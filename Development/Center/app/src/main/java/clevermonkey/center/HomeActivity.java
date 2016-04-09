@@ -1,0 +1,54 @@
+package clevermonkey.center;
+
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+
+public class HomeActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_home);
+
+        //设置控件响应回调。
+        //自动控制模式按钮。
+        ((Button)findViewById(R.id.btn_home_engine)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomeActivity.this, EngineActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        //远程遥控模式按钮。
+        ((Button)findViewById(R.id.btn_home_remote)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomeActivity.this, RemoteActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        //远程监控模式按钮。
+        ((Button)findViewById(R.id.btn_home_monitor)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomeActivity.this, MonitorActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        //关于按钮。
+        ((Button)findViewById(R.id.btn_home_about)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomeActivity.this, AboutActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+}
