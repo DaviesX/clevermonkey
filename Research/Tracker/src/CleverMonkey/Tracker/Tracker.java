@@ -5,65 +5,65 @@ import java.awt.Point;
 import java.awt.Color;
 import java.awt.Graphics;
 
-/** CMTrackerÀàÓÃÓÚ¸ù¾İÍ¼ÏñÊäÈë¸ø³öÔË¶¯¿ØÖÆÄ¿±êĞÅÏ¢¡£ */
+/** CMTrackerç±»ç”¨äºæ ¹æ®å›¾åƒè¾“å…¥ç»™å‡ºè¿åŠ¨æ§åˆ¶ç›®æ ‡ä¿¡æ¯ã€‚ */
 public class Tracker {
-	// ½á¹ûÀàĞÍÃ¶¾Ù¡£
+	// ç»“æœç±»å‹æšä¸¾ã€‚
 	public enum ResultType {
 		Unk, Run, Stop
 	}
 
-	// Ä£Ê½Í¼¸ß¶È¡£
+	// æ¨¡å¼å›¾é«˜åº¦ã€‚
 	protected final int k_patternHeight = 160;
-	// Ä£Ê½Í¼¿í¶È¡£
+	// æ¨¡å¼å›¾å®½åº¦ã€‚
 	protected final int k_patternWidth = 90;
-	// ÅĞ±ğÑÕÉ«ÉÏÏŞ¡£
+	// åˆ¤åˆ«é¢œè‰²ä¸Šé™ã€‚
 	protected final Color k_appointedColorMax = new Color(15, 15, 15);
-	// ÅĞ±ğÑÕÉ«ÏÂÏŞ¡£
+	// åˆ¤åˆ«é¢œè‰²ä¸‹é™ã€‚
 	protected final Color k_appointedColorMin = new Color(0, 0, 0);
-	// Â·¾¶Ïß¿íÏÂÏŞ¡£
+	// è·¯å¾„çº¿å®½ä¸‹é™ã€‚
 	protected final int k_trackWidthMin = 20;
-	// È±µã¼äÏ¶ÈİÏŞ¡£
+	// ç¼ºç‚¹é—´éš™å®¹é™ã€‚
 	protected final int k_gapMax = 1;
-	// Í£Ö¹Ïß×îĞ¡¿í¶È¡£
+	// åœæ­¢çº¿æœ€å°å®½åº¦ã€‚
 	protected final int k_stopLineWidthMin = 80;
-	// Í£Ö¹Ö¸ÁîËùĞèµÄ×îĞ¡Á¬ĞøÍ£Ö¹ĞĞÊıÄ¿¡£
+	// åœæ­¢æŒ‡ä»¤æ‰€éœ€çš„æœ€å°è¿ç»­åœæ­¢è¡Œæ•°ç›®ã€‚
 	protected final int k_stopLineCounterMin = 50;
-	// ÔË¶¯¿ØÖÆÄ¿±êÅĞ±ğ»ùÏß
+	// è¿åŠ¨æ§åˆ¶ç›®æ ‡åˆ¤åˆ«åŸºçº¿
 	protected final int k_baseLine = 40;
 
-	// ´«ÈëµÄÔ­Í¼¡£
+	// ä¼ å…¥çš„åŸå›¾ã€‚
 	protected BufferedImage m_originalImg;
-	// AlphaÄ£Ê½Í¼Í¼Ïñ¡£
+	// Alphaæ¨¡å¼å›¾å›¾åƒã€‚
 	protected BufferedImage m_alphaImg = new BufferedImage(k_patternWidth,
 			k_patternHeight, BufferedImage.TYPE_INT_RGB);
-	// BetaÄ£Ê½Í¼Í¼Ïñ¡£
+	// Betaæ¨¡å¼å›¾å›¾åƒã€‚
 	protected BufferedImage m_betaImg = new BufferedImage(k_patternWidth,
 			k_patternHeight, BufferedImage.TYPE_INT_RGB);
-	// AlphaÄ£Ê½Í¼Êı×é¡£
+	// Alphaæ¨¡å¼å›¾æ•°ç»„ã€‚
 	protected boolean[][] m_patternAlpha = new boolean[k_patternWidth][k_patternHeight];
-	// BetaÄ£Ê½Í¼Êı×é¡£
+	// Betaæ¨¡å¼å›¾æ•°ç»„ã€‚
 	protected boolean[][] m_patternBeta = new boolean[k_patternWidth][k_patternHeight];
-	// ÓĞĞ§ĞĞ±ê¼Ç¡£¼ÇÂ¼¶ÔÓ¦ĞĞÊÇ·ñÓĞĞ§¡£
-	// ÓĞĞ§ĞĞ¶¨Òå£ºÒÑÊ¶±ğµ½Â·¾¶ÏßµãµÄĞĞ£¬¼´²»Ğè¼ÆËãÄâºÏµãµÄĞĞ¡£
+	// æœ‰æ•ˆè¡Œæ ‡è®°ã€‚è®°å½•å¯¹åº”è¡Œæ˜¯å¦æœ‰æ•ˆã€‚
+	// æœ‰æ•ˆè¡Œå®šä¹‰ï¼šå·²è¯†åˆ«åˆ°è·¯å¾„çº¿ç‚¹çš„è¡Œï¼Œå³ä¸éœ€è®¡ç®—æ‹Ÿåˆç‚¹çš„è¡Œã€‚
 	protected boolean[] m_isValidLine = new boolean[k_patternHeight];
-	// Í£Ö¹ĞĞ±ê¼Ç¡£¼ÇÂ¼¶ÔÓ¦ĞĞÊÇ·ñÎªÍ£Ö¹±ê¼ÇĞĞ¡£
-	// Í£Ö¹ĞĞ¶¨Òå£ºĞĞÓĞĞ§Â·¾¶¿í¶È²»Ğ¡ÓÚ¹æ¶¨µÄÍ£Ö¹±ê¼Ç¿í¶ÈµÄĞĞ¡£
+	// åœæ­¢è¡Œæ ‡è®°ã€‚è®°å½•å¯¹åº”è¡Œæ˜¯å¦ä¸ºåœæ­¢æ ‡è®°è¡Œã€‚
+	// åœæ­¢è¡Œå®šä¹‰ï¼šè¡Œæœ‰æ•ˆè·¯å¾„å®½åº¦ä¸å°äºè§„å®šçš„åœæ­¢æ ‡è®°å®½åº¦çš„è¡Œã€‚
 	protected boolean[] m_isStopLine = new boolean[k_patternHeight];
-	// Ä£Ê½Í¼µ½Ô­Í¼µÄ×ª»»ÏµÊı¡£
+	// æ¨¡å¼å›¾åˆ°åŸå›¾çš„è½¬æ¢ç³»æ•°ã€‚
 	public int m_patternToImgScale;
-	// ½á¹ûÁ¿-ÔË¶¯¿ØÖÆÄ¿±êµã¡£¸ÃÄ¿±êµã»ùÓÚ×ÔÈ»ÉãÏñÍ·×ø±êÏµ£¨Ô­µãÔÚ×óÉÏ½Ç£©¡£
+	// ç»“æœé‡-è¿åŠ¨æ§åˆ¶ç›®æ ‡ç‚¹ã€‚è¯¥ç›®æ ‡ç‚¹åŸºäºè‡ªç„¶æ‘„åƒå¤´åæ ‡ç³»ï¼ˆåŸç‚¹åœ¨å·¦ä¸Šè§’ï¼‰ã€‚
 	protected Point m_targetPoint = new Point(0, 0);
-	// ½á¹ûÁ¿-½á¹ûÀàĞÍ¡£
+	// ç»“æœé‡-ç»“æœç±»å‹ã€‚
 	protected ResultType m_resultType = ResultType.Unk;
 
-	// ½Ó¿Ú¡£
+	// æ¥å£ã€‚
 
-	// ´«Èë·ÖÎöÍ¼Ïñ¡£
-	// Í¼Ïñ±ØĞëÊÇ16£º9µÄ³¤¿í±È¡£
+	// ä¼ å…¥åˆ†æå›¾åƒã€‚
+	// å›¾åƒå¿…é¡»æ˜¯16ï¼š9çš„é•¿å®½æ¯”ã€‚
 	public ResultType AnalyseImg(BufferedImage img) {
 		m_originalImg = img;
 
-		// ¹¤×÷Á÷³Ì¡£Ïê²ÎÉè¼ÆÎÄµµ¡£
+		// å·¥ä½œæµç¨‹ã€‚è¯¦å‚è®¾è®¡æ–‡æ¡£ã€‚
 		if (!ToAlpha())
 			return ResultType.Unk;
 		if (!ToBeta())
@@ -76,22 +76,22 @@ public class Tracker {
 		return m_resultType;
 	}
 
-	// »ñÈ¡½á¹ûÁ¿¡£
-	// @return ½á¹ûÁ¿-ÔË¶¯¿ØÖÆÄ¿±êµã¡£
+	// è·å–ç»“æœé‡ã€‚
+	// @return ç»“æœé‡-è¿åŠ¨æ§åˆ¶ç›®æ ‡ç‚¹ã€‚
 	public Point GetResult() {
 		return m_targetPoint;
 	}
 
-	// ÒÔÍ¼Æ¬¶ÔÏó·½Ê½Êä³öÔ­Í¼¡£
-	// @isResultDrawed ÊÇ·ñ»æÖÆ½á¹ûµã¡£
-	// @return Ô­Í¼¡£
+	// ä»¥å›¾ç‰‡å¯¹è±¡æ–¹å¼è¾“å‡ºåŸå›¾ã€‚
+	// @isResultDrawed æ˜¯å¦ç»˜åˆ¶ç»“æœç‚¹ã€‚
+	// @return åŸå›¾ã€‚
 	public BufferedImage GetOriginalImg(boolean isResultDrawed) {
 
-		// ²»»æÖÆ½á¹ûµãÔòÖ±½Ó·µ»ØÔ­Í¼¡£
+		// ä¸ç»˜åˆ¶ç»“æœç‚¹åˆ™ç›´æ¥è¿”å›åŸå›¾ã€‚
 		if (isResultDrawed == false)
 			return m_originalImg;
 
-		// ·ñÔò²¹³ä»æÖÆ½á¹ûµã¼°»ùÏß¡£
+		// å¦åˆ™è¡¥å……ç»˜åˆ¶ç»“æœç‚¹åŠåŸºçº¿ã€‚
 		Graphics graphics = m_originalImg.getGraphics();
 		graphics.setColor(Color.GRAY);
 		graphics.drawLine(0, k_baseLine, m_originalImg.getWidth() - 1,
@@ -101,26 +101,26 @@ public class Tracker {
 		return m_originalImg;
 	}
 
-	// ÒÔÍ¼Æ¬¶ÔÏó·½Ê½Êä³öAlphaÄ£Ê½Í¼¡£
-	// @isResultDrawed ÊÇ·ñ»æÖÆ½á¹ûµã¡£
-	// @return AlphaÄ£Ê½Í¼¡£
+	// ä»¥å›¾ç‰‡å¯¹è±¡æ–¹å¼è¾“å‡ºAlphaæ¨¡å¼å›¾ã€‚
+	// @isResultDrawed æ˜¯å¦ç»˜åˆ¶ç»“æœç‚¹ã€‚
+	// @return Alphaæ¨¡å¼å›¾ã€‚
 	public BufferedImage GetAlphaPatternImg(boolean isResultDrawed) {
 
-		// ÖğÒ»ÅĞ±ğÊı×éÊı¾İ²¢Ó³ÉäÌî³äÍ¼Æ¬¶ÔÏóÖĞ¡£
+		// é€ä¸€åˆ¤åˆ«æ•°ç»„æ•°æ®å¹¶æ˜ å°„å¡«å……å›¾ç‰‡å¯¹è±¡ä¸­ã€‚
 		for (int x = 0; x < k_patternWidth; ++x) {
 			for (int y = 0; y < k_patternHeight; ++y) {
-				// Ä¿±êµã×ÅÉ«ÎªºÚÉ«£¬ÆäËüµã×ÅÉ«Îª°×É«¡£
+				// ç›®æ ‡ç‚¹ç€è‰²ä¸ºé»‘è‰²ï¼Œå…¶å®ƒç‚¹ç€è‰²ä¸ºç™½è‰²ã€‚
 				if (m_patternAlpha[x][y] == true)
 					m_alphaImg.setRGB(x, y, Color.BLACK.getRGB());
 				else
 					m_alphaImg.setRGB(x, y, Color.WHITE.getRGB());
 			}
 		}
-		// ²»»æÖÆ½á¹ûµãÔòÖ±½Ó·µ»Ø¡£
+		// ä¸ç»˜åˆ¶ç»“æœç‚¹åˆ™ç›´æ¥è¿”å›ã€‚
 		if (isResultDrawed == false || m_patternToImgScale == 0)
 			return m_alphaImg;
 
-		// ·ñÔò²¹³ä»æÖÆ½á¹ûµã¼°»ùÏß¡£
+		// å¦åˆ™è¡¥å……ç»˜åˆ¶ç»“æœç‚¹åŠåŸºçº¿ã€‚
 		Graphics graphics = m_alphaImg.getGraphics();
 		graphics.setColor(Color.GRAY);
 		graphics.drawLine(0, k_baseLine, k_patternWidth - 1, k_baseLine);
@@ -130,15 +130,15 @@ public class Tracker {
 		return m_alphaImg;
 	}
 
-	// ÒÔÍ¼Æ¬¶ÔÏó·½Ê½Êä³öBetaÄ£Ê½Í¼¡£
-	// @isResultDrawed ÊÇ·ñ»æÖÆ½á¹ûµã¡£
-	// @return BetaÄ£Ê½Í¼¡£
+	// ä»¥å›¾ç‰‡å¯¹è±¡æ–¹å¼è¾“å‡ºBetaæ¨¡å¼å›¾ã€‚
+	// @isResultDrawed æ˜¯å¦ç»˜åˆ¶ç»“æœç‚¹ã€‚
+	// @return Betaæ¨¡å¼å›¾ã€‚
 	public BufferedImage GetBetaPatternImg(boolean isResultDrawed) {
 
-		// ÖğÒ»ÅĞ±ğÊı×éÊı¾İ²¢Ó³ÉäÌî³äµ½ĞÂµÄÍ¼Æ¬¶ÔÏóÖĞ¡£
+		// é€ä¸€åˆ¤åˆ«æ•°ç»„æ•°æ®å¹¶æ˜ å°„å¡«å……åˆ°æ–°çš„å›¾ç‰‡å¯¹è±¡ä¸­ã€‚
 		for (int x = 0; x < k_patternWidth; ++x) {
 			for (int y = 0; y < k_patternHeight; ++y) {
-				// Ä¿±êµã×ÅÉ«ÎªºÚÉ«£¬Í£Ö¹ĞĞ×ÅÉ«ÎªºìÉ«£¬ÆäËüµã×ÅÉ«Îª°×É«¡£
+				// ç›®æ ‡ç‚¹ç€è‰²ä¸ºé»‘è‰²ï¼Œåœæ­¢è¡Œç€è‰²ä¸ºçº¢è‰²ï¼Œå…¶å®ƒç‚¹ç€è‰²ä¸ºç™½è‰²ã€‚
 				if (m_patternBeta[x][y] == true)
 					if (m_isStopLine[y] == true)
 						m_betaImg.setRGB(x, y, Color.RED.getRGB());
@@ -148,11 +148,11 @@ public class Tracker {
 					m_betaImg.setRGB(x, y, Color.WHITE.getRGB());
 			}
 		}
-		// ²»»æÖÆ½á¹ûµãÔòÖ±½Ó·µ»Ø¡£
+		// ä¸ç»˜åˆ¶ç»“æœç‚¹åˆ™ç›´æ¥è¿”å›ã€‚
 		if (isResultDrawed == false || m_patternToImgScale == 0)
 			return m_betaImg;
 
-		// ·ñÔò²¹³ä»æÖÆ½á¹ûµã¼°»ùÏß¡£
+		// å¦åˆ™è¡¥å……ç»˜åˆ¶ç»“æœç‚¹åŠåŸºçº¿ã€‚
 		Graphics graphics = m_betaImg.getGraphics();
 		graphics.setColor(Color.GRAY);
 		graphics.drawLine(0, k_baseLine, k_patternWidth - 1, k_baseLine);
@@ -162,27 +162,27 @@ public class Tracker {
 		return m_betaImg;
 	}
 
-	// ¹¤¾ßº¯Êı¡£
+	// å·¥å…·å‡½æ•°ã€‚
 
-	// µÚÒ»´ÎÄ£Ê½»¯´¦Àí£¬½«Ô­Ê¼ÊäÈëÍ¼Ïñ´¦ÀíÎªºÚ°×Ä£Ê½Í¼¡£
-	// ·½·¨ÊÇÖğÒ»½«Ò»¶¨´óĞ¡µÄÔ­Í¼Çø¿é¼ÆËãÓ³Éäµ½Ä£Ê½Í¼ÏñËØ¡£Ó³ÉäÊ±½«×Ô¶¯ÅĞ±ğÇø¿éÑÕÉ«ÊÇ·ñÔÚÄ¿±êÑÕÉ«Çø¼äÖĞ¡£
-	// ¸ÃÁ÷³Ì¿ÉÒÔ¹ıÂËÉ«¿é»ìÏı¼°Ôëµã¸ÉÈÅ¡£
+	// ç¬¬ä¸€æ¬¡æ¨¡å¼åŒ–å¤„ç†ï¼Œå°†åŸå§‹è¾“å…¥å›¾åƒå¤„ç†ä¸ºé»‘ç™½æ¨¡å¼å›¾ã€‚
+	// æ–¹æ³•æ˜¯é€ä¸€å°†ä¸€å®šå¤§å°çš„åŸå›¾åŒºå—è®¡ç®—æ˜ å°„åˆ°æ¨¡å¼å›¾åƒç´ ã€‚æ˜ å°„æ—¶å°†è‡ªåŠ¨åˆ¤åˆ«åŒºå—é¢œè‰²æ˜¯å¦åœ¨ç›®æ ‡é¢œè‰²åŒºé—´ä¸­ã€‚
+	// è¯¥æµç¨‹å¯ä»¥è¿‡æ»¤è‰²å—æ··æ·†åŠå™ªç‚¹å¹²æ‰°ã€‚
 	protected boolean ToAlpha() {
 		Color color;
-		// ÑÕÉ«·ÖÁ¿ÀÛ¼ÓÆ÷¡£
+		// é¢œè‰²åˆ†é‡ç´¯åŠ å™¨ã€‚
 		int red = 0;
 		int green = 0;
 		int blue = 0;
 
-		// ³õÊ¼»¯Ä£Ê½Í¼µ½Ô­Í¼µÄ×ª»»ÏµÊı¡£
+		// åˆå§‹åŒ–æ¨¡å¼å›¾åˆ°åŸå›¾çš„è½¬æ¢ç³»æ•°ã€‚
 		m_patternToImgScale = m_originalImg.getHeight() / k_patternHeight;
 
 		for (int x = 0; x < k_patternWidth; ++x) {
 			for (int y = 0; y < k_patternHeight; ++y) {
-				// New Method Á½ĞĞÈ¡Ñù·¨¡£
-				// ·Ö±ğÉ¨ÃèÁ½ĞĞµÄÏñËØ£¬È¡¸ÃÁ½ĞĞµÄËùÓĞÏñËØµÄÑÕÉ«Æ½¾ùÖµ×÷ÎªµÈĞ§Çø¿éÑÕÉ«¡£½è´ËÏû³ıÔëµã¸ÉÈÅ¡£
-				// ËùÑ¡ÔñµÄÁ½ĞĞ·Ö±ğÏòÇø¿é±ß½çÄÚÆ«ÒÆÁ½ĞĞ£¬¼´È¡±ß½çÆğ¼ÆµÄµÚÈıĞĞ¡£Ê¹Ñù±¾ÔÚÔ­Í¼ÉÏµÄ·Ö²¼¸üÆ½¾ù¡£
-				// NOTICE µ¥Ò»Ä£Ê½Í¼Á£×Ó¶ÔÓ¦Çø¿é´óĞ¡Ä¬ÈÏ²»Ğ¡ÓÚ3*3ÏñËØ¡£
+				// New Method ä¸¤è¡Œå–æ ·æ³•ã€‚
+				// åˆ†åˆ«æ‰«æä¸¤è¡Œçš„åƒç´ ï¼Œå–è¯¥ä¸¤è¡Œçš„æ‰€æœ‰åƒç´ çš„é¢œè‰²å¹³å‡å€¼ä½œä¸ºç­‰æ•ˆåŒºå—é¢œè‰²ã€‚å€Ÿæ­¤æ¶ˆé™¤å™ªç‚¹å¹²æ‰°ã€‚
+				// æ‰€é€‰æ‹©çš„ä¸¤è¡Œåˆ†åˆ«å‘åŒºå—è¾¹ç•Œå†…åç§»ä¸¤è¡Œï¼Œå³å–è¾¹ç•Œèµ·è®¡çš„ç¬¬ä¸‰è¡Œã€‚ä½¿æ ·æœ¬åœ¨åŸå›¾ä¸Šçš„åˆ†å¸ƒæ›´å¹³å‡ã€‚
+				// NOTICE å•ä¸€æ¨¡å¼å›¾ç²’å­å¯¹åº”åŒºå—å¤§å°é»˜è®¤ä¸å°äº3*3åƒç´ ã€‚
 				for (int i = 0; i < m_patternToImgScale; ++i) {
 					color = new Color(m_originalImg.getRGB(x
 							* m_patternToImgScale + i, y * m_patternToImgScale
@@ -218,42 +218,42 @@ public class Tracker {
 		return true;
 	}
 
-	// ¶ÔÓ¦º¯ÊıµÄ¼ò»¯°æ¡£ÒÔ¼ò»¯Á÷³Ì£¬½µµÍÊ¶±ğÎÈ¶¨ĞÔ¼°³É¹¦ÂÊµÄ´ú¼Û½µµÍ¼ÆËã¸´ÔÓ¶È¡£
+	// å¯¹åº”å‡½æ•°çš„ç®€åŒ–ç‰ˆã€‚ä»¥ç®€åŒ–æµç¨‹ï¼Œé™ä½è¯†åˆ«ç¨³å®šæ€§åŠæˆåŠŸç‡çš„ä»£ä»·é™ä½è®¡ç®—å¤æ‚åº¦ã€‚
 	protected boolean ToAlphaS() {
 		Color color;
-		// ÑÕÉ«·ÖÁ¿ÀÛ¼ÓÆ÷¡£
+		// é¢œè‰²åˆ†é‡ç´¯åŠ å™¨ã€‚
 		int red = 0;
 		int green = 0;
 		int blue = 0;
 
-		// ³õÊ¼»¯Ä£Ê½Í¼µ½Ô­Í¼µÄ×ª»»ÏµÊı¡£
+		// åˆå§‹åŒ–æ¨¡å¼å›¾åˆ°åŸå›¾çš„è½¬æ¢ç³»æ•°ã€‚
 		m_patternToImgScale = m_originalImg.getHeight() / k_patternHeight;
 
 		for (int x = 0; x < k_patternWidth; ++x) {
 			for (int y = 0; y < k_patternHeight; ++y) {
-				// Old Method ËÄµãÈ¡Ñù·¨¡£
-				// È¡Ä£Ê½Í¼¶ÔÓ¦µÄÔ­Ê¼Í¼Çø¿éµÄËÄ¸ö½Ç¹²ËÄ¸öµãµÄÑÕÉ«Æ½¾ùÖµ×÷Îª¸ÃÇø¿éµÄÑÕÉ«´ú±íÖµ¡£ËæºóÅĞ¶Ï¸ÃÑÕÉ«ÖµÊÇ·ñÎªÄ¿±êÅĞ±ğÑÕÉ«²¢Ìî³äÄ£Ê½Í¼µã
+				// Old Method å››ç‚¹å–æ ·æ³•ã€‚
+				// å–æ¨¡å¼å›¾å¯¹åº”çš„åŸå§‹å›¾åŒºå—çš„å››ä¸ªè§’å…±å››ä¸ªç‚¹çš„é¢œè‰²å¹³å‡å€¼ä½œä¸ºè¯¥åŒºå—çš„é¢œè‰²ä»£è¡¨å€¼ã€‚éšååˆ¤æ–­è¯¥é¢œè‰²å€¼æ˜¯å¦ä¸ºç›®æ ‡åˆ¤åˆ«é¢œè‰²å¹¶å¡«å……æ¨¡å¼å›¾ç‚¹
 
-				// ×óÉÏ½Ç
+				// å·¦ä¸Šè§’
 				color = new Color(m_originalImg.getRGB(x * m_patternToImgScale,
 						y * m_patternToImgScale));
 				red = color.getRed();
 				green = color.getGreen();
 				blue = color.getBlue();
-				// ÓÒÉÏ½Ç
+				// å³ä¸Šè§’
 				color = new Color(m_originalImg.getRGB((x + 1)
 						* m_patternToImgScale - 1, y * m_patternToImgScale));
 				red += color.getRed();
 				green += color.getGreen();
 				blue += color.getBlue();
-				// ÓÒÏÂ½Ç
+				// å³ä¸‹è§’
 				color = new Color(m_originalImg.getRGB((x + 1)
 						* m_patternToImgScale - 1, (y + 1)
 						* m_patternToImgScale - 1));
 				red += color.getRed();
 				green += color.getGreen();
 				blue += color.getBlue();
-				// ×óÏÂ½Ç
+				// å·¦ä¸‹è§’
 				color = new Color(m_originalImg.getRGB(x * m_patternToImgScale,
 						(y + 1) * m_patternToImgScale - 1));
 				red += color.getRed();
@@ -279,23 +279,23 @@ public class Tracker {
 		return true;
 	}
 
-	// µÚ¶ş´ÎÄ£Ê½»¯´¦Àí¡£½«ºÚ°×Ä£Ê½Í¼´¦ÀíÎª²»ÍêÈ«Â·¾¶ÏßÍ¼£¬²¢Ê¶±ğÍ£Ö¹Ö¸Áî¡£
-	// ·½·¨ÊÇÑ°ÕÒÃ¿Ò»ĞĞµÄÂ·¾¶²¿·ÖÖĞµã×÷Îª¸ÃĞĞµÄÂ·¾¶Ïßµã¡£µ«»ìÏıºÍÎŞĞ§ĞĞ»á±»ÂÔ¹ı¡£
-	// ¸ÃÁ÷³Ì¿ÉÒÔ´¦ÀíÎŞ¹ØÂ·¾¶»ìÏı¡¢É¢µã»ìÏı¼°È±µã¸ÉÈÅ¡£
-	// NOTICE ¸Ãº¯Êı¹¤×÷Âß¼­Çë²ÎÔÄÉè¼ÆÁ÷³ÌÍ¼¡£
+	// ç¬¬äºŒæ¬¡æ¨¡å¼åŒ–å¤„ç†ã€‚å°†é»‘ç™½æ¨¡å¼å›¾å¤„ç†ä¸ºä¸å®Œå…¨è·¯å¾„çº¿å›¾ï¼Œå¹¶è¯†åˆ«åœæ­¢æŒ‡ä»¤ã€‚
+	// æ–¹æ³•æ˜¯å¯»æ‰¾æ¯ä¸€è¡Œçš„è·¯å¾„éƒ¨åˆ†ä¸­ç‚¹ä½œä¸ºè¯¥è¡Œçš„è·¯å¾„çº¿ç‚¹ã€‚ä½†æ··æ·†å’Œæ— æ•ˆè¡Œä¼šè¢«ç•¥è¿‡ã€‚
+	// è¯¥æµç¨‹å¯ä»¥å¤„ç†æ— å…³è·¯å¾„æ··æ·†ã€æ•£ç‚¹æ··æ·†åŠç¼ºç‚¹å¹²æ‰°ã€‚
+	// NOTICE è¯¥å‡½æ•°å·¥ä½œé€»è¾‘è¯·å‚é˜…è®¾è®¡æµç¨‹å›¾ã€‚
 	protected boolean ToBeta() {
-		// µ¥ÁªÍ¨ÏßÓĞĞ§ÏñËØX×ø±êÀÛ¼ÓÆ÷¡£
+		// å•è”é€šçº¿æœ‰æ•ˆåƒç´ Xåæ ‡ç´¯åŠ å™¨ã€‚
 		int pointX = 0;
-		// µ¥ÁªÍ¨ÏßÓĞĞ§ÏñËØ¼ÆÊıÆ÷¡£
+		// å•è”é€šçº¿æœ‰æ•ˆåƒç´ è®¡æ•°å™¨ã€‚
 		int pointCounter = 0;
-		// µ¥ÁªÍ¨Ïß¼ÆÊıÓĞĞ§ÆÚÄÚµÄÃ¿Ò»¼äÏ¶ÄÚµÄ¼äÏ¶µã¼ÆÊıÆ÷¡£
+		// å•è”é€šçº¿è®¡æ•°æœ‰æ•ˆæœŸå†…çš„æ¯ä¸€é—´éš™å†…çš„é—´éš™ç‚¹è®¡æ•°å™¨ã€‚
 		int gapCounter = 0;
-		// ÓĞĞ§±ê¼Ç¡£µ±Ê×´Î¼ÇÂ¼ÓĞĞ§µãºóÉèÖÃ¡£
+		// æœ‰æ•ˆæ ‡è®°ã€‚å½“é¦–æ¬¡è®°å½•æœ‰æ•ˆç‚¹åè®¾ç½®ã€‚
 		boolean isSet = false;
 
-		// ÖğĞĞÉ¨Ãè¡£
+		// é€è¡Œæ‰«æã€‚
 		for (int y = 0; y < k_patternHeight; ++y) {
-			// ÖØÖÃÊı¾İ¡£
+			// é‡ç½®æ•°æ®ã€‚
 			pointX = 0;
 			pointCounter = 0;
 			gapCounter = 0;
@@ -304,7 +304,7 @@ public class Tracker {
 			m_isStopLine[y] = false;
 
 			for (int x = 0; x < k_patternWidth; ++x) {
-				// ÇåÀíPatternBeta.
+				// æ¸…ç†PatternBeta.
 				m_patternBeta[x][y] = false;
 
 				if (m_patternAlpha[x][y] == true) {
@@ -315,11 +315,11 @@ public class Tracker {
 					if (gapCounter < k_gapMax) {
 						++gapCounter;
 					} else {
-						// ½öµ±Á¬Í¨Ïß¿í¶È´óÓÚÔ¤Éè×îĞ¡¿í¶È²Å½øĞĞ´¦Àí£¬·ñÔòÇåÀí±äÁ¿£¬½øĞĞÏÂ´ÎÅĞ±ğ¡£
+						// ä»…å½“è¿é€šçº¿å®½åº¦å¤§äºé¢„è®¾æœ€å°å®½åº¦æ‰è¿›è¡Œå¤„ç†ï¼Œå¦åˆ™æ¸…ç†å˜é‡ï¼Œè¿›è¡Œä¸‹æ¬¡åˆ¤åˆ«ã€‚
 						if (pointCounter >= k_trackWidthMin) {
-							// Èç¹ûÒÑ¾­¼ÇÂ¼¹ıÊı¾İ£¬Ôò±íÃ÷¸ÃĞĞÊı¾İÎŞĞ§£¬ÇåÀí¸ÃĞĞÊı¾İ£¬Ìø¹ıÊ£Óà²¿·ÖÖ±½Ó¿ªÊ¼ÏÂÒ»ĞĞÉ¨Ãè¡£
-							// Éè¼ÆËµÃ÷£ºÒò¿¼ÂÇµ½¸ÃÇé¿öµÄ·¢Éú¸ÅÂÊ½ÏĞ¡£¬ËùÒÔ²ÉÈ¡ÓÅÏÈĞ´Èë£¬Ê§°ÜÇåÀíµÄ²ßÂÔ¡£
-							// Èç¹ûÊµ¼Ê²âÊÔ±íÃ÷¸ÃÇé¿ö·¢Éú¸ÅÂÊ½Ï´ó£¬¿ÉÒÔ¸ÄÓÃÁÙÊ±±äÁ¿´æ´¢Êı¾İ£¬×îºóĞ´ÈëµÄ²ßÂÔ¡£
+							// å¦‚æœå·²ç»è®°å½•è¿‡æ•°æ®ï¼Œåˆ™è¡¨æ˜è¯¥è¡Œæ•°æ®æ— æ•ˆï¼Œæ¸…ç†è¯¥è¡Œæ•°æ®ï¼Œè·³è¿‡å‰©ä½™éƒ¨åˆ†ç›´æ¥å¼€å§‹ä¸‹ä¸€è¡Œæ‰«æã€‚
+							// è®¾è®¡è¯´æ˜ï¼šå› è€ƒè™‘åˆ°è¯¥æƒ…å†µçš„å‘ç”Ÿæ¦‚ç‡è¾ƒå°ï¼Œæ‰€ä»¥é‡‡å–ä¼˜å…ˆå†™å…¥ï¼Œå¤±è´¥æ¸…ç†çš„ç­–ç•¥ã€‚
+							// å¦‚æœå®é™…æµ‹è¯•è¡¨æ˜è¯¥æƒ…å†µå‘ç”Ÿæ¦‚ç‡è¾ƒå¤§ï¼Œå¯ä»¥æ”¹ç”¨ä¸´æ—¶å˜é‡å­˜å‚¨æ•°æ®ï¼Œæœ€åå†™å…¥çš„ç­–ç•¥ã€‚
 							if (isSet == true) {
 								m_isValidLine[y] = false;
 								for (int i = 0; i < k_patternWidth; ++i)
@@ -327,18 +327,18 @@ public class Tracker {
 								pointCounter = 0;
 								break;
 							}
-							// ÑéÖ¤ÊÇ·ñÎªÍ£Ö¹±ê¼ÇĞĞ¡£
+							// éªŒè¯æ˜¯å¦ä¸ºåœæ­¢æ ‡è®°è¡Œã€‚
 							if (pointCounter >= k_stopLineWidthMin) {
 								m_isStopLine[y] = true;
 							}
-							// ¼ÇÂ¼Êı¾İ¡£
+							// è®°å½•æ•°æ®ã€‚
 							isSet = true;
-							// È¡ÖĞµãÎªÂ·¾¶Ïßµã¡£
+							// å–ä¸­ç‚¹ä¸ºè·¯å¾„çº¿ç‚¹ã€‚
 							m_patternBeta[Math.round(((float) pointX)
 									/ pointCounter)][y] = true;
 							m_isValidLine[y] = true;
 						}
-						// ÇåÀí±äÁ¿ÎªÏÂÒ»´ÎÅĞ±ğ×¼±¸¡£
+						// æ¸…ç†å˜é‡ä¸ºä¸‹ä¸€æ¬¡åˆ¤åˆ«å‡†å¤‡ã€‚
 						pointX = 0;
 						pointCounter = 0;
 						gapCounter = 0;
@@ -346,22 +346,22 @@ public class Tracker {
 				}
 			}
 
-			// ĞĞÄÚÉ¨ÃèÍê±Ï¡£´¦Àí±ßÔµÇé¿ö¡£
+			// è¡Œå†…æ‰«æå®Œæ¯•ã€‚å¤„ç†è¾¹ç¼˜æƒ…å†µã€‚
 			if (pointCounter >= k_trackWidthMin) {
-				// Èç¹ûÒÑ¾­¼ÇÂ¼¹ıÊı¾İ£¬Ôò±íÃ÷¸ÃĞĞÊı¾İÎŞĞ§£¬ÇåÀí¸ÃĞĞÊı¾İ£¬Ìø¹ıÊ£Óà²¿·ÖÖ±½Ó¿ªÊ¼ÏÂÒ»ĞĞÉ¨Ãè¡£
-				// Éè¼ÆËµÃ÷£ºÒò¿¼ÂÇµ½¸ÃÇé¿öµÄ·¢Éú¸ÅÂÊ½ÏĞ¡£¬ËùÒÔ²ÉÈ¡ÓÅÏÈĞ´Èë£¬Ê§°ÜÇåÀíµÄ²ßÂÔ¡£
-				// Èç¹ûÊµ¼Ê²âÊÔ±íÃ÷¸ÃÇé¿ö·¢Éú¸ÅÂÊ½Ï´ó£¬¿ÉÒÔ¸ÄÓÃÁÙÊ±±äÁ¿´æ´¢Êı¾İ£¬×îºóĞ´ÈëµÄ²ßÂÔ¡£
+				// å¦‚æœå·²ç»è®°å½•è¿‡æ•°æ®ï¼Œåˆ™è¡¨æ˜è¯¥è¡Œæ•°æ®æ— æ•ˆï¼Œæ¸…ç†è¯¥è¡Œæ•°æ®ï¼Œè·³è¿‡å‰©ä½™éƒ¨åˆ†ç›´æ¥å¼€å§‹ä¸‹ä¸€è¡Œæ‰«æã€‚
+				// è®¾è®¡è¯´æ˜ï¼šå› è€ƒè™‘åˆ°è¯¥æƒ…å†µçš„å‘ç”Ÿæ¦‚ç‡è¾ƒå°ï¼Œæ‰€ä»¥é‡‡å–ä¼˜å…ˆå†™å…¥ï¼Œå¤±è´¥æ¸…ç†çš„ç­–ç•¥ã€‚
+				// å¦‚æœå®é™…æµ‹è¯•è¡¨æ˜è¯¥æƒ…å†µå‘ç”Ÿæ¦‚ç‡è¾ƒå¤§ï¼Œå¯ä»¥æ”¹ç”¨ä¸´æ—¶å˜é‡å­˜å‚¨æ•°æ®ï¼Œæœ€åå†™å…¥çš„ç­–ç•¥ã€‚
 				if (isSet == true) {
 					m_isValidLine[y] = false;
 					for (int i = 0; i < k_patternWidth; ++i)
 						m_patternBeta[i][y] = false;
 					continue;
 				}
-				// ÑéÖ¤ÊÇ·ñÎªÍ£Ö¹±ê¼ÇĞĞ¡£
+				// éªŒè¯æ˜¯å¦ä¸ºåœæ­¢æ ‡è®°è¡Œã€‚
 				if (pointCounter >= k_stopLineWidthMin) {
 					m_isStopLine[y] = true;
 				}
-				// È¡ÖĞµãÎªÓĞĞ§µã¡£
+				// å–ä¸­ç‚¹ä¸ºæœ‰æ•ˆç‚¹ã€‚
 				m_patternBeta[Math.round(((float) pointX) / pointCounter)][y] = true;
 				m_isValidLine[y] = true;
 			}
@@ -371,18 +371,18 @@ public class Tracker {
 		return true;
 	}
 
-	// ¶ÔÓ¦º¯ÊıµÄ¼ò»¯°æ¡£ÒÔ½µµÍ¾«¶ÈµÄ´ú¼Û½µµÍ¼ÆËã¸´ÔÓ¶È¡£
+	// å¯¹åº”å‡½æ•°çš„ç®€åŒ–ç‰ˆã€‚ä»¥é™ä½ç²¾åº¦çš„ä»£ä»·é™ä½è®¡ç®—å¤æ‚åº¦ã€‚
 	protected boolean ToBetaS() {
-		// µ¥ÁªÍ¨ÏßÓĞĞ§ÏñËØX×ø±êÀÛ¼ÓÆ÷¡£
+		// å•è”é€šçº¿æœ‰æ•ˆåƒç´ Xåæ ‡ç´¯åŠ å™¨ã€‚
 		int pointX = 0;
-		// µ¥ÁªÍ¨ÏßÓĞĞ§ÏñËØ¼ÆÊıÆ÷¡£
+		// å•è”é€šçº¿æœ‰æ•ˆåƒç´ è®¡æ•°å™¨ã€‚
 		int pointCounter = 0;
-		// µ¥ÁªÍ¨Ïß¼ÆÊıÓĞĞ§ÆÚÄÚµÄÃ¿Ò»¼äÏ¶ÄÚµÄ¼äÏ¶µã¼ÆÊıÆ÷¡£
+		// å•è”é€šçº¿è®¡æ•°æœ‰æ•ˆæœŸå†…çš„æ¯ä¸€é—´éš™å†…çš„é—´éš™ç‚¹è®¡æ•°å™¨ã€‚
 		int gapCounter = 0;
 
-		// ÖğĞĞÉ¨Ãè¡£
+		// é€è¡Œæ‰«æã€‚
 		for (int y = 0; y < k_patternHeight; ++y) {
-			// ÖØÖÃÊı¾İ¡£
+			// é‡ç½®æ•°æ®ã€‚
 			pointX = 0;
 			pointCounter = 0;
 			gapCounter = 0;
@@ -390,7 +390,7 @@ public class Tracker {
 			m_isStopLine[y] = false;
 
 			for (int x = 0; x < k_patternWidth; ++x) {
-				// ÇåÀíPatternBeta.
+				// æ¸…ç†PatternBeta.
 				m_patternBeta[x][y] = false;
 
 				if (m_patternAlpha[x][y] == true) {
@@ -401,26 +401,26 @@ public class Tracker {
 					if (gapCounter < k_gapMax) {
 						++gapCounter;
 					} else {
-						// ¹ı¶ÌµÄÎŞĞ§Á¬Í¨ÏßÔòºöÂÔ²¢¼ÌĞøÉ¨Ãè¡£
+						// è¿‡çŸ­çš„æ— æ•ˆè¿é€šçº¿åˆ™å¿½ç•¥å¹¶ç»§ç»­æ‰«æã€‚
 						if (pointCounter < k_trackWidthMin) {
-							// ÇåÀí±äÁ¿ÎªÏÂÒ»´ÎÅĞ±ğ×¼±¸¡£
+							// æ¸…ç†å˜é‡ä¸ºä¸‹ä¸€æ¬¡åˆ¤åˆ«å‡†å¤‡ã€‚
 							pointX = 0;
 							pointCounter = 0;
 							gapCounter = 0;
 						}
-						// ·ñÔò£¬ÍË³öËÑË÷ºó´¦ÀíÊı¾İ¡£
+						// å¦åˆ™ï¼Œé€€å‡ºæœç´¢åå¤„ç†æ•°æ®ã€‚
 						else {
 							break;
 						}
 					}
 				}
 			}
-			// ÔÙ´ÎÅĞ±ğÊÇÎªÁË´¦Àí±ßÔµÇé¿ö¡£
+			// å†æ¬¡åˆ¤åˆ«æ˜¯ä¸ºäº†å¤„ç†è¾¹ç¼˜æƒ…å†µã€‚
 			if (pointCounter >= k_trackWidthMin) {
-				// È¡ÖĞµãÎªÓĞĞ§µã¡£
+				// å–ä¸­ç‚¹ä¸ºæœ‰æ•ˆç‚¹ã€‚
 				m_patternBeta[Math.round(((float) pointX) / pointCounter)][y] = true;
 				m_isValidLine[y] = true;
-				// ÑéÖ¤ÊÇ·ñÎªÍ£Ö¹±ê¼ÇĞĞ¡£
+				// éªŒè¯æ˜¯å¦ä¸ºåœæ­¢æ ‡è®°è¡Œã€‚
 				if (pointCounter >= k_stopLineWidthMin) {
 					m_isStopLine[y] = true;
 				}
@@ -431,22 +431,22 @@ public class Tracker {
 		return true;
 	}
 
-	// µÚÈı´ÎÄ£Ê½»¯´¦Àí¡£ÄâºÏ²»ÍêÈ«Â·¾¶ÏßÍ¼µÄºÏÀíÈ±Ê§²¿·Ö¡£
-	// ·½·¨ÊÇÊ¹ÓÃÂ·¾¶ÏßÈ±Ê§²¿·ÖÁ½¶ËµÄÓĞĞ§µã¼ÆËãÄâºÏ·½³Ì²ÎÊı£¬²¢Ê¹ÓÃ¸Ã·½³Ì²¹È«Â·¾¶ÏßÍ¼¡£´æÔÚ²»ºÏÀíµÄÈ±Ê§²¿·Ö»áÊ¹·½·¨Ê§°Ü¡£
-	// ¸ÃÁ÷³Ì¿ÉÒÔ´¦ÀíÖĞ¶Ï»ìÏı¡£
+	// ç¬¬ä¸‰æ¬¡æ¨¡å¼åŒ–å¤„ç†ã€‚æ‹Ÿåˆä¸å®Œå…¨è·¯å¾„çº¿å›¾çš„åˆç†ç¼ºå¤±éƒ¨åˆ†ã€‚
+	// æ–¹æ³•æ˜¯ä½¿ç”¨è·¯å¾„çº¿ç¼ºå¤±éƒ¨åˆ†ä¸¤ç«¯çš„æœ‰æ•ˆç‚¹è®¡ç®—æ‹Ÿåˆæ–¹ç¨‹å‚æ•°ï¼Œå¹¶ä½¿ç”¨è¯¥æ–¹ç¨‹è¡¥å…¨è·¯å¾„çº¿å›¾ã€‚å­˜åœ¨ä¸åˆç†çš„ç¼ºå¤±éƒ¨åˆ†ä¼šä½¿æ–¹æ³•å¤±è´¥ã€‚
+	// è¯¥æµç¨‹å¯ä»¥å¤„ç†ä¸­æ–­æ··æ·†ã€‚
 	protected boolean ToGamma() {
 
 		for (int i = 0; i < k_patternHeight; ++i) {
-			// Ñ°ÕÒ¶Ïµã¡£
+			// å¯»æ‰¾æ–­ç‚¹ã€‚
 			if (m_isValidLine[i] == false) {
-				// ÄâºÏÏßµÄÁ½¶Ëµã¡£
+				// æ‹Ÿåˆçº¿çš„ä¸¤ç«¯ç‚¹ã€‚
 				Point startPoint = new Point();
 				Point endPoint = new Point();
 
-				// ¼ÆËãÄâºÏÏßÆğµã¡£
+				// è®¡ç®—æ‹Ÿåˆçº¿èµ·ç‚¹ã€‚
 				int x = 0;
 				int y = i - 1;
-				// Èç¹ûÂ·¾¶Ïß´Óµ×²¿¿ªÊ¼È±Ê§£¬ÉèÖÃÆğµãÎªÎŞĞ§Öµ£¬¸ù¾İÖÕµãÇé¿ö´¦Àí¡£
+				// å¦‚æœè·¯å¾„çº¿ä»åº•éƒ¨å¼€å§‹ç¼ºå¤±ï¼Œè®¾ç½®èµ·ç‚¹ä¸ºæ— æ•ˆå€¼ï¼Œæ ¹æ®ç»ˆç‚¹æƒ…å†µå¤„ç†ã€‚
 				if (y == -1) {
 					startPoint.setLocation(-1, -1);
 				} else {
@@ -456,12 +456,12 @@ public class Tracker {
 					startPoint.setLocation(x, y);
 				}
 
-				// ¼ÆËãÄâºÏÏßÖÕµã¡£
+				// è®¡ç®—æ‹Ÿåˆçº¿ç»ˆç‚¹ã€‚
 				for (y += 2; y < k_patternHeight && m_isValidLine[y] != true; ++y)
 					;
-				// Èç¹ûÕÒ²»µ½ÄâºÏÏßÖÕµã¡£
+				// å¦‚æœæ‰¾ä¸åˆ°æ‹Ÿåˆçº¿ç»ˆç‚¹ã€‚
 				if (y >= k_patternHeight) {
-					// ÒÔµ×±ßÖĞµã×÷ÎªÖÕµã¡£
+					// ä»¥åº•è¾¹ä¸­ç‚¹ä½œä¸ºç»ˆç‚¹ã€‚
 					endPoint.setLocation(k_patternWidth / 2,
 							k_patternHeight - 1);
 				} else {
@@ -472,23 +472,23 @@ public class Tracker {
 					endPoint.setLocation(x, y);
 				}
 
-				// ¼ì²éÌØÊâÇé¿ö¡£
+				// æ£€æŸ¥ç‰¹æ®Šæƒ…å†µã€‚
 				if (startPoint.y == -1) {
-					// È±Ê§²¿·Ö´©¹ıÅĞ±ğ»ùÏß²¢µÖ´ïÍ¼Ïñ¶¥²¿£¬ÕâÊÇÎŞ·¨´¦ÀíµÄÇé¿ö¡£
+					// ç¼ºå¤±éƒ¨åˆ†ç©¿è¿‡åˆ¤åˆ«åŸºçº¿å¹¶æŠµè¾¾å›¾åƒé¡¶éƒ¨ï¼Œè¿™æ˜¯æ— æ³•å¤„ç†çš„æƒ…å†µã€‚
 					if (endPoint.y > k_baseLine) {
 						m_resultType = ResultType.Unk;
 						return false;
 					}
-					// È±Ê§²¿·ÖÔÚ»ùÏßÉÏ²¢µÖ´ïÍ¼Ïñ¶¥²¿£¬Ôò²»×÷ÄâºÏ¡£
+					// ç¼ºå¤±éƒ¨åˆ†åœ¨åŸºçº¿ä¸Šå¹¶æŠµè¾¾å›¾åƒé¡¶éƒ¨ï¼Œåˆ™ä¸ä½œæ‹Ÿåˆã€‚
 					else {
-						// Ìø¹ı¸Ã²¿·Ö¡£
+						// è·³è¿‡è¯¥éƒ¨åˆ†ã€‚
 						i = endPoint.y;
 						continue;
 					}
 				}
 
-				// ÏßĞÔÄâºÏÈ±Ê§²¿·İ¡£ÄâºÏ·½³ÌÎª y=ax+b¡£
-				// µ±Ğ±ÂÊÎª0Ê±¡£
+				// çº¿æ€§æ‹Ÿåˆç¼ºå¤±éƒ¨ä»½ã€‚æ‹Ÿåˆæ–¹ç¨‹ä¸º y=ax+bã€‚
+				// å½“æ–œç‡ä¸º0æ—¶ã€‚
 				if (endPoint.x - startPoint.x == 0) {
 					for (y = startPoint.y + 1; y < endPoint.y; ++y) {
 						m_patternBeta[x][y] = true;
@@ -505,7 +505,7 @@ public class Tracker {
 					}
 				}
 
-				// Ìø¹ıÒÑÄâºÏ²¿·Ö¡£
+				// è·³è¿‡å·²æ‹Ÿåˆéƒ¨åˆ†ã€‚
 				i = endPoint.y;
 			}
 		}
@@ -513,21 +513,21 @@ public class Tracker {
 		return true;
 	}
 
-	// »ñÈ¡×îÖÕ·ÖÎö½á¹û¡£¼ÆËãÄ¿±ê¿ØÖÆµã¡£
-	// ·½·¨ÊÇ¼ÆËãÂ·¾¶ÏßÓëÅĞ±ğ»ùÏßµÄ½»µã¡£
+	// è·å–æœ€ç»ˆåˆ†æç»“æœã€‚è®¡ç®—ç›®æ ‡æ§åˆ¶ç‚¹ã€‚
+	// æ–¹æ³•æ˜¯è®¡ç®—è·¯å¾„çº¿ä¸åˆ¤åˆ«åŸºçº¿çš„äº¤ç‚¹ã€‚
 	protected boolean ToOmega() {
-		// ¼ÆËãÄ¿±ê¿ØÖÆµãx×ø±ê¡£
+		// è®¡ç®—ç›®æ ‡æ§åˆ¶ç‚¹xåæ ‡ã€‚
 		int x = 0;
 		for (; x < k_patternWidth && m_patternBeta[x][k_baseLine] != true; ++x)
 			;
 
-		// ¸ù¾İBetaÄ£Ê½Í¼ÕÒ³öµÄÄ¿±êµã×ø±êĞë×ª»»»ØÔ­Í¼×ø±êÒÔ±ãÊä³ö¡£
+		// æ ¹æ®Betaæ¨¡å¼å›¾æ‰¾å‡ºçš„ç›®æ ‡ç‚¹åæ ‡é¡»è½¬æ¢å›åŸå›¾åæ ‡ä»¥ä¾¿è¾“å‡ºã€‚
 		m_targetPoint.setLocation(x * m_patternToImgScale, k_baseLine
 				* m_patternToImgScale);
 
 		m_resultType = ResultType.Run;
 
-		// ÑéÖ¤ÊÇ·ñÎªÍ£Ö¹Ö¸Áî¡£½öµ±ÅĞ±ğ»ùÏßÎªÍ£Ö¹ĞĞÊÇÅĞ±ğ¡£
+		// éªŒè¯æ˜¯å¦ä¸ºåœæ­¢æŒ‡ä»¤ã€‚ä»…å½“åˆ¤åˆ«åŸºçº¿ä¸ºåœæ­¢è¡Œæ˜¯åˆ¤åˆ«ã€‚
 		if (m_isStopLine[k_baseLine] == true) {
 			int start = k_baseLine - 1;
 			int end = k_baseLine + 1;

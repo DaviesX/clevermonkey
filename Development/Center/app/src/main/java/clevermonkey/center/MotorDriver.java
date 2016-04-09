@@ -9,12 +9,12 @@ import android.graphics.Point;
 
 public class MotorDriver {
 
-    //速度匹配数组。
+    //閫熷害鍖归厤鏁扮粍銆
     float[] m_vLeft = new float[101];
     float[] m_vRight = new float[101];
 
     public Point GetMotorArgu(float vLeft, float vRight) {
-        //驱动级数。
+        //椹卞姩绾ф暟銆
         int left = 0;
         int right = 0;
 

@@ -6,20 +6,20 @@ import CleverMonkey.Tracker.Tracker;
 
 public class MotionArithmetic {
 
-	// Ğ¡³µÁ½ÂÖ¼ä¾àµÄÒ»°ë¡£
+	// å°è½¦ä¸¤è½®é—´è·çš„ä¸€åŠã€‚
 	protected final float k_carWidthHalf = 0.07f;
 
-	// ÖĞĞÄµã±¾µ×ËÙ¶È(m/s)¡£
+	// ä¸­å¿ƒç‚¹æœ¬åº•é€Ÿåº¦(m/s)ã€‚
 	protected float m_vBase = 0.05f;
 
-	// ½Ó¿Ú¡£
+	// æ¥å£ã€‚
 
-	// Í¨¹ıÌá¹©µÄÔË¶¯Ä¿±êµã¼°ÔË¶¯²ÎÊı£¬Ëã³ö¶ÔÓ¦µÄÔË¶¯Ñ§¿ØÖÆ²ÎÊı¡£
+	// é€šè¿‡æä¾›çš„è¿åŠ¨ç›®æ ‡ç‚¹åŠè¿åŠ¨å‚æ•°ï¼Œç®—å‡ºå¯¹åº”çš„è¿åŠ¨å­¦æ§åˆ¶å‚æ•°ã€‚
 	public void GetMotionArgu(Vec2 vLeft, Vec2 vRight, final Vec2 target,
 			Tracker.ResultType resultType) {
-		// ½ÇÎ»ÒÆ¡£
+		// è§’ä½ç§»ã€‚
 		double theta = Math.abs(Math.atan(target.x / target.y));
-		// Ë²ĞÄ°ë¾¶¡£
+		// ç¬å¿ƒåŠå¾„ã€‚
 		double r = Math.sqrt((target.x * target.x + target.y * target.y)
 				/ (2 * (1 + Math.cos(theta))));
 

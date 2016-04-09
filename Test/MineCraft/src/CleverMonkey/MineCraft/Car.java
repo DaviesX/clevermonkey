@@ -19,67 +19,67 @@ import CleverMonkey.Tracker.Tracker;
 
 public class Car {
 
-	// ÎïÀíµ¥Î»Ã×(m)µ½ÎïÀíÏñËØµÄ×ª»»ÏµÊı¡£
+	// ç‰©ç†å•ä½ç±³(m)åˆ°ç‰©ç†åƒç´ çš„è½¬æ¢ç³»æ•°ã€‚
 	protected final int k_mToPixelScale = 7000;
-	// Í¼Ïñ´«¸ĞÆ÷·Ö±æÂÊ¡£
+	// å›¾åƒä¼ æ„Ÿå™¨åˆ†è¾¨ç‡ã€‚
 	protected final int k_cameraHeight = 1280;
-	// Í¼Ïñ´«¸ĞÆ÷·Ö±æÂÊ¡£
+	// å›¾åƒä¼ æ„Ÿå™¨åˆ†è¾¨ç‡ã€‚
 	protected final int k_cameraWidth = 720;
-	// Ğ¡³µÎïÀí°ë¿í¶È¡£
+	// å°è½¦ç‰©ç†åŠå®½åº¦ã€‚
 	protected final float k_carWidthHalf = 0.07f;
-	// Ä£Äâ²½¼ä¸ôÊ±¼ä£¨Ãë£©¡£
+	// æ¨¡æ‹Ÿæ­¥é—´éš”æ—¶é—´ï¼ˆç§’ï¼‰ã€‚
 	protected final float k_stepTime = 0.1f;
 
-	// Î¨Ò»µÄÍ¼ÏñÊ¶±ğÆ÷¶ÔÏó¡£
+	// å”¯ä¸€çš„å›¾åƒè¯†åˆ«å™¨å¯¹è±¡ã€‚
 	public Tracker m_tracker = new Tracker();
-	// Î¨Ò»µÄÔË¶¯ÔËËãÆ÷¶ÔÏó¡£
+	// å”¯ä¸€çš„è¿åŠ¨è¿ç®—å™¨å¯¹è±¡ã€‚
 	protected MotionArithmetic m_motionArithmetic = new MotionArithmetic();
-	// Î¨Ò»World¶ÔÏó¡£
+	// å”¯ä¸€Worldå¯¹è±¡ã€‚
 	protected World m_world;
-	// µØÍ¼Í¼Ïñ¶ÔÏó¡£
+	// åœ°å›¾å›¾åƒå¯¹è±¡ã€‚
 	protected BufferedImage m_mapImg;
-	// Í¼Ïñ´«¸ĞÆ÷Êä³öÍ¼Ïñ¡£
+	// å›¾åƒä¼ æ„Ÿå™¨è¾“å‡ºå›¾åƒã€‚
 	protected BufferedImage m_cameraImg = new BufferedImage(k_cameraWidth,
 			k_cameraHeight, BufferedImage.TYPE_INT_ARGB);
-	// Ğ¡³µ×óÎ»ÖÃ¶¨Òå¸ÕÌå¡£
+	// å°è½¦å·¦ä½ç½®å®šä¹‰åˆšä½“ã€‚
 	protected Body m_carLeftBody;
-	// Ğ¡³µÓÒÎ»ÖÃ¶¨Òå¸ÕÌå¡£
+	// å°è½¦å³ä½ç½®å®šä¹‰åˆšä½“ã€‚
 	protected Body m_carRightBody;
-	// ×óÂÖËÙ¶È¡£
+	// å·¦è½®é€Ÿåº¦ã€‚
 	protected Vec2 vLeft = new Vec2();
-	// ÓÒÂÖËÙ¶È¡£
+	// å³è½®é€Ÿåº¦ã€‚
 	protected Vec2 vRight = new Vec2();
-	// ÔË¶¯¿ØÖÆÄ¿±êµã¡£
+	// è¿åŠ¨æ§åˆ¶ç›®æ ‡ç‚¹ã€‚
 	protected Point m_targetPoint = new Point();
-	// ÔË¶¯¿ØÖÆÄ¿±êµãµÄĞ¡³µ×ø±êÏµ±íÊ¾¡£
+	// è¿åŠ¨æ§åˆ¶ç›®æ ‡ç‚¹çš„å°è½¦åæ ‡ç³»è¡¨ç¤ºã€‚
 	protected Vec2 m_targetVec2 = new Vec2();
 	//
 	Tracker.ResultType m_resultType;
 
-	// ½Ó¿Ú¡£
+	// æ¥å£ã€‚
 
-	// ÉèÖÃµØÍ¼¡£
+	// è®¾ç½®åœ°å›¾ã€‚
 	public void SetMap(BufferedImage mapImg) {
 		m_mapImg = mapImg;
 	}
 
-	// ·ÅÖÃĞ¡³µÓÚÖ¸¶¨Î»ÖÃ£¬Í¨¹ıĞ¡³µ×óÎ»ÖÃ¶¨Òå¡£Î»ÖÃÒÔµØÍ¼Í¼Ïñ×ø±ê¶¨Òå¡£
+	// æ”¾ç½®å°è½¦äºæŒ‡å®šä½ç½®ï¼Œé€šè¿‡å°è½¦å·¦ä½ç½®å®šä¹‰ã€‚ä½ç½®ä»¥åœ°å›¾å›¾åƒåæ ‡å®šä¹‰ã€‚
 	public void SetCar(Vec2 leftVec2) {
 
 		if (m_mapImg == null) {
-			JOptionPane.showMessageDialog(null, "ÇëÏÈÔØÈëµØÍ¼¡£", "Error",
+			JOptionPane.showMessageDialog(null, "è¯·å…ˆè½½å…¥åœ°å›¾ã€‚", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 
-		// ³õÊ¼»¯JBox2D¡£
-		// ²»ĞèÒªÊ¹ÓÃÖØÁ¦¡£
+		// åˆå§‹åŒ–JBox2Dã€‚
+		// ä¸éœ€è¦ä½¿ç”¨é‡åŠ›ã€‚
 		m_world = new World(new Vec2(0, 0), false);
 
-		// ´´½¨Ğ¡³µ¡£
-		// ·´×ª×ø±ê¡£ÒòÎªµØÍ¼Í¼Ïñ×ø±êÏµÒÔ×óÉÏ½ÇÎªÔ­µã£¬ÎïÀíÊÀ½ç×ø±êÏµÒÑ×óÏÂ½ÇÎªÔ­µã¡£
+		// åˆ›å»ºå°è½¦ã€‚
+		// åè½¬åæ ‡ã€‚å› ä¸ºåœ°å›¾å›¾åƒåæ ‡ç³»ä»¥å·¦ä¸Šè§’ä¸ºåŸç‚¹ï¼Œç‰©ç†ä¸–ç•Œåæ ‡ç³»å·²å·¦ä¸‹è§’ä¸ºåŸç‚¹ã€‚
 		leftVec2.y = m_mapImg.getHeight() - leftVec2.y;
-		// ½«µØÍ¼Í¼Ïñ×ø±ê×ª»»µ½ÎïÀí×ø±ê¡£
+		// å°†åœ°å›¾å›¾åƒåæ ‡è½¬æ¢åˆ°ç‰©ç†åæ ‡ã€‚
 		leftVec2.x /= k_mToPixelScale;
 		leftVec2.y /= k_mToPixelScale;
 		// Left.
@@ -104,7 +104,7 @@ public class Car {
 		m_carRightBody = m_world.createBody(carBodyDef);
 		m_carRightBody.createFixture(carFixtureDef);
 
-		// ´´½¨¹Ø½Ú¡£
+		// åˆ›å»ºå…³èŠ‚ã€‚
 		DistanceJointDef carDistanceJointDef = new DistanceJointDef();
 		carDistanceJointDef.initialize(
 				m_carLeftBody,
@@ -116,39 +116,39 @@ public class Car {
 		carDistanceJointDef.collideConnected = false;
 		m_world.createJoint(carDistanceJointDef);
 
-		// ¸üĞÂÍ¼Ïñ´«¸ĞÆ÷Í¼Ïñ¡£
+		// æ›´æ–°å›¾åƒä¼ æ„Ÿå™¨å›¾åƒã€‚
 		UpdateCameraImg();
-		// ¸üĞÂ¸ú×ÙÆ÷¶ÔÏóÊı¾İ¡£
+		// æ›´æ–°è·Ÿè¸ªå™¨å¯¹è±¡æ•°æ®ã€‚
 		m_resultType = m_tracker.AnalyseImg(m_cameraImg);
 	}
 
-	// ÔË¶¯µ½ÏÂÒ»µã¡£
+	// è¿åŠ¨åˆ°ä¸‹ä¸€ç‚¹ã€‚
 	public boolean Run() {
 
-		// »ñÈ¡ÔË¶¯Ä¿±êµã¡£
-		// ÒòÎªÃ¿´ÎÔËĞĞºóÒÑ¸üĞÂ¸ú×ÙÆ÷Êı¾İ£¬´Ë´¦ÎŞĞèÔÙ´Î¸üĞÂ¡£
+		// è·å–è¿åŠ¨ç›®æ ‡ç‚¹ã€‚
+		// å› ä¸ºæ¯æ¬¡è¿è¡Œåå·²æ›´æ–°è·Ÿè¸ªå™¨æ•°æ®ï¼Œæ­¤å¤„æ— éœ€å†æ¬¡æ›´æ–°ã€‚
 		m_targetPoint.setLocation(m_tracker.GetResult());
 
-		// ×ª»»Ä¿±êµãµ½Ğ¡³µ×ø±êÏµ±íÊ¾¡£
+		// è½¬æ¢ç›®æ ‡ç‚¹åˆ°å°è½¦åæ ‡ç³»è¡¨ç¤ºã€‚
 		m_targetVec2.set(m_targetPoint.x, m_targetPoint.y);
 		m_targetVec2.x -= k_cameraWidth / 2;
 		m_targetVec2.y = k_cameraHeight - m_targetVec2.y;
 		m_targetVec2.x /= k_mToPixelScale;
 		m_targetVec2.y /= k_mToPixelScale;
 
-		// ´«ÈëÔË¶¯Ä¿±êµã£¬»ñÈ¡ÔË¶¯Ñ§²ÎÊı¡£
+		// ä¼ å…¥è¿åŠ¨ç›®æ ‡ç‚¹ï¼Œè·å–è¿åŠ¨å­¦å‚æ•°ã€‚
 		m_motionArithmetic.GetMotionArgu(vLeft, vRight, m_targetVec2,
 				m_resultType);
-		// ´«ÈëÔË¶¯Ñ§²ÎÊı£¬¸üĞÂĞ¡³µÎ»ÖÃ¡£
-		// ½«ÏßËÙ¶È×ª»»ÎªËÙ¶ÈÏòÁ¿£¬ËÙ¶ÈÏòÁ¿ÓÀÔ¶´¹Ö±ÓÚĞ¡³µ¶¨ÒåµãÁ¬Ïß¡£
-		// ¼ÆËã½Ç¶È¡£
+		// ä¼ å…¥è¿åŠ¨å­¦å‚æ•°ï¼Œæ›´æ–°å°è½¦ä½ç½®ã€‚
+		// å°†çº¿é€Ÿåº¦è½¬æ¢ä¸ºé€Ÿåº¦å‘é‡ï¼Œé€Ÿåº¦å‘é‡æ°¸è¿œå‚ç›´äºå°è½¦å®šä¹‰ç‚¹è¿çº¿ã€‚
+		// è®¡ç®—è§’åº¦ã€‚
 		Vec2 vec2L = m_carLeftBody.getPosition();
 		Vec2 vec2R = m_carRightBody.getPosition();
 		double theta = vec2L.x == vec2R.x ? Math.PI / 2 : Math
 				.atan((vec2L.y - vec2R.y) / (vec2L.x - vec2R.x));
 		if (vec2L.x > vec2R.x)
 			theta += Math.PI;
-		// Ó¦ÓÃĞı×ª¾ØÕó¡£
+		// åº”ç”¨æ—‹è½¬çŸ©é˜µã€‚
 		vLeft.x = (float) (vLeft.x * Math.cos(theta) - vLeft.y
 				* Math.sin(theta));
 		vLeft.y = (float) (vLeft.x * Math.sin(theta) + vLeft.y
@@ -157,72 +157,72 @@ public class Car {
 				* Math.sin(theta));
 		vRight.y = (float) (vRight.x * Math.sin(theta) + vRight.y
 				* Math.cos(theta));
-		// Ó¦ÓÃËÙ¶È¡£
+		// åº”ç”¨é€Ÿåº¦ã€‚
 		m_carLeftBody.setLinearVelocity(vLeft);
 		m_carRightBody.setLinearVelocity(vRight);
 
-		// °´Box2DÍÆ¼ö²ÎÊıÔËĞĞ¡£
+		// æŒ‰Box2Dæ¨èå‚æ•°è¿è¡Œã€‚
 		m_world.step(k_stepTime, 10, 8);
 
-		// ¸üĞÂÍ¼Ïñ´«¸ĞÆ÷Í¼Ïñ¡£
+		// æ›´æ–°å›¾åƒä¼ æ„Ÿå™¨å›¾åƒã€‚
 		UpdateCameraImg();
-		// ¸üĞÂ¸ú×ÙÆ÷¶ÔÏóÊı¾İ¡£
+		// æ›´æ–°è·Ÿè¸ªå™¨å¯¹è±¡æ•°æ®ã€‚
 		m_resultType = m_tracker.AnalyseImg(m_cameraImg);
 
 		return true;
 	}
 
-	// »ñÈ¡Ğ¡³µÎ»ÖÃ¡£Î»ÖÃÒÔµØÍ¼Í¼Ïñ×ø±ê¶¨Òå¡£
+	// è·å–å°è½¦ä½ç½®ã€‚ä½ç½®ä»¥åœ°å›¾å›¾åƒåæ ‡å®šä¹‰ã€‚
 	public void GetLocation(Vec2 left, Vec2 right) {
 		Vec2 vec2 = new Vec2(m_carLeftBody.getPosition().mul(k_mToPixelScale));
-		// ·´×ª×ø±ê¡£
+		// åè½¬åæ ‡ã€‚
 		vec2.y = m_mapImg.getHeight() - vec2.y;
 		left.set(vec2);
 		vec2.set(m_carRightBody.getPosition().mul(k_mToPixelScale));
-		// ·´×ª×ø±ê¡£
+		// åè½¬åæ ‡ã€‚
 		vec2.y = m_mapImg.getHeight() - vec2.y;
 		right.set(vec2);
 	}
 
-	// »ñÈ¡Í¼Ïñ´«¸ĞÆ÷Í¼ÏñµÄÒıÓÃ¡£
+	// è·å–å›¾åƒä¼ æ„Ÿå™¨å›¾åƒçš„å¼•ç”¨ã€‚
 	public final BufferedImage GetShortcut() {
 		return m_cameraImg;
 	}
 
-	// »ñÈ¡¸ú×ÙÆ÷µÄÒıÓÃ¡£
+	// è·å–è·Ÿè¸ªå™¨çš„å¼•ç”¨ã€‚
 	public final Tracker GetTracker() {
 		return m_tracker;
 	}
 
-	// ¹¤¾ßº¯Êı¡£
+	// å·¥å…·å‡½æ•°ã€‚
 
-	// ¸üĞÂÍ¼Ïñ´«¸ĞÆ÷Í¼Ïñ¡£
+	// æ›´æ–°å›¾åƒä¼ æ„Ÿå™¨å›¾åƒã€‚
 	protected void UpdateCameraImg() {
-		// Ğ¡³µÎ»ÖÃµÄµØÍ¼×ø±ê¡£
+		// å°è½¦ä½ç½®çš„åœ°å›¾åæ ‡ã€‚
 		Vec2 vec2L = m_carLeftBody.getPosition().mul(k_mToPixelScale);
 		Vec2 vec2R = m_carRightBody.getPosition().mul(k_mToPixelScale);
-		// ·­×ª×ø±ê¡£
+		// ç¿»è½¬åæ ‡ã€‚
 		vec2L.y = m_mapImg.getHeight() - vec2L.y;
 		vec2R.y = m_mapImg.getHeight() - vec2R.y;
-		// ½Ç¶È¡£
+		// è§’åº¦ã€‚
 		double theta = vec2L.x == vec2R.x ? Math.PI / 2 : Math
 				.atan((vec2L.y - vec2R.y) / (vec2L.x - vec2R.x));
 		if (vec2L.x > vec2R.x)
 			theta += Math.PI;
-		// Ğ¡³µÖĞµã¡£
+		// å°è½¦ä¸­ç‚¹ã€‚
 		int midX = (int) Math.round((vec2L.x + vec2R.x) / 2);
 		int midY = (int) Math.round((vec2L.y + vec2R.y) / 2);
 
-		// Í¼Ïñ´«¸ĞÆ÷Ô­µã¡£
+		// å›¾åƒä¼ æ„Ÿå™¨åŸç‚¹ã€‚
 		int cameraOriginX = (int) Math.round(midX - k_cameraWidth / 2
 				* Math.cos(theta) + k_cameraHeight * Math.sin(theta));
 		int cameraOriginY = (int) Math.round(midY - k_cameraWidth / 2
 				* Math.sin(theta) - k_cameraHeight * Math.cos(theta));
 
-		// Ã¿¸öÍ¼Ïñ´«¸ĞÆ÷ÏñËØÖğÒ»Ó³Éä¸´ÖÆ¡£
+		// æ¯ä¸ªå›¾åƒä¼ æ„Ÿå™¨åƒç´ é€ä¸€æ˜ å°„å¤åˆ¶ã€‚
 		for (int x = 0; x < k_cameraWidth; ++x) {
 			for (int y = 0; y < k_cameraHeight; ++y) {
-				// ÏÈ½«Í¼Ïñ´«¸ĞÆ÷Í¼ÏñµÄ×ø±êµã³ËĞı×ª¾ØÕó£¬ºó¼ÓÉÏÍ¼Ïñ´«¸ĞÆ÷Ô­µã×ø±ê´Ó¶øÍê³ÉÍ¼Ïñ´«¸ĞÆ÷ÏñËØµ½µØÍ¼ÏñËØµÄÒ»¶ÔÒ»Ó³Éä¡£
+				// å…ˆå°†å›¾åƒä¼ æ„Ÿå™¨å›¾åƒçš„åæ ‡ç‚¹ä¹˜æ—‹è½¬çŸ©é˜µï¼ŒååŠ ä¸Šå›¾åƒä¼ æ„Ÿå™¨åŸç‚¹åæ ‡ä»è€Œå®Œæˆå›¾åƒä¼ æ„Ÿå™¨åƒç´ åˆ°åœ°å›¾åƒç´ çš„ä¸€å¯¹ä¸€æ˜ å°„ã€‚
 				int rgb = m_mapImg.getRGB(
 						(int) (Math.round(Math.cos(theta) * x - Math.sin(theta)
 								* y) + cameraOriginX),

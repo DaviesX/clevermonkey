@@ -33,28 +33,28 @@ import CleverMonkey.Tracker.Tracker;
 
 public class Window {
 
-	// Ä£ÄâÖ¡¼ä¸ôÊ±¼ä£¨ºÁÃë£©¡£
+	// æ¨¡æ‹Ÿå¸§é—´éš”æ—¶é—´ï¼ˆæ¯«ç§’ï¼‰ã€‚
 	protected int k_frameTime = 500;
 
-	// ÏÔÊ¾µØÍ¼µÄJLable¡£
+	// æ˜¾ç¤ºåœ°å›¾çš„JLableã€‚
 	protected JLabel m_leftLabel = new JLabel("", JLabel.CENTER);
-	// ÏÔÊ¾CameraµÄJLable¡£
+	// æ˜¾ç¤ºCameraçš„JLableã€‚
 	protected JLabel m_rightLabel1 = new JLabel("Camera");
-	// ÏÔÊ¾AlphaÍ¼µÄJLable¡£
+	// æ˜¾ç¤ºAlphaå›¾çš„JLableã€‚
 	protected JLabel m_rightLabel2 = new JLabel("Alpha");
-	// ÏÔÊ¾BetaµÄJLable¡£
+	// æ˜¾ç¤ºBetaçš„JLableã€‚
 	protected JLabel m_rightLabel3 = new JLabel("Beta");
-	// ÏÔÊ¾nullµÄJLable¡£
+	// æ˜¾ç¤ºnullçš„JLableã€‚
 	protected JLabel m_rightLabel4 = new JLabel("null");
-	// ÒÑËõ·ÅµÄµØÍ¼Ô­Í¼¡£
+	// å·²ç¼©æ”¾çš„åœ°å›¾åŸå›¾ã€‚
 	protected Image m_mapImg;
-	// µØÍ¼Í¼Æ¬Ô­µãÎ»ÖÃ¡£
+	// åœ°å›¾å›¾ç‰‡åŸç‚¹ä½ç½®ã€‚
 	protected Point m_mapImgOrigin = new Point();
-	// Î¨Ò»µÄCar¶ÔÏó¡£
+	// å”¯ä¸€çš„Carå¯¹è±¡ã€‚
 	protected Car m_car = new Car();
-	// ÒıÓÃµÄTracker¶ÔÏó¡£
+	// å¼•ç”¨çš„Trackerå¯¹è±¡ã€‚
 	protected Tracker m_tracker;
-	// Î¨Ò»¶¨Ê±Æ÷ÈÎÎñ¶ÔÏó¡£
+	// å”¯ä¸€å®šæ—¶å™¨ä»»åŠ¡å¯¹è±¡ã€‚
 	protected TimerTask m_timerTask = new TimerTask() {
 		@Override
 		public void run() {
@@ -67,9 +67,9 @@ public class Window {
 			}
 		}
 	};
-	// µØÍ¼Í¼Æ¬Ëõ·Å±ÈÀı¡£
+	// åœ°å›¾å›¾ç‰‡ç¼©æ”¾æ¯”ä¾‹ã€‚
 	protected float m_mapImgScale;
-	// ¸÷Í¼Æ¬»æÖÆÇøÓò¶¨Òå¡£
+	// å„å›¾ç‰‡ç»˜åˆ¶åŒºåŸŸå®šä¹‰ã€‚
 	protected int m_rightImg1W;
 	protected int m_rightImg1H;
 	protected int m_rightImg2W;
@@ -83,11 +83,11 @@ public class Window {
 		new Window().Init();
 	}
 
-	// ´°¿Ú»æÖÆº¯Êı¡£
+	// çª—å£ç»˜åˆ¶å‡½æ•°ã€‚
 	public void OnDraw() {
 
 		if (m_mapImg == null) {
-			JOptionPane.showMessageDialog(null, "µØÍ¼Î´±»ÔØÈë¡£", "Error",
+			JOptionPane.showMessageDialog(null, "åœ°å›¾æœªè¢«è½½å…¥ã€‚", "Error",
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
@@ -98,12 +98,12 @@ public class Window {
 		Graphics graphics = img.getGraphics();
 		graphics.drawImage(m_mapImg, 0, 0, null);
 
-		// »æÖÆĞ¡³µ¡£
+		// ç»˜åˆ¶å°è½¦ã€‚
 		graphics.setColor(Color.GREEN);
 		Vec2 vec2L = new Vec2();
 		Vec2 vec2R = new Vec2();
 		m_car.GetLocation(vec2L, vec2R);
-		// ×ø±ê×ª»»¡£
+		// åæ ‡è½¬æ¢ã€‚
 		vec2L.mulLocal(m_mapImgScale);
 		vec2R.mulLocal(m_mapImgScale);
 
@@ -112,11 +112,11 @@ public class Window {
 		graphics.drawLine((int) vec2L.x, (int) vec2L.y, (int) vec2R.x,
 				(int) vec2R.y);
 
-		// »æÖÆÍ¼Ïñ´«¸ĞÆ÷¿ò¡£
+		// ç»˜åˆ¶å›¾åƒä¼ æ„Ÿå™¨æ¡†ã€‚
 		int midX = Math.round((vec2L.x + vec2R.x) / 2);
 		int midY = Math.round((vec2L.y + vec2R.y) / 2);
 
-		// ½Ç¶È¡£
+		// è§’åº¦ã€‚
 		double theta = vec2L.x == vec2R.x ? Math.PI / 2 : Math
 				.atan((vec2L.y - vec2R.y) / (vec2L.x - vec2R.x));
 		if (vec2L.x > vec2R.x)
@@ -168,14 +168,14 @@ public class Window {
 		m_rightLabel3.setIcon(icon);
 	}
 
-	// ³õÊ¼»¯´°¿Ú¡£
+	// åˆå§‹åŒ–çª—å£ã€‚
 	protected void Init() {
-		// Ö÷´°¿Ú¡£
+		// ä¸»çª—å£ã€‚
 		JFrame mainFrame = new JFrame("CMMineCraft");
 
 		mainFrame.setLayout(new BorderLayout());
 
-		// ²Ëµ¥¡£
+		// èœå•ã€‚
 		JMenuBar mainMenuBar = new JMenuBar();
 		JMenu fileMenu = new JMenu("File");
 		JMenu simulateMenu = new JMenu("Simulate");
@@ -196,7 +196,7 @@ public class Window {
 		simulateMenu.add(simulateRunMenuItem);
 		simulateMenu.add(simulateStopMenuItem);
 
-		// ¿ò¼Ü¡£
+		// æ¡†æ¶ã€‚
 		JPanel mainPanel = new JPanel();
 		JPanel leftPanel = new JPanel();
 		JPanel rightPanel = new JPanel();
@@ -208,7 +208,7 @@ public class Window {
 		mainPanel.setLayout(new GridLayout(1, 2));
 		leftPanel.setLayout(new BorderLayout());
 		rightPanel.setLayout(new GridLayout(2, 2));
-		// Ê¹ÓÃborderLayoutÒÔ¾ÓÖĞJLabelÏÔÊ¾Í¼Æ¬¡£
+		// ä½¿ç”¨borderLayoutä»¥å±…ä¸­JLabelæ˜¾ç¤ºå›¾ç‰‡ã€‚
 		rightPanel1.setLayout(new BorderLayout());
 		rightPanel2.setLayout(new BorderLayout());
 		rightPanel3.setLayout(new BorderLayout());
@@ -226,22 +226,22 @@ public class Window {
 		rightPanel3.add(m_rightLabel3);
 		rightPanel4.add(m_rightLabel4);
 
-		// ²Ëµ¥ÊÂ¼ş¡£
+		// èœå•äº‹ä»¶ã€‚
 		fileSetMapMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// Ê¹ÓÃ±ê×¼ÎÄ¼ş¶Ô»°¿òÔØÈëÍ¼Æ¬¡£
-				FileDialog loadFileDlg = new FileDialog(mainFrame, "Ñ¡ÔñµØÍ¼Í¼Æ¬",
+				// ä½¿ç”¨æ ‡å‡†æ–‡ä»¶å¯¹è¯æ¡†è½½å…¥å›¾ç‰‡ã€‚
+				FileDialog loadFileDlg = new FileDialog(mainFrame, "é€‰æ‹©åœ°å›¾å›¾ç‰‡",
 						FileDialog.LOAD);
 				loadFileDlg.setVisible(true);
 
 				try {
 					BufferedImage img = ImageIO.read(new File(loadFileDlg
 							.getDirectory() + loadFileDlg.getFile()));
-					// ÉèÖÃĞ¡³µµÄµØÍ¼¡£
+					// è®¾ç½®å°è½¦çš„åœ°å›¾ã€‚
 					m_car.SetMap(img);
 
-					// µÈ±ÈËõ·ÅÒÔÊÊÓ¦´°¿Ú¡£²ÎÊı"-1"±íÊ¾µÈ±ÈËõ·Å¡£
+					// ç­‰æ¯”ç¼©æ”¾ä»¥é€‚åº”çª—å£ã€‚å‚æ•°"-1"è¡¨ç¤ºç­‰æ¯”ç¼©æ”¾ã€‚
 					if ((float) leftPanel.getHeight() / img.getHeight() > (float) leftPanel
 							.getWidth() / img.getWidth()) {
 						m_mapImgScale = (float) leftPanel.getWidth()
@@ -254,7 +254,7 @@ public class Window {
 						m_mapImg = img.getScaledInstance(-1,
 								leftPanel.getHeight(), Image.SCALE_SMOOTH);
 					}
-					// µÈ´ı¡£
+					// ç­‰å¾…ã€‚
 					m_mapImg = new ImageIcon(m_mapImg).getImage();
 
 					m_mapImgOrigin.x = (leftPanel.getWidth() - m_mapImg
@@ -262,15 +262,15 @@ public class Window {
 					m_mapImgOrigin.y = (leftPanel.getHeight() - m_mapImg
 							.getHeight(null)) / 2;
 
-					// »æÖÆµØÍ¼¡£
+					// ç»˜åˆ¶åœ°å›¾ã€‚
 					ImageIcon iconL = new ImageIcon(m_mapImg);
 					m_leftLabel.setIcon(iconL);
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
 
-				// ¼ÆËã¸÷ÇøÓòÍ¼ÏñµÄÏÔÊ¾´óĞ¡¡£
-				// µÈ±ÈËõ·ÅÒÔÊÊÓ¦´°¿Ú¡£²ÎÊı"-1"±íÊ¾µÈ±ÈËõ·Å¡£
+				// è®¡ç®—å„åŒºåŸŸå›¾åƒçš„æ˜¾ç¤ºå¤§å°ã€‚
+				// ç­‰æ¯”ç¼©æ”¾ä»¥é€‚åº”çª—å£ã€‚å‚æ•°"-1"è¡¨ç¤ºç­‰æ¯”ç¼©æ”¾ã€‚
 				Image img;
 				img = m_car.GetShortcut();
 				if ((double) rightPanel1.getHeight() / img.getHeight(null) > (double) rightPanel1
@@ -335,10 +335,10 @@ public class Window {
 					public void mousePressed(MouseEvent e) {
 						Point point = e.getPoint();
 						Vec2 vec2 = new Vec2(point.x, point.y);
-						// ×ª»»µ½´°¿ÚµØÍ¼×ø±ê¡£
+						// è½¬æ¢åˆ°çª—å£åœ°å›¾åæ ‡ã€‚
 						vec2.x -= m_mapImgOrigin.x;
 						vec2.y -= m_mapImgOrigin.y;
-						// ×ª»»µ½µØÍ¼Í¼Æ¬×ø±ê¡£
+						// è½¬æ¢åˆ°åœ°å›¾å›¾ç‰‡åæ ‡ã€‚
 						vec2.x /= m_mapImgScale;
 						vec2.y /= m_mapImgScale;
 						m_car.SetCar(vec2);
@@ -363,12 +363,12 @@ public class Window {
 			}
 		});
 
-		// ÉèÖÃ¡£
+		// è®¾ç½®ã€‚
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.pack();
 		mainFrame.setVisible(true);
 
-		// ³õÊ¼»¯¶ÔÏóÒıÓÃ¡£
+		// åˆå§‹åŒ–å¯¹è±¡å¼•ç”¨ã€‚
 		m_tracker = m_car.GetTracker();
 
 	}

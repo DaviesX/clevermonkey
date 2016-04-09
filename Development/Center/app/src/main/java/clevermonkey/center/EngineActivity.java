@@ -36,26 +36,26 @@ import java.util.TimerTask;
 
 public class EngineActivity extends AppCompatActivity {
 
-    //指令发送间隔（毫秒）。
+    //鎸囦护鍙戦€侀棿闅旓紙姣锛夈€
     protected int k_stepTime = 200;
-    //预设的Monitor连接端口。
+    //棰勮鐨凪onitor杩炴帴绔彛銆
     protected final int k_port = 35555;
 
-    //唯一的Camera对象。
+    //鍞竴鐨凜amera瀵硅薄銆
     protected Camera m_camera;
-    //预览原始数据缓冲区。
+    //棰勮鍘熷鏁版嵁缂撳啿鍖恒€
     protected byte[] m_previewByte = new byte[1280 * 720 * 3 / 2];
-    //预览原始数据格式转换中间图像矩形。
+    //棰勮鍘熷鏁版嵁鏍煎紡杞崲涓棿鍥惧儚鐭╁舰銆
     protected Rect m_previewRect = new Rect(0, 0, 1280, 720);
-    //数据处理控制标志。
+    //鏁版嵁澶勭悊鎺у埗鏍囧織銆
     protected boolean isOn = false;
-    //唯一的Monitor的网络接口。
+    //鍞竴鐨凪onitor鐨勭綉缁滄帴鍙ｃ€
     protected Socket m_socket;
-    //唯一的Monitor输入流。
+    //鍞竴鐨凪onitor杈撳叆娴併€
     protected InputStream m_inputStream;
-    //唯一的Monitor输出流。
+    //鍞竴鐨凪onitor杈撳嚭娴併€
     protected OutputStream m_outputStream;
-    //唯一的消息处理器。
+    //鍞竴鐨勬秷鎭鐞嗗櫒銆
     protected Handler m_handler;
     //
     protected  Bitmap m_previewBmp;
@@ -67,9 +67,9 @@ public class EngineActivity extends AppCompatActivity {
     protected Rect m_cameraSrcRect = new Rect(0, 0, 720, 1280);
     protected Rect m_alphaSrcRect = new Rect(0, 0, 720, 1280);
     protected Rect m_betaSrcRect;
-    //唯一的网络线程对象。
+    //鍞竴鐨勭綉缁滅嚎绋嬪璞°€
     protected Thread m_netThread;
-    //唯一的TimerTask对象。用于控制数据处理间隔。
+    //鍞竴鐨凾imerTask瀵硅薄銆傜敤浜庢帶鍒舵暟鎹鐞嗛棿闅斻€
     protected TimerTask m_timerTask = new TimerTask() {
         @Override
         public void run() {
@@ -84,17 +84,17 @@ public class EngineActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_engine);
 
-        //设置SurfaceView属性。
+        //璁剧疆SurfaceView灞炴€с€
         SurfaceView surfaceView = (SurfaceView) findViewById(R.id.surfaceView_engine);
         surfaceView.getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                //当Surface初始化后启用预览画面。
+                //褰揝urface鍒濆鍖栧悗鍚敤棰勮鐢婚潰銆
                 try {
                     m_camera.setPreviewDisplay(holder);
                     m_camera.startPreview();
-                    //因为工作时对焦距离不变，所以仅需一次自动对焦即可。
+                    //鍥犱负宸ヤ綔鏃跺鐒﹁窛绂讳笉鍙橈紝鎵€浠ヤ粎闇€涓€娆¤嚜鍔ㄥ鐒﹀嵆鍙€
                     m_camera.autoFocus(null);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -111,9 +111,9 @@ public class EngineActivity extends AppCompatActivity {
             }
         });
 
-        //启动Camera。
+        //鍚姩Camera銆
         m_camera = Camera.open();
-        //设置Camera参数。
+        //璁剧疆Camera鍙傛暟銆
         Camera.Parameters parameters = m_camera.getParameters();
         parameters.setPreviewSize(1280, 720);
         parameters.setPreviewFpsRange(25000, 30000);
@@ -122,12 +122,12 @@ public class EngineActivity extends AppCompatActivity {
         m_camera.addCallbackBuffer(m_previewByte);
         m_camera.setPreviewCallbackWithBuffer(new Camera.PreviewCallback() {
             @Override
-            //处理每个预览帧的回调。
+            //澶勭悊姣忎釜棰勮甯х殑鍥炶皟銆
             public void onPreviewFrame(byte[] data, Camera camera) {
                 try {
-                    //根据标志控制是否进行数据处理，减少资源消耗。
+                    //鏍规嵁鏍囧織鎺у埗鏄惁杩涜鏁版嵁澶勭悊锛屽噺灏戣祫婧愭秷鑰椼€
                     if (isOn) {
-                        //转换为RGB格式。
+                        //杞崲涓篟GB鏍煎紡銆
                         YuvImage yuvImage = new YuvImage(data, ImageFormat.NV21, 1280, 720, null);
                         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(m_previewByte.length);
                         yuvImage.compressToJpeg(m_previewRect, 30, byteArrayOutputStream);
@@ -135,15 +135,15 @@ public class EngineActivity extends AppCompatActivity {
                         m_previewBmp = BitmapFactory.decodeByteArray(tmp, 0, tmp.length);
 
                         isOn = false;
-                        //将图像输入跟踪器。
-                        //显示跟踪器图像。
+                        //灏嗗浘鍍忚緭鍏ヨ窡韪櫒銆
+                        //鏄剧ず璺熻釜鍣ㄥ浘鍍忋€
                         ((ImageView) findViewById(R.id.imageView_engine_alpha)).setImageBitmap(m_previewBmp);
 
-                        //发送到远程Monitor。
+                        //鍙戦€佸埌杩滅▼Monitor銆
                         if (m_outputStream != null)
                             UpdateMonitor();
                     }
-                    //重新将已使用完毕的缓冲数组加入回队列。
+                    //閲嶆柊灏嗗凡浣跨敤瀹屾瘯鐨勭紦鍐叉暟缁勫姞鍏ュ洖闃熷垪銆
                     m_camera.addCallbackBuffer(m_previewByte);
 
                 } catch (Exception e) {
@@ -152,17 +152,17 @@ public class EngineActivity extends AppCompatActivity {
             }
         });
 
-        //设置""按钮回调。
-        //启动工作过程。
+        //璁剧疆""鎸夐挳鍥炶皟銆
+        //鍚姩宸ヤ綔杩囩▼銆
         ((Button) findViewById(R.id.button_engine_start)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //设定定时器。
+                //璁惧畾瀹氭椂鍣ㄣ€
                 new Timer().schedule(m_timerTask, 5000, k_stepTime);
             }
         });
 
-        //初始化消息处理例程。
+        //鍒濆鍖栨秷鎭鐞嗕緥绋嬨€
         m_handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -172,21 +172,21 @@ public class EngineActivity extends AppCompatActivity {
             }
         };
 
-        //初始化Server。
-        //不能在主线程执行网络操作。需启动新线程异步连接。
+        //鍒濆鍖朣erver銆
+        //涓嶈兘鍦ㄤ富绾跨▼鎵ц缃戠粶鎿嶄綔銆傞渶鍚姩鏂扮嚎绋嬪紓姝ヨ繛鎺ャ€
         m_netThread=new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     ServerSocket serverSocket = new ServerSocket(k_port);
-                    //仅接受一个客户端连接。
+                    //浠呮帴鍙椾竴涓鎴风杩炴帴銆
                     m_socket = serverSocket.accept();
                     serverSocket.close();
                     m_inputStream = m_socket.getInputStream();
                     m_outputStream = m_socket.getOutputStream();
-                    //提示。
+                    //鎻愮ず銆
                     Message msg = new Message();
-                    msg.obj = "远程Monitor已连接。";
+                    msg.obj = "杩滅▼Monitor宸茶繛鎺ャ€";
                     m_handler.sendMessage(msg);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -196,8 +196,8 @@ public class EngineActivity extends AppCompatActivity {
         });
         m_netThread.start();
 
-        //提示。
-        //获取wifi服务.。
+        //鎻愮ず銆
+        //鑾峰彇wifi鏈嶅姟.銆
         final WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
         if (!wifiManager.isWifiEnabled())
             wifiManager.setWifiEnabled(true);
@@ -207,7 +207,7 @@ public class EngineActivity extends AppCompatActivity {
                 ((ipAdress >> 8) & 0xFF) + "." +
                 ((ipAdress >> 16) & 0xFF) + "." +
                 (ipAdress >> 24 & 0xFF);
-        ((TextView) findViewById(R.id.textView_engine)).setText("Monitor未连接。\n本机IP: " + ipString);
+        ((TextView) findViewById(R.id.textView_engine)).setText("Monitor鏈繛鎺ャ€俓n鏈満IP: " + ipString);
 
     }
 
@@ -234,7 +234,7 @@ public class EngineActivity extends AppCompatActivity {
 
 
     boolean UpdateMonitor() {
-        //构造实时画面位图。
+        //鏋勯€犲疄鏃剁敾闈綅鍥俱€
         //Bitmap toSendBmp = Bitmap.createBitmap(1280, 720, Bitmap.Config.ARGB_8888);
        // Canvas canvas = new Canvas(toSendBmp);
        // canvas.drawBitmap(m_previewBmp, m_cameraSrcRect, m_cameraDetRect, null);

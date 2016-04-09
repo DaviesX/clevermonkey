@@ -10,31 +10,31 @@ import javax.imageio.ImageIO;
 
 public class Window {
 
-	// ÏÔÊ¾Ô­Í¼µÄJLable¡£
-	protected JLabel m_leftLabel = new JLabel("Ô­Í¼", JLabel.CENTER);
-	// ÏÔÊ¾Ä£Ê½Í¼µÄJLable¡£
-	protected JLabel m_rightLabel1 = new JLabel("AlphaÄ£Ê½Í¼");
-	// ÏÔÊ¾ÆåÅÌÍ¼µÄJLable¡£
-	protected JLabel m_rightLabel2 = new JLabel("BetaÄ£Ê½Í¼");
-	// ÏÔÊ¾½á¹ûµÄJLable¡£
-	protected JLabel m_rightLabel3 = new JLabel("½á¹û");
-	// ÏÔÊ¾nullµÄJLable¡£
+	// æ˜¾ç¤ºåŽŸå›¾çš„JLableã€‚
+	protected JLabel m_leftLabel = new JLabel("åŽŸå›¾", JLabel.CENTER);
+	// æ˜¾ç¤ºæ¨¡å¼å›¾çš„JLableã€‚
+	protected JLabel m_rightLabel1 = new JLabel("Alphaæ¨¡å¼å›¾");
+	// æ˜¾ç¤ºæ£‹ç›˜å›¾çš„JLableã€‚
+	protected JLabel m_rightLabel2 = new JLabel("Betaæ¨¡å¼å›¾");
+	// æ˜¾ç¤ºç»“æžœçš„JLableã€‚
+	protected JLabel m_rightLabel3 = new JLabel("ç»“æžœ");
+	// æ˜¾ç¤ºnullçš„JLableã€‚
 	protected JLabel m_rightLabel4 = new JLabel("null");
-	// Î¨Ò»µÄCMTrcker¶ÔÏó¡£
+	// å”¯ä¸€çš„CMTrckerå¯¹è±¡ã€‚
 	Tracker m_tracker = new Tracker();
 
 	public static void main(String[] args) {
 		new Window().Init();
 	}
 
-	/** ³õÊ¼»¯´°¿Ú¡£ */
+	/** åˆå§‹åŒ–çª—å£ã€‚ */
 	protected void Init() {
-		// Ö÷´°¿Ú¡£
+		// ä¸»çª—å£ã€‚
 		JFrame mainFrame = new JFrame("CMTracker");
 
 		mainFrame.setLayout(new BorderLayout());
 
-		// ²Ëµ¥¡£
+		// èœå•ã€‚
 		JMenuBar mainMenuBar = new JMenuBar();
 		JMenu fileMenu = new JMenu("File");
 		JMenuItem fileOpenMenuItem = new JMenuItem("Open...");
@@ -46,7 +46,7 @@ public class Window {
 		fileMenu.addSeparator();
 		fileMenu.add(fileQuitMenuItem);
 
-		// ¿ò¼Ü¡£
+		// æ¡†æž¶ã€‚
 		JPanel mainPanel = new JPanel();
 		JPanel leftPanel = new JPanel();
 		JPanel rightPanel = new JPanel();
@@ -58,7 +58,7 @@ public class Window {
 		mainPanel.setLayout(new GridLayout(1, 2));
 		leftPanel.setLayout(new BorderLayout());
 		rightPanel.setLayout(new GridLayout(2, 2));
-		// Ê¹ÓÃborderLayoutÒÔ¾ÓÖÐJLabelÏÔÊ¾Í¼Æ¬¡£
+		// ä½¿ç”¨borderLayoutä»¥å±…ä¸­JLabelæ˜¾ç¤ºå›¾ç‰‡ã€‚
 		rightPanel1.setLayout(new BorderLayout());
 		rightPanel2.setLayout(new BorderLayout());
 		rightPanel3.setLayout(new BorderLayout());
@@ -76,23 +76,23 @@ public class Window {
 		rightPanel3.add(m_rightLabel3);
 		rightPanel4.add(m_rightLabel4);
 
-		// ²Ëµ¥ÊÂ¼þ¡£
+		// èœå•äº‹ä»¶ã€‚
 		fileOpenMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// Ê¹ÓÃ±ê×¼ÎÄ¼þ¶Ô»°¿òÔØÈëÍ¼Æ¬¡£
-				FileDialog loadFileDlg = new FileDialog(mainFrame, "Ñ¡Ôñ²âÊÔÍ¼Æ¬", FileDialog.LOAD);
+				// ä½¿ç”¨æ ‡å‡†æ–‡ä»¶å¯¹è¯æ¡†è½½å…¥å›¾ç‰‡ã€‚
+				FileDialog loadFileDlg = new FileDialog(mainFrame, "é€‰æ‹©æµ‹è¯•å›¾ç‰‡", FileDialog.LOAD);
 				loadFileDlg.setVisible(true);
 
 				try {
 					BufferedImage img = ImageIO.read(new File(loadFileDlg.getDirectory() + loadFileDlg.getFile()));
 
-					// ·ÖÎö¡£
+					// åˆ†æžã€‚
 					m_tracker.AnalyseImg(img);
 
-					// ÏÔÊ¾½á¹û¡£
+					// æ˜¾ç¤ºç»“æžœã€‚
 
-					// µÈ±ÈËõ·ÅÒÔÊÊÓ¦´°¿Ú¡£²ÎÊý"-1"±íÊ¾µÈ±ÈËõ·Å¡£
+					// ç­‰æ¯”ç¼©æ”¾ä»¥é€‚åº”çª—å£ã€‚å‚æ•°"-1"è¡¨ç¤ºç­‰æ¯”ç¼©æ”¾ã€‚
 					img = m_tracker.GetOriginalImg(true);
 					ImageIcon iconL;
 					if ((double) leftPanel.getHeight() / img.getHeight(null) > (double) leftPanel.getWidth()
@@ -102,7 +102,7 @@ public class Window {
 						iconL = new ImageIcon(img.getScaledInstance(-1, leftPanel.getHeight(), Image.SCALE_SMOOTH));
 					m_leftLabel.setIcon(iconL);
 
-					// µÈ±ÈËõ·ÅÒÔÊÊÓ¦´°¿Ú¡£²ÎÊý"-1"±íÊ¾µÈ±ÈËõ·Å¡£
+					// ç­‰æ¯”ç¼©æ”¾ä»¥é€‚åº”çª—å£ã€‚å‚æ•°"-1"è¡¨ç¤ºç­‰æ¯”ç¼©æ”¾ã€‚
 					img = m_tracker.GetAlphaPatternImg(true);
 					ImageIcon iconR1;
 					if ((double) rightPanel1.getHeight() / img.getHeight(null) > (double) rightPanel1.getWidth()
@@ -112,7 +112,7 @@ public class Window {
 						iconR1 = new ImageIcon(img.getScaledInstance(-1, rightPanel1.getHeight(), Image.SCALE_SMOOTH));
 					m_rightLabel1.setIcon(iconR1);
 
-					// µÈ±ÈËõ·ÅÒÔÊÊÓ¦´°¿Ú¡£²ÎÊý"-1"±íÊ¾µÈ±ÈËõ·Å¡£
+					// ç­‰æ¯”ç¼©æ”¾ä»¥é€‚åº”çª—å£ã€‚å‚æ•°"-1"è¡¨ç¤ºç­‰æ¯”ç¼©æ”¾ã€‚
 					img = m_tracker.GetBetaPatternImg(true);
 					ImageIcon iconR2;
 					if ((double) rightPanel2.getHeight() / img.getHeight(null) > (double) rightPanel2.getWidth()
@@ -122,7 +122,7 @@ public class Window {
 						iconR2 = new ImageIcon(img.getScaledInstance(-1, rightPanel2.getHeight(), Image.SCALE_SMOOTH));
 					m_rightLabel2.setIcon(iconR2);
 
-					// ½á¹û×Ö´®¡£
+					// ç»“æžœå­—ä¸²ã€‚
 					m_rightLabel3.setText(m_tracker.GetResult().toString());
 
 				} catch (IOException e1) {

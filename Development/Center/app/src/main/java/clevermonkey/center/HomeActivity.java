@@ -14,8 +14,8 @@ public class HomeActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_home);
 
-        //设置控件响应回调。
-        //自动控制模式按钮。
+        //璁剧疆鎺т欢鍝嶅簲鍥炶皟銆
+        //鑷姩鎺у埗妯″紡鎸夐挳銆
         ((Button)findViewById(R.id.btn_home_engine)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -24,7 +24,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        //远程遥控模式按钮。
+        //杩滅▼閬ユ帶妯″紡鎸夐挳銆
         ((Button)findViewById(R.id.btn_home_remote)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -33,7 +33,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        //远程监控模式按钮。
+        //杩滅▼鐩戞帶妯″紡鎸夐挳銆
         ((Button)findViewById(R.id.btn_home_monitor)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -42,7 +42,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        //关于按钮。
+        //鍏充簬鎸夐挳銆
         ((Button)findViewById(R.id.btn_home_about)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -47,24 +47,24 @@ public class MonitorActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //设置为准备界面。
+        //璁剧疆涓哄噯澶囩晫闈€
         setContentView(R.layout.activity_monitor_pre);
 
         final WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
 
-        //提示。
-        //显示当前wifi信息。
+        //鎻愮ず銆
+        //鏄剧ず褰撳墠wifi淇℃伅銆
         String msg;
         if (wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED) {
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-            msg = wifiInfo.getBSSID() == null ? "WIFI未连接到热点。\n请点击 Connect WIFI 按钮连接到目标热点。"
-                    : "WIFI已连接到：\nSSID: " + wifiInfo.getSSID() + "\nBSSID: " + wifiInfo.getBSSID();
+            msg = wifiInfo.getBSSID() == null ? "WIFI鏈繛鎺ュ埌鐑偣銆俓n璇风偣鍑 Connect WIFI 鎸夐挳杩炴帴鍒扮洰鏍囩儹鐐广€"
+                    : "WIFI宸茶繛鎺ュ埌锛歕nSSID: " + wifiInfo.getSSID() + "\nBSSID: " + wifiInfo.getBSSID();
         } else {
-            msg = "WIFI未开启。";
+            msg = "WIFI鏈紑鍚€";
         }
         ((TextView) findViewById(R.id.textView_monitor_pre)).setText(msg);
 
-        //设置消息处理例程。
+        //璁剧疆娑堟伅澶勭悊渚嬬▼銆
         m_handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -96,48 +96,48 @@ public class MonitorActivity extends AppCompatActivity {
             }
         };
 
-        //注册"Connect wifi"按钮回调。
+        //娉ㄥ唽"Connect wifi"鎸夐挳鍥炶皟銆
         ((Button) findViewById(R.id.btn_monitor_pre_connect)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //启动系统设置程序连接到目标热点。
+                //鍚姩绯荤粺璁剧疆绋嬪簭杩炴帴鍒扮洰鏍囩儹鐐广€
                 startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS));
-                //提示。
-                //显示当前wifi信息。
+                //鎻愮ず銆
+                //鏄剧ず褰撳墠wifi淇℃伅銆
                 String msg;
                 if (wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED) {
                     WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-                    msg = wifiInfo.getBSSID() == null ? "WIFI未连接到热点。\n请点击 Connect WIFI 按钮连接到目标热点。"
-                            : "WIFI已连接到：\nSSID: " + wifiInfo.getSSID() + "\nBSSID: " + wifiInfo.getBSSID();
+                    msg = wifiInfo.getBSSID() == null ? "WIFI鏈繛鎺ュ埌鐑偣銆俓n璇风偣鍑 Connect WIFI 鎸夐挳杩炴帴鍒扮洰鏍囩儹鐐广€"
+                            : "WIFI宸茶繛鎺ュ埌锛歕nSSID: " + wifiInfo.getSSID() + "\nBSSID: " + wifiInfo.getBSSID();
                 } else {
-                    msg = "WIFI未开启。";
+                    msg = "WIFI鏈紑鍚€";
                 }
                 ((TextView) findViewById(R.id.textView_monitor_pre)).setText(msg);
             }
         });
 
-        //注册"Connect Server"按钮回调。
+        //娉ㄥ唽"Connect Server"鎸夐挳鍥炶皟銆
         ((Button) findViewById(R.id.btn_monitor_pre_sever)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //不能在主线程执行网络操作。需启动新线程异步连接。
+                //涓嶈兘鍦ㄤ富绾跨▼鎵ц缃戠粶鎿嶄綔銆傞渶鍚姩鏂扮嚎绋嬪紓姝ヨ繛鎺ャ€
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        //建立连接。
+                        //寤虹珛杩炴帴銆
                         try {
                             m_socket = new Socket(((EditText) findViewById(R.id.editText_monitor_pre)).getText().toString(), k_port);
                             m_inputStream = m_socket.getInputStream();
                             m_outputStream = m_socket.getOutputStream();
-                            //连接到目标后进入工作界面。
+                            //杩炴帴鍒扮洰鏍囧悗杩涘叆宸ヤ綔鐣岄潰銆
                             Message msg = Message.obtain();
                             msg.what=k_msgTypeControl;
                             msg.obj = R.layout.activity_monitor;
                             m_handler.sendMessage(msg);
-                            //提示。
+                            //鎻愮ず銆
                             msg = Message.obtain();
                             msg.what=k_msgTypeText;
-                            msg.obj ="远程Monitor已连接。";
+                            msg.obj ="杩滅▼Monitor宸茶繛鎺ャ€";
                             m_handler.sendMessage(msg);
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -148,14 +148,14 @@ public class MonitorActivity extends AppCompatActivity {
             }
         });
 
-        //启用定时器定时读取输入流并刷新画面。
+        //鍚敤瀹氭椂鍣ㄥ畾鏃惰鍙栬緭鍏ユ祦骞跺埛鏂扮敾闈€
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
                 try {
                     if (m_inputStream != null && m_inputStream.available() > 0) {
                         m_byteRead=m_inputStream.read(m_byte);
-                        //通知UI线程刷新。
+                        //閫氱煡UI绾跨▼鍒锋柊銆
                         Message msg = Message.obtain();
                         msg.what=k_msgTypeImg;
                         m_handler.sendMessage(msg);
@@ -173,7 +173,7 @@ public class MonitorActivity extends AppCompatActivity {
         super.onDestroy();
 
         try {
-            //清理连接。
+            //娓呯悊杩炴帴銆
             if (m_socket != null)
                 m_socket.close();
             if (m_inputStream != null)
