@@ -1,4 +1,4 @@
-package CleverMonkey.MineCraft;
+package Test;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -51,7 +51,9 @@ public class Window {
 	// 地图图片原点位置。
 	protected Point m_mapImgOrigin = new Point();
 	// 唯一的Car对象。
-	protected Car m_car = new Car();
+        protected CarEntity m_car = new CarEntity(new OrthoVeloStrategy());
+        // 模拟系统。
+	protected Simulation m_sim = new Simulation();
 	// 引用的Tracker对象。
 	protected Tracker m_tracker;
 	// 唯一定时器任务对象。
@@ -59,7 +61,7 @@ public class Window {
 		@Override
 		public void run() {
 			try {
-				m_car.Run();
+				m_sim.TimeEvolution();
 				OnDraw();
 			} catch (Exception e1) {
 				e1.printStackTrace();
@@ -102,7 +104,7 @@ public class Window {
 		graphics.setColor(Color.GREEN);
 		Vec2 vec2L = new Vec2();
 		Vec2 vec2R = new Vec2();
-		m_car.GetLocation(vec2L, vec2R);
+		m_sim.GetLocation(vec2L, vec2R);
 		// 坐标转换。
 		vec2L.mulLocal(m_mapImgScale);
 		vec2R.mulLocal(m_mapImgScale);
@@ -122,28 +124,28 @@ public class Window {
 		if (vec2L.x > vec2R.x)
 			theta += Math.PI;
 
-		int x1 = (int) Math.round(midX - m_car.k_cameraWidth / 2
+		int x1 = (int) Math.round(midX - m_sim.k_cameraWidth / 2
 				* m_mapImgScale * Math.cos(theta));
-		int y1 = (int) Math.round(midY - m_car.k_cameraWidth / 2
+		int y1 = (int) Math.round(midY - m_sim.k_cameraWidth / 2
 				* m_mapImgScale * Math.sin(theta));
-		int x2 = (int) Math.round(midX + m_car.k_cameraWidth / 2
+		int x2 = (int) Math.round(midX + m_sim.k_cameraWidth / 2
 				* m_mapImgScale * Math.cos(theta));
-		int y2 = (int) Math.round(midY + m_car.k_cameraWidth / 2
+		int y2 = (int) Math.round(midY + m_sim.k_cameraWidth / 2
 				* m_mapImgScale * Math.sin(theta));
 		graphics.drawLine(x1, y1, x2, y2);
-		x1 = (int) Math.round(x2 + m_car.k_cameraHeight * m_mapImgScale
+		x1 = (int) Math.round(x2 + m_sim.k_cameraHeight * m_mapImgScale
 				* Math.sin(theta));
-		y1 = (int) Math.round(y2 - m_car.k_cameraHeight * m_mapImgScale
+		y1 = (int) Math.round(y2 - m_sim.k_cameraHeight * m_mapImgScale
 				* Math.cos(theta));
 		graphics.drawLine(x1, y1, x2, y2);
-		x2 = (int) Math.round(x1 - m_car.k_cameraWidth * m_mapImgScale
+		x2 = (int) Math.round(x1 - m_sim.k_cameraWidth * m_mapImgScale
 				* Math.cos(theta));
-		y2 = (int) Math.round(y1 - m_car.k_cameraWidth * m_mapImgScale
+		y2 = (int) Math.round(y1 - m_sim.k_cameraWidth * m_mapImgScale
 				* Math.sin(theta));
 		graphics.drawLine(x1, y1, x2, y2);
-		x1 = (int) Math.round(midX - m_car.k_cameraWidth / 2 * m_mapImgScale
+		x1 = (int) Math.round(midX - m_sim.k_cameraWidth / 2 * m_mapImgScale
 				* Math.cos(theta));
-		y1 = (int) Math.round(midY - m_car.k_cameraWidth / 2 * m_mapImgScale
+		y1 = (int) Math.round(midY - m_sim.k_cameraWidth / 2 * m_mapImgScale
 				* Math.sin(theta));
 		graphics.drawLine(x1, y1, x2, y2);
 
@@ -151,7 +153,7 @@ public class Window {
 		m_leftLabel.setIcon(icon);
 
 		// Camera.
-		icon = new ImageIcon(m_car.GetShortcut().getScaledInstance(
+		icon = new ImageIcon(m_sim.GetShortcut().getScaledInstance(
 				m_rightImg1W, m_rightImg1H, Image.SCALE_SMOOTH));
 		m_rightLabel1.setIcon(icon);
 
@@ -231,15 +233,16 @@ public class Window {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// 使用标准文件对话框载入图片。
-				FileDialog loadFileDlg = new FileDialog(mainFrame, "选择地图图片",
-						FileDialog.LOAD);
-				loadFileDlg.setVisible(true);
+//				FileDialog loadFileDlg = new FileDialog(mainFrame, "选择地图图片",
+//						FileDialog.LOAD);
+//				loadFileDlg.setVisible(true);
 
 				try {
-					BufferedImage img = ImageIO.read(new File(loadFileDlg
-							.getDirectory() + loadFileDlg.getFile()));
+                                        // String path = loadFileDlg.getDirectory() + loadFileDlg.getFile();
+                                        String path = "/home/davis/cmonkey-code/Test/MineCraft/MapImg/未标题-1.jpg";
+					BufferedImage img = ImageIO.read(new File(path));
 					// 设置小车的地图。
-					m_car.SetMap(img);
+					m_sim.SetMap(img);
 
 					// 等比缩放以适应窗口。参数"-1"表示等比缩放。
 					if ((float) leftPanel.getHeight() / img.getHeight() > (float) leftPanel
@@ -272,7 +275,7 @@ public class Window {
 				// 计算各区域图像的显示大小。
 				// 等比缩放以适应窗口。参数"-1"表示等比缩放。
 				Image img;
-				img = m_car.GetShortcut();
+				img = m_sim.GetShortcut();
 				if ((double) rightPanel1.getHeight() / img.getHeight(null) > (double) rightPanel1
 						.getWidth() / img.getWidth(null)) {
 					m_rightImg1W = rightPanel1.getWidth();
@@ -341,7 +344,7 @@ public class Window {
 						// 转换到地图图片坐标。
 						vec2.x /= m_mapImgScale;
 						vec2.y /= m_mapImgScale;
-						m_car.SetCar(vec2);
+						m_sim.SetCar(vec2);
 
 						OnDraw();
 					}
@@ -369,7 +372,7 @@ public class Window {
 		mainFrame.setVisible(true);
 
 		// 初始化对象引用。
-		m_tracker = m_car.GetTracker();
+		m_tracker = m_sim.GetTracker();
 
 	}
 }
