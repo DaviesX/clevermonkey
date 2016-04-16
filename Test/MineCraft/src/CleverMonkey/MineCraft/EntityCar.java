@@ -17,11 +17,11 @@
  */
 package MineCraft.src.CleverMonkey.MineCraft;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import org.jbox2d.common.Mat33;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.common.Vec3;
-import org.jbox2d.dynamics.World;
 
 class CarBody {
 
@@ -37,13 +37,13 @@ class CarBody {
                 backCentroid.set(initialCentroid.x + initialDirection.x * (-l / 2), initialCentroid.y + initialDirection.y * (-l / 2));
                 carCentroid = initialCentroid.clone();
         }
-        
+
         public void SetCentroidPosition(Vec2 pos) {
                 Vec2 dir = GetDirection();
                 carCentroid = pos.clone();
-                backCentroid.set(carCentroid.x - dir.x*m_lhalf, carCentroid.y - dir.y*m_lhalf);
+                backCentroid.set(carCentroid.x - dir.x * m_lhalf, carCentroid.y - dir.y * m_lhalf);
         }
-        
+
         public Vec2 GetCentroidPosition() {
                 return carCentroid.clone();
         }
@@ -142,6 +142,14 @@ class CarBody {
                         LinearTransform.Apply2Point(R, new Vec2(+halfExtents.x, -halfExtents.y), c);
                         LinearTransform.Apply2Point(R, new Vec2(-halfExtents.x, -halfExtents.y), d);
                 }
+
+                public void GetFourCornersCounterClockwise(Mat33 customTransform, Vec2 a, Vec2 b, Vec2 c, Vec2 d) {
+                        Mat33 T = LinearTransform.Mul(customTransform, R);
+                        LinearTransform.Apply2Point(T, new Vec2(-halfExtents.x, +halfExtents.y), a);
+                        LinearTransform.Apply2Point(T, new Vec2(+halfExtents.x, +halfExtents.y), b);
+                        LinearTransform.Apply2Point(T, new Vec2(+halfExtents.x, -halfExtents.y), c);
+                        LinearTransform.Apply2Point(T, new Vec2(-halfExtents.x, -halfExtents.y), d);
+                }
         }
 
         public OBB GetOBB() {
@@ -217,8 +225,26 @@ public class EntityCar implements IPhysEntity, IDrawable {
                 m_carBody.ClosedFormSolver(v, dt);
         }
 
+        private void __DrawLine(Graphics g, Vec2 a, Vec2 b) {
+                g.drawLine((int) a.x, (int) a.y, (int) b.x, (int) b.y);
+        }
+
         @Override
         public void Draw(Graphics g, int width, int height) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                Mat33 tScreen = new Screen(width, height).FromEuclidSpace(new Vec2(0, 0), m_universe.GetWorldScale());
+
+                CarBody.OBB obb = m_carBody.GetOBB();
+
+                Vec2 p0 = new Vec2();
+                Vec2 p1 = new Vec2();
+                Vec2 p2 = new Vec2();
+                Vec2 p3 = new Vec2();
+                obb.GetFourCornersCounterClockwise(tScreen, p0, p1, p2, p3);
+
+                g.setColor(Color.GREEN);
+                __DrawLine(g, p0, p1);
+                __DrawLine(g, p1, p2);
+                __DrawLine(g, p2, p3);
+                __DrawLine(g, p3, p0);
         }
 }

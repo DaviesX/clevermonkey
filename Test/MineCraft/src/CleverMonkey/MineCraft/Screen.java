@@ -52,7 +52,7 @@ public class Screen {
                 throw new UnsupportedOperationException();
         }
 
-        public Mat33 FromEuclidSpace(Vec2 t, Vec2 targetScale) {
+        public Mat33 FromEuclidSpace(Vec2 t, Vec2 sourceScale) {
                 throw new UnsupportedOperationException();
         }
 
