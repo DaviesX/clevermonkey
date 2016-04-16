@@ -17,10 +17,27 @@
  */
 package Test;
 
+import java.awt.image.BufferedImage;
+import javax.swing.JComponent;
+
 /**
- *
  * @author davis
  */
-public class OrthoVeloStrategy implements ITracingStrategy {
-        
+public class ITracingStrategyFactory {
+
+        enum Strategy {
+                OrthoVelo,
+                CurveFitting
+        }
+
+        static ITracingStrategy CreateStrategy(Strategy type, Map map, boolean is2Debug, JComponent alpha, JComponent beta, JComponent gamma) {
+                switch (type) {
+                        case OrthoVelo:
+                                return new StrategyOrthoVelo(map, is2Debug, alpha, beta, gamma);
+                        case CurveFitting:
+                                return null;
+                        default:
+                                return null;
+                }
+        }
 }

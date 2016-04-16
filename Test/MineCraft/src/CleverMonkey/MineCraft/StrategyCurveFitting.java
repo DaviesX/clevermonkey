@@ -17,34 +17,33 @@
  */
 package Test;
 
-import java.util.Set;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.joints.JointDef;
+import org.jbox2d.common.Vec2;
 
 /**
- * 小车。
+ * 曲线拟合策略。
+ * 
  * @author davis
  */
-public class CarEntity implements IPhysEntity {
-        private final ITracingStrategy m_strategy;
-        
-        public CarEntity(ITracingStrategy stg) {
-                m_strategy = stg;
-        }
+public class StrategyCurveFitting implements ITracingStrategy {
 
         @Override
-        public Set<BodyDef> GetBodyDef() {
+        public float ComputeFrontWheelAngularVelocity() {
                 throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public Set<JointDef> GetJointDef() {
+        public float TimeEvolution(Vec2 centroid, Vec2 centroidVelocity, float dt, Simulation.Clock t) {
                 throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
-        public void TimeEvolution(Body body, float dt, Simulation.Clock t) {
+        public float ComputeFrontWheelAngle() {
                 throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public float ComputeFrontWheelVelocity() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
 }

@@ -15,11 +15,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package Test;
+
+import java.awt.Graphics;
 
 /**
+ * 可绘制物。
  *
  * @author davis
  */
-public class CurveFittingStrategy {
-        
+public interface IDrawable {
+
+        public void Draw(Graphics g, int width, int height);
 }

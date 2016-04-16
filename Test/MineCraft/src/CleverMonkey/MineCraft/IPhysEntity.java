@@ -17,18 +17,18 @@
  */
 package Test;
 
-import java.util.Set;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.joints.JointDef;
+import org.jbox2d.dynamics.World;
 
 /**
  * 物理实体。
+ *
  * @author davis
  */
 public interface IPhysEntity {
-        
-        public Set<BodyDef> GetBodyDef();
-        public Set<JointDef> GetJointDef();
-        public void TimeEvolution(Body body, float dt, Simulation.Clock t);
+
+        public void OnAdd(World world);
+
+        public void OnRemove(World world);
+
+        public void TimeEvolution(World world, float dt, Simulation.Clock t);
 }
