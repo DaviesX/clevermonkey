@@ -4,7 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.FileDialog;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
@@ -29,20 +30,20 @@ import javax.swing.UnsupportedLookAndFeelException;
 public final class App {
 
         // 显示地图的JLable。
-        protected JLabel m_drawRegionLabel = new JLabel("", JLabel.CENTER);
+        private final JLabel m_drawRegionLabel = new JLabel("", JLabel.CENTER);
         // 显示Camera的JLable。
-        protected JLabel m_cameraLabel = new JLabel("Camera");
+        private final JLabel m_cameraLabel = new JLabel("Camera");
         // 显示Alpha图的JLable。
-        protected JLabel m_alphLabel = new JLabel("Alpha");
+        private final JLabel m_alphLabel = new JLabel("Alpha");
         // 显示Beta的JLable。
-        protected JLabel m_betaLabel = new JLabel("Beta");
+        private final JLabel m_betaLabel = new JLabel("Beta");
         // 显示null的JLable。
-        protected JLabel m_nullLabel = new JLabel("null");
-        // 地图图片原点位置。
-        protected Vec2 m_mapImgOrigin = new Vec2();
+        private final JLabel m_nullLabel = new JLabel("null");
         // 主窗口。
         private final JFrame m_mainFrame;
-
+        
+        // 地图图片原点位置。
+        protected Vec2 m_mapImgOrigin = new Vec2();
         // 模拟数据上下文对象。
         private final SimulationContext m_simCtx;
         // 绘制区域的屏幕对象。
@@ -78,7 +79,8 @@ public final class App {
                         }
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
                         // 使用跨平台皮肤后备方案。
-                        System.out.println("Not supported");
+                        JOptionPane.showMessageDialog(null, "GTK+ or system theme are not supported. Applying fallback crossplatform theme", 
+                                                      "CMonkey", JOptionPane.ERROR_MESSAGE);
                         UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 
                 }
@@ -154,6 +156,24 @@ public final class App {
                 rightPanel4.add(m_nullLabel);
 
                 // 设置事件。
+                m_drawRegionLabel.addComponentListener(new ComponentListener() {
+                        @Override
+                        public void componentResized(ComponentEvent e) {
+                                m_drawRegionScreen.Resize(e.getComponent().getWidth(), e.getComponent().getHeight());
+                        }
+
+                        @Override
+                        public void componentMoved(ComponentEvent e) {
+                        }
+
+                        @Override
+                        public void componentShown(ComponentEvent e) {
+                        }
+
+                        @Override
+                        public void componentHidden(ComponentEvent e) {
+                        }
+                });
                 // 菜单事件。
                 fileSetMapMenuItem.addActionListener((ActionEvent e) -> {
                         // 使用标准文件对话框载入图片。
@@ -203,14 +223,22 @@ public final class App {
 
                                 @Override
                                 public void mousePressed(MouseEvent e) {
-                                        Vec2 selected = new Vec2(e.getPoint().x, e.getPoint().y);
-                                        Vec2 position = LinearTransform.Apply2Point(
-                                                m_drawRegionScreen.ToEuclidSpace(m_mapImgOrigin, 1 / 100.0f), selected);
-
-                                        EntityCar car = new EntityCar(position, __GenerateStrategyFromAppState());
-
                                         m_simCtx.BeginModification();
                                         {
+                                                Map map = m_simCtx.GetMap();
+                                                if (map == null) {
+                                                        JOptionPane.showMessageDialog(null, 
+                                                                "You haven't loaded the map yet. Failed to set the car position.", 
+                                                                "CMonkey", JOptionPane.ERROR_MESSAGE);
+                                                        return ;
+                                                }
+                                                Vec2 scaling = new Vec2(map.MapWidth()/m_drawRegionScreen.Width(),
+                                                                        map.MapHeight()/m_drawRegionScreen.Height());
+                                                Vec2 selected = new Vec2(e.getPoint().x, e.getPoint().y);
+                                                Vec2 position = LinearTransform.Apply2Point(
+                                                        m_drawRegionScreen.ToEuclidSpace(m_mapImgOrigin, scaling), selected);
+
+                                                EntityCar car = new EntityCar(position, __GenerateStrategyFromAppState());
                                                 m_simCtx.SetCar(car);
                                         }
                                         m_simCtx.EndModification();
@@ -257,15 +285,19 @@ public final class App {
                 });
 
                 loadDefaultBenchmarkMenuItem.addActionListener((ActionEvent e) -> {
-                        Map map = null;
+                        Map map;
                         try {
                                 map = new Map(new FileInputStream("Test/MineCraft/MapImg/未标题-1.jpg"));
                         } catch (IOException ex) {
                                 Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+                                JOptionPane.showMessageDialog(null, "Benchmark map is not present in the directory. Stop proceeding.", 
+                                                              "CMonkey", JOptionPane.INFORMATION_MESSAGE);
+                                return;
                         }
                         m_simCtx.BeginModification();
                         {
                                 m_simCtx.SetMap(map);
+                                m_simCtx.SetCar(new EntityCar(new Vec2(0.05f, 0.05f), __GenerateStrategyFromAppState()));
                         }
                         m_simCtx.EndModification();
                 });
@@ -293,6 +325,8 @@ public final class App {
                 try {
                         App app = new App();
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+                        JOptionPane.showMessageDialog(null, "App starts with failures. Program exiting.", 
+                                                      "CMonkey", JOptionPane.ERROR_MESSAGE);
                         Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
                 }
         }

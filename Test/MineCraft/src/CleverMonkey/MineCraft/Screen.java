@@ -49,11 +49,11 @@ public class Screen {
                 return m_h;
         }
 
-        public Mat33 ToEuclidSpace(Vec2 t, float s2e) {
+        public Mat33 ToEuclidSpace(Vec2 t, Vec2 s2e) {
                 throw new UnsupportedOperationException();
         }
 
-        public Mat33 FromEuclidSpace(Vec2 t, float s2e) {
+        public Mat33 FromEuclidSpace(Vec2 t, Vec2 s2e) {
                 throw new UnsupportedOperationException();
         }
 

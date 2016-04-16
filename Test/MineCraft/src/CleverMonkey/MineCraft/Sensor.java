@@ -17,7 +17,6 @@
  */
 package MineCraft.src.CleverMonkey.MineCraft;
 
-import MineCraft.src.CleverMonkey.MineCraft.LinearTransform;
 import java.awt.image.BufferedImage;
 import org.jbox2d.common.Mat33;
 import org.jbox2d.common.Vec2;
