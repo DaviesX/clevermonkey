@@ -19,7 +19,6 @@ package MineCraft.src.CleverMonkey.MineCraft;
 
 import org.jbox2d.common.Mat33;
 import org.jbox2d.common.Vec2;
-import org.jbox2d.common.Vec3;
 
 /**
  * 屏幕变换辅助类。
@@ -49,11 +48,11 @@ public class Screen {
                 return m_h;
         }
 
-        public Mat33 ToEuclidSpace(Vec2 t, Vec2 s2e) {
+        public Mat33 ToEuclidSpace(Vec2 t, Vec2 targetScale) {
                 throw new UnsupportedOperationException();
         }
 
-        public Mat33 FromEuclidSpace(Vec2 t, Vec2 s2e) {
+        public Mat33 FromEuclidSpace(Vec2 t, Vec2 targetScale) {
                 throw new UnsupportedOperationException();
         }
 

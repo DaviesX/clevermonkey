@@ -232,14 +232,11 @@ public final class App {
                                                                 "CMonkey", JOptionPane.ERROR_MESSAGE);
                                                         return ;
                                                 }
-                                                Vec2 scaling = new Vec2(map.MapWidth()/m_drawRegionScreen.Width(),
-                                                                        map.MapHeight()/m_drawRegionScreen.Height());
                                                 Vec2 selected = new Vec2(e.getPoint().x, e.getPoint().y);
                                                 Vec2 position = LinearTransform.Apply2Point(
-                                                        m_drawRegionScreen.ToEuclidSpace(m_mapImgOrigin, scaling), selected);
+                                                        m_drawRegionScreen.ToEuclidSpace(m_mapImgOrigin, map.GetScale()), selected);
 
-                                                EntityCar car = new EntityCar(position, __GenerateStrategyFromAppState());
-                                                m_simCtx.SetCar(car);
+                                                m_simCtx.SetCar(new EntityCar(position, __GenerateStrategyFromAppState()));
                                         }
                                         m_simCtx.EndModification();
                                 }
