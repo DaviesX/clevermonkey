@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.io.FileInputStream;
+import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -21,6 +22,7 @@ import org.jbox2d.common.Vec2;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -38,29 +40,18 @@ public final class App {
         protected JLabel m_nullLabel = new JLabel("null");
         // 地图图片原点位置。
         protected Vec2 m_mapImgOrigin = new Vec2();
-
+        // 主窗口。
+        private final JFrame m_mainFrame;
+        
         // 模拟数据上下文对象。
         private final SimulationContext m_simCtx;
         // 绘制区域的屏幕对象。
         private final Screen m_drawRegionScreen = new Screen(0, 0);
-        // 主窗口。
-        private final JFrame m_mainFrame;
-
         // 模拟器演变速度。
         private final float k_simDeltaT = 0.1f;
 
         public App() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
                 m_simCtx = SimulationContext.GetInstance();
-                // 已经可以开始运行。
-                m_simCtx.Start();
-
-                // 设置模拟数据上下文。
-                m_simCtx.BeginModification();
-                {
-                        m_simCtx.GetDrawer().SetDrawingTarget(m_drawRegionLabel);
-                        m_simCtx.GetSimulation().SetDeltaT(k_simDeltaT);
-                }
-                m_simCtx.EndModification();
 
                 // 设置皮肤。
                 try {
@@ -81,11 +72,11 @@ public final class App {
                         // 使用跨平台皮肤后备方案。
                         System.out.println("Not supported");
                         UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+                        
                 }
-
-                // 主窗口。
+                
+                // 创建主窗口UI。
                 m_mainFrame = new JFrame("CMMineCraft");
-
                 m_mainFrame.setLayout(new BorderLayout());
 
                 // 菜单。
@@ -102,10 +93,13 @@ public final class App {
                 JMenu strategyMenu = new JMenu("Select Strategy");
                 JMenuItem strategyOrthoVeloMenuItem = new JMenuItem("OrthoVelo");
                 JMenuItem strategyCurveFittingMenuItem = new JMenuItem("Curve Fitting");
-
-                m_mainFrame.add(mainMenuBar, BorderLayout.NORTH);
+                
+                JMenu benchmarkMenu = new JMenu("Benchmark");
+                JMenuItem loadDefaultBenchmarkMenuItem = new JMenuItem("Load default benchmark");
+                
                 mainMenuBar.add(fileMenu);
                 mainMenuBar.add(simulateMenu);
+                mainMenuBar.add(benchmarkMenu);
 
                 fileMenu.add(fileSetMapMenuItem);
                 fileMenu.addSeparator();
@@ -118,6 +112,8 @@ public final class App {
 
                 strategyMenu.add(strategyOrthoVeloMenuItem);
                 strategyMenu.add(strategyCurveFittingMenuItem);
+                
+                benchmarkMenu.add(loadDefaultBenchmarkMenuItem);
 
                 // 框架。
                 JPanel mainPanel = new JPanel();
@@ -136,7 +132,6 @@ public final class App {
                 rightPanel2.setLayout(new BorderLayout());
                 rightPanel3.setLayout(new BorderLayout());
                 rightPanel4.setLayout(new BorderLayout());
-                m_mainFrame.add(mainPanel, BorderLayout.CENTER);
                 mainPanel.add(leftPanel);
                 mainPanel.add(rightPanel);
                 rightPanel.add(rightPanel1);
@@ -149,6 +144,7 @@ public final class App {
                 rightPanel3.add(m_betaLabel);
                 rightPanel4.add(m_nullLabel);
 
+                // 设置事件。
                 // 菜单事件。
                 fileSetMapMenuItem.addActionListener((ActionEvent e) -> {
                         // 使用标准文件对话框载入图片。
@@ -246,11 +242,38 @@ public final class App {
                         }
                         m_simCtx.EndModification();
                 });
+                
+                loadDefaultBenchmarkMenuItem.addActionListener((ActionEvent e) -> {
+                        Map map = null;
+                        try {
+                                map = new Map(new FileInputStream("Test/MineCraft/MapImg/未标题-1.jpg"));
+                        } catch (IOException ex) {
+                                Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        m_simCtx.BeginModification();
+                        {
+                                m_simCtx.SetMap(map);
+                        }
+                        m_simCtx.EndModification();
+                });
 
-                // 完成设置。
+                // 完成窗口UI设置。
+                m_mainFrame.getContentPane().add(mainMenuBar, BorderLayout.NORTH);
+                m_mainFrame.getContentPane().add(mainPanel, BorderLayout.CENTER);
                 m_mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 m_mainFrame.pack();
                 m_mainFrame.setVisible(true);
+                
+                // 已经可以开始运行。
+                m_simCtx.Start();
+
+                // 设置模拟数据上下文。
+                m_simCtx.BeginModification();
+                {
+                        m_simCtx.GetDrawer().SetDrawingTarget(leftPanel);
+                        m_simCtx.GetSimulation().SetDeltaT(k_simDeltaT);
+                }
+                m_simCtx.EndModification();
         }
 
         public static void main(String[] args) {

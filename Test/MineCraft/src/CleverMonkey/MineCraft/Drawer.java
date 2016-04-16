@@ -19,6 +19,8 @@ package Test;
 
 import java.awt.Graphics;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
@@ -28,17 +30,25 @@ class DrawRegion extends JPanel {
 
         @Override
         protected void paintComponent(Graphics g) {
+                System.out.println("Drawing");
                 if (m_batch == null) {
                         return;
                 }
                 super.paintComponent(g);
                 m_batch.stream().forEach((drawable) -> {
-                        drawable.Draw(g, super.getWidth(), super.getHeight());
+                        if (drawable != null) {
+                                drawable.Draw(g, super.getWidth(), super.getHeight());
+                        }
                 });
+        }
+        
+        private void __Present() {
+                repaint();
         }
 
         public void Draw(List<IDrawable> batch) {
                 m_batch = batch;
+                repaint();
         }
 }
 
