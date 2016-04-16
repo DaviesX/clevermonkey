@@ -1,6 +1,5 @@
-package Test;
+package MineCraft.src.CleverMonkey.MineCraft;
 
-import MineCraft.src.CleverMonkey.MineCraft.LinearTransform;
 import java.awt.BorderLayout;
 import java.awt.FileDialog;
 import java.awt.GridLayout;
@@ -22,7 +21,6 @@ import org.jbox2d.common.Vec2;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -49,6 +47,15 @@ public final class App {
         private final Screen m_drawRegionScreen = new Screen(0, 0);
         // 模拟器演变速度。
         private final float k_simDeltaT = 0.1f;
+        // 跟踪策略。
+        private ITracingStrategyFactory.Strategy m_strategy = ITracingStrategyFactory.Strategy.OrthoVelo;
+        
+
+        private ITracingStrategy __GenerateStrategyFromAppState() {
+                return ITracingStrategyFactory.CreateStrategy(
+                                        ITracingStrategyFactory.Strategy.OrthoVelo,
+                                        m_simCtx.GetMap(), true, m_alphLabel, m_betaLabel, m_nullLabel);
+        }
 
         public App() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
                 m_simCtx = SimulationContext.GetInstance();
@@ -99,6 +106,7 @@ public final class App {
                 
                 mainMenuBar.add(fileMenu);
                 mainMenuBar.add(simulateMenu);
+                mainMenuBar.add(strategyMenu);
                 mainMenuBar.add(benchmarkMenu);
 
                 fileMenu.add(fileSetMapMenuItem);
@@ -153,12 +161,11 @@ public final class App {
                         loadFileDlg.setVisible(true);
 
                         try {
-                                String path = loadFileDlg.getDirectory() + loadFileDlg.getFile();
-                                if (path == null || "".equals(path)) {
+                                if (loadFileDlg.getDirectory() == null || loadFileDlg.getFile() == null) {
                                         // 用户没有选择文件。
                                         return;
                                 }
-
+                                String path = loadFileDlg.getDirectory() + loadFileDlg.getFile();
                                 Map map = new Map(new FileInputStream(path));
                                 m_simCtx.BeginModification();
                                 {
@@ -199,10 +206,7 @@ public final class App {
                                         Vec2 position = LinearTransform.Apply2Point(
                                                 m_drawRegionScreen.ToEuclidSpace(m_mapImgOrigin, 1 / 100.0f), selected);
 
-                                        ITracingStrategy strategy = ITracingStrategyFactory.CreateStrategy(
-                                                ITracingStrategyFactory.Strategy.OrthoVelo,
-                                                m_simCtx.GetMap(), true, m_alphLabel, m_betaLabel, m_nullLabel);
-                                        EntityCar car = new EntityCar(position, strategy);
+                                        EntityCar car = new EntityCar(position, __GenerateStrategyFromAppState());
 
                                         m_simCtx.BeginModification();
                                         {
@@ -224,10 +228,8 @@ public final class App {
                 strategyOrthoVeloMenuItem.addActionListener((ActionEvent e) -> {
                         m_simCtx.BeginModification();
                         {
-                                ITracingStrategy strategy = ITracingStrategyFactory.CreateStrategy(
-                                        ITracingStrategyFactory.Strategy.OrthoVelo,
-                                        m_simCtx.GetMap(), true, m_alphLabel, m_betaLabel, m_nullLabel);
-                                m_simCtx.GetCar().ChangeStrategy(strategy);
+                                m_strategy = ITracingStrategyFactory.Strategy.OrthoVelo;
+                                m_simCtx.GetCar().ChangeStrategy(__GenerateStrategyFromAppState());
                         }
                         m_simCtx.EndModification();
                 });
@@ -235,10 +237,8 @@ public final class App {
                 strategyCurveFittingMenuItem.addActionListener((ActionEvent e) -> {
                         m_simCtx.BeginModification();
                         {
-                                ITracingStrategy strategy = ITracingStrategyFactory.CreateStrategy(
-                                        ITracingStrategyFactory.Strategy.CurveFitting,
-                                        m_simCtx.GetMap(), true, m_alphLabel, m_betaLabel, m_nullLabel);
-                                m_simCtx.GetCar().ChangeStrategy(strategy);
+                                m_strategy = ITracingStrategyFactory.Strategy.CurveFitting;
+                                m_simCtx.GetCar().ChangeStrategy(__GenerateStrategyFromAppState());
                         }
                         m_simCtx.EndModification();
                 });

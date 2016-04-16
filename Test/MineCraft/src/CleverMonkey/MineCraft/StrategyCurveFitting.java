@@ -15,8 +15,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package Test;
+package MineCraft.src.CleverMonkey.MineCraft;
 
+import javax.swing.JComponent;
 import org.jbox2d.common.Vec2;
 
 /**
@@ -25,7 +26,24 @@ import org.jbox2d.common.Vec2;
  * @author davis
  */
 public class StrategyCurveFitting implements ITracingStrategy {
-
+        
+        private final Map m_map;
+        private final boolean m_is2Debug;
+        private final JComponent m_alpha;
+        private final JComponent m_beta;
+        private final JComponent m_gamma;
+        
+        /*
+         * 应该由ITracingStrategyFactory来构造这个对象。
+         */
+        public StrategyCurveFitting(Map map, boolean is2Debug, JComponent alpha, JComponent beta, JComponent gamma) {
+                m_map = map;
+                m_is2Debug = is2Debug;
+                m_alpha = alpha;
+                m_beta = beta;
+                m_gamma = gamma;
+        }
+        
         @Override
         public float ComputeFrontWheelAngularVelocity() {
                 throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

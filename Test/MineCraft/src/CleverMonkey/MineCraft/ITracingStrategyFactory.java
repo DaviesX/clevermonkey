@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package Test;
+package MineCraft.src.CleverMonkey.MineCraft;
 
 import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
@@ -35,7 +35,7 @@ public class ITracingStrategyFactory {
                         case OrthoVelo:
                                 return new StrategyOrthoVelo(map, is2Debug, alpha, beta, gamma);
                         case CurveFitting:
-                                return null;
+                                return new StrategyCurveFitting(map, is2Debug, alpha, beta, gamma);
                         default:
                                 return null;
                 }
