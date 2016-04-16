@@ -32,5 +32,5 @@ public interface ITracingStrategy {
 
         public float ComputeFrontWheelAngle();
 
-        public float ComputeFrontWheelVelocity();
+        public Vec2 ComputeFrontWheelVelocity();
 }

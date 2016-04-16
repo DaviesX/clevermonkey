@@ -60,7 +60,7 @@ public class StrategyOrthoVelo implements ITracingStrategy {
         }
 
         @Override
-        public float ComputeFrontWheelVelocity() {
+        public Vec2 ComputeFrontWheelVelocity() {
                 throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 }

@@ -92,7 +92,7 @@ public class SimulationContext {
         // Thread and tasks
         private Runner m_runner = null;
         private Thread m_runnerThr = null;
-        private final Mutex m_mutex = new Mutex();     // 使用非标准的Oracle API
+        private final Mutex m_mutex = new Mutex();     // 使用非标准的Oracle Proprietary API
 
         public void Start() {
                 if (m_runner == null) {
