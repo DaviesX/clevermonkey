@@ -28,7 +28,6 @@ class DrawRegion extends JPanel {
 
         @Override
         protected void paintComponent(Graphics g) {
-                System.out.println("Drawing");
                 if (m_batch == null) {
                         return;
                 }

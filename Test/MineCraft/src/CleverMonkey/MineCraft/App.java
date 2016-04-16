@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.FileDialog;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
@@ -21,6 +22,7 @@ import org.jbox2d.common.Vec2;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -40,7 +42,7 @@ public final class App {
         protected Vec2 m_mapImgOrigin = new Vec2();
         // 主窗口。
         private final JFrame m_mainFrame;
-        
+
         // 模拟数据上下文对象。
         private final SimulationContext m_simCtx;
         // 绘制区域的屏幕对象。
@@ -49,12 +51,11 @@ public final class App {
         private final float k_simDeltaT = 0.1f;
         // 跟踪策略。
         private ITracingStrategyFactory.Strategy m_strategy = ITracingStrategyFactory.Strategy.OrthoVelo;
-        
 
         private ITracingStrategy __GenerateStrategyFromAppState() {
                 return ITracingStrategyFactory.CreateStrategy(
-                                        ITracingStrategyFactory.Strategy.OrthoVelo,
-                                        m_simCtx.GetMap(), true, m_alphLabel, m_betaLabel, m_nullLabel);
+                        ITracingStrategyFactory.Strategy.OrthoVelo,
+                        m_simCtx.GetMap(), true, m_alphLabel, m_betaLabel, m_nullLabel);
         }
 
         public App() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
@@ -79,9 +80,9 @@ public final class App {
                         // 使用跨平台皮肤后备方案。
                         System.out.println("Not supported");
                         UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-                        
+
                 }
-                
+
                 // 创建主窗口UI。
                 m_mainFrame = new JFrame("CMMineCraft");
                 m_mainFrame.setLayout(new BorderLayout());
@@ -100,10 +101,10 @@ public final class App {
                 JMenu strategyMenu = new JMenu("Select Strategy");
                 JMenuItem strategyOrthoVeloMenuItem = new JMenuItem("OrthoVelo");
                 JMenuItem strategyCurveFittingMenuItem = new JMenuItem("Curve Fitting");
-                
+
                 JMenu benchmarkMenu = new JMenu("Benchmark");
                 JMenuItem loadDefaultBenchmarkMenuItem = new JMenuItem("Load default benchmark");
-                
+
                 mainMenuBar.add(fileMenu);
                 mainMenuBar.add(simulateMenu);
                 mainMenuBar.add(strategyMenu);
@@ -120,7 +121,7 @@ public final class App {
 
                 strategyMenu.add(strategyOrthoVeloMenuItem);
                 strategyMenu.add(strategyCurveFittingMenuItem);
-                
+
                 benchmarkMenu.add(loadDefaultBenchmarkMenuItem);
 
                 // 框架。
@@ -229,7 +230,13 @@ public final class App {
                         m_simCtx.BeginModification();
                         {
                                 m_strategy = ITracingStrategyFactory.Strategy.OrthoVelo;
-                                m_simCtx.GetCar().ChangeStrategy(__GenerateStrategyFromAppState());
+                                EntityCar car = m_simCtx.GetCar();
+                                if (car != null) {
+                                        car.ChangeStrategy(__GenerateStrategyFromAppState());
+                                } else {
+                                        JOptionPane.showMessageDialog(null, "Car have not been set, but strategy is applied", "CMonkey",
+                                                                      JOptionPane.INFORMATION_MESSAGE);
+                                }
                         }
                         m_simCtx.EndModification();
                 });
@@ -238,11 +245,17 @@ public final class App {
                         m_simCtx.BeginModification();
                         {
                                 m_strategy = ITracingStrategyFactory.Strategy.CurveFitting;
-                                m_simCtx.GetCar().ChangeStrategy(__GenerateStrategyFromAppState());
+                                EntityCar car = m_simCtx.GetCar();
+                                if (car != null) {
+                                        car.ChangeStrategy(__GenerateStrategyFromAppState());
+                                } else {
+                                        JOptionPane.showMessageDialog(null, "Car have not been set, but strategy is applied", "CMonkey",
+                                                                      JOptionPane.INFORMATION_MESSAGE);
+                                }
                         }
                         m_simCtx.EndModification();
                 });
-                
+
                 loadDefaultBenchmarkMenuItem.addActionListener((ActionEvent e) -> {
                         Map map = null;
                         try {
@@ -263,7 +276,7 @@ public final class App {
                 m_mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 m_mainFrame.pack();
                 m_mainFrame.setVisible(true);
-                
+
                 // 已经可以开始运行。
                 m_simCtx.Start();
 
