@@ -45,7 +45,7 @@ class DrawRegion extends JPanel {
 
         public void Draw(List<IDrawable> batch) {
                 m_batch = batch;
-                repaint();
+                __Present();
         }
 }
 
