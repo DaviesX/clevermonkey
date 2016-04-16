@@ -165,6 +165,7 @@ public class SimulationContext {
 
         public void SetMap(Map map) {
                 m_map = map;
+                m_sim.SetWorldScale(map.GetScale());
         }
 
         public Map GetMap() {

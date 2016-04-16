@@ -22,6 +22,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
+import org.jbox2d.common.Vec2;
 
 /**
  * 地图。
@@ -31,7 +32,7 @@ import javax.imageio.ImageIO;
 public class Map implements IDrawable {
 
         // 物理单位米(m)到物理像素的转换系数。
-        private final int k_mToPixelScale = 7000;
+        private final float k_mToPixelScale = 7000.0f;
 
         private BufferedImage m_mem;
 
@@ -51,12 +52,16 @@ public class Map implements IDrawable {
                 return m_mem;
         }
 
-        public int MapWidth() {
+        public float MapWidth() {
                 return m_mem.getWidth() / k_mToPixelScale;
         }
 
-        public int MapHeight() {
+        public float MapHeight() {
                 return m_mem.getHeight() / k_mToPixelScale;
+        }
+        
+        public Vec2 GetScale() {
+                return new Vec2(MapWidth(), MapHeight());
         }
 
         @Override

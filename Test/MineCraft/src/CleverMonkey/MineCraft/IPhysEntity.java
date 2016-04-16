@@ -17,8 +17,6 @@
  */
 package MineCraft.src.CleverMonkey.MineCraft;
 
-import org.jbox2d.dynamics.World;
-
 /**
  * 物理实体。
  *
@@ -26,9 +24,9 @@ import org.jbox2d.dynamics.World;
  */
 public interface IPhysEntity {
 
-        public void OnAdd(World world);
+        public void OnAdd(Simulation.Universe universe);
 
-        public void OnRemove(World world);
+        public void OnRemove(Simulation.Universe universe);
 
-        public void TimeEvolution(World world, float dt, Simulation.Clock t);
+        public void TimeEvolution(Simulation.Universe universe, float dt, Simulation.Clock t);
 }

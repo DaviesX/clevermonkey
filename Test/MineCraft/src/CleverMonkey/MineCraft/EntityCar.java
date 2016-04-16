@@ -176,6 +176,7 @@ public class EntityCar implements IPhysEntity, IDrawable {
         private final float k_carLength = 0.20f;
         private final float k_carWidth = 0.14f;
         private final float k_speed = 0.1f;
+        private Simulation.Universe m_universe;
 
         public EntityCar(Vec2 centroid, ITracingStrategy stg) {
                 m_strategy = stg;
@@ -195,15 +196,19 @@ public class EntityCar implements IPhysEntity, IDrawable {
         }
 
         @Override
-        public void OnAdd(World world) {
+        public void OnAdd(Simulation.Universe universe) {
+                // 暂时不参与到box2d的世界中。
+                m_universe = universe;
         }
 
         @Override
-        public void OnRemove(World world) {
+        public void OnRemove(Simulation.Universe universe) {
+                // 暂时不参与到box2d的世界中。
+                m_universe = null;
         }
 
         @Override
-        public void TimeEvolution(World world, float dt, Simulation.Clock t) {
+        public void TimeEvolution(Simulation.Universe universe, float dt, Simulation.Clock t) {
                 if (null == m_strategy) {
                         return;
                 }
