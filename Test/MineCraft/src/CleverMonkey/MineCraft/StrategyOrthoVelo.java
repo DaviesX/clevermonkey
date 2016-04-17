@@ -50,8 +50,7 @@ public class StrategyOrthoVelo implements ITracingStrategy {
         }
 
         @Override
-        public float TimeEvolution(Vec2 centroid, Vec2 centroidVelocity, float dt, Simulation.Clock t) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        public void TimeEvolution(Vec2 centroid, Vec2 centroidVelocity, float dt, Simulation.Clock t) {
         }
 
         @Override
@@ -61,6 +60,6 @@ public class StrategyOrthoVelo implements ITracingStrategy {
 
         @Override
         public Vec2 ComputeFrontWheelVelocity() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                return new Vec2(0.05f, 0.1f);
         }
 }

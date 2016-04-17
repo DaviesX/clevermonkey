@@ -61,8 +61,8 @@ public class LinearTransform {
         public static void Apply2Point(Mat33 t, Vec2 v, Vec2 out) {
                 // 优化缓存
                 float x0 = t.col1.x * v.x;
-                float y0 = t.col1.y * v.y;
-                float x1 = t.col2.x * v.x;
+                float y0 = t.col1.y * v.x;
+                float x1 = t.col2.x * v.y;
                 float y1 = t.col2.y * v.y;
                 float x2 = t.col3.x;
                 float y2 = t.col3.y;
@@ -85,8 +85,8 @@ public class LinearTransform {
         public static void Apply2Vector(Mat33 t, Vec2 v, Vec2 out) {
                 // 优化缓存
                 float x0 = t.col1.x * v.x;
-                float y0 = t.col1.y * v.y;
-                float x1 = t.col2.x * v.x;
+                float y0 = t.col1.y * v.x;
+                float x1 = t.col2.x * v.y;
                 float y1 = t.col2.y * v.y;
                 out.x = x0 + x1;
                 out.y = y0 + y1;

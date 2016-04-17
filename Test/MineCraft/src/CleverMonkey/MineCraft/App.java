@@ -294,7 +294,7 @@ public final class App {
                         m_simCtx.BeginModification();
                         {
                                 m_simCtx.SetMap(map);
-                                m_simCtx.SetCar(new EntityCar(new Vec2(0.05f, 0.05f), __GenerateStrategyFromAppState()));
+                                m_simCtx.SetCar(new EntityCar(new Vec2(0.2f, 0.1f), __GenerateStrategyFromAppState()));
                         }
                         m_simCtx.EndModification();
                 });

@@ -23,6 +23,11 @@ import org.jbox2d.common.Mat33;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.common.Vec3;
 
+/**
+ * 小车模拟辅助类。
+ * 
+ * @author davis
+ */
 class CarBody {
 
         private final float m_lhalf;
@@ -165,10 +170,10 @@ class CarBody {
                 // |x|   | 1 0 0 |^(-1) | vx*s vy*s tx*s | |x'|
                 // |y| = | 0 1 0 |      | ux*s uy*s ty*s | |y'|
                 // |1|   | 0 0 1 |      | 0    0    1    | |1 |
-                Mat33 SXTxR = new Mat33(new Vec3(v.x * scale.x, u.x * scale.x, 0.0f),
+                Mat33 SxTxR = new Mat33(new Vec3(v.x * scale.x, u.x * scale.x, 0.0f),
                                         new Vec3(v.y * scale.y, u.y * scale.y, 0.0f),
                                         new Vec3(carCentroid.x * scale.x, carCentroid.y * scale.y, 1.0f));
-                return new OBB(SXTxR, carCentroid, new Vec2(m_whalf, m_lhalf));
+                return new OBB(SxTxR, carCentroid, new Vec2(m_whalf, m_lhalf));
         }
 }
 
