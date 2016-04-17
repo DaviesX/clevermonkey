@@ -18,7 +18,6 @@
 package CleverMonkey.MineCraft;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 import org.jbox2d.common.Mat33;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.common.Vec3;
@@ -52,6 +51,7 @@ public class Sensor {
          *
          * @param T 从源图像到传感器的反变换。
          * @param src 源图像。
+         * @param toDownsample 是否执行降采样。
          */
         public void UpdateSensorFromSourceImage(Mat33 T, BufferedImage src, boolean toDownsample) {
                 // 线性变换T: X -> W (X, W ≅ RxR)
@@ -92,9 +92,6 @@ public class Sensor {
                                 m_downSampled.setRGB(x, y, (0XFF) | (lumin << 16) | (lumin << 8) | (lumin));
                         }
                 }
-        }
-        
-        public void SobelFilterSensorImage() {
         }
         
         public Screen GetScreen() {
