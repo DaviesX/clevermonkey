@@ -41,19 +41,20 @@ public class Simulation {
                         m_fromTheBigBang += dt;
                 }
         }
-        
+
         public class Universe {
+
                 private final World m_world = new World(new Vec2(0, 0), false);
                 private final Vec2 m_scale = new Vec2(1.0f, 1.0f);
-                
+
                 public void SetWorldScale(Vec2 scale) {
                         m_scale.set(scale);
                 }
-                
+
                 public World GetBox2dWorld() {
                         return m_world;
                 }
-                
+
                 public Vec2 GetWorldScale() {
                         return m_scale;
                 }
@@ -95,29 +96,29 @@ public class Simulation {
                 entity.OnRemove(m_universe);
                 m_entities.remove(entity);
         }
-        
+
         /**
          * 设置演变间隔。
-         * 
-         * @param dt 
+         *
+         * @param dt
          */
         public void SetDeltaT(float dt) {
                 m_dt = dt;
         }
-        
+
         /**
          * 设置世界大小。
-         * 
-         * @param scale 
+         *
+         * @param scale
          */
         public void SetWorldScale(Vec2 scale) {
                 m_universe.SetWorldScale(scale);
         }
-        
+
         /**
          * 进行演变。
-         * 
-         * @return 
+         *
+         * @return
          */
         public boolean TimeEvolution() {
                 m_entities.stream().forEach((entity) -> {

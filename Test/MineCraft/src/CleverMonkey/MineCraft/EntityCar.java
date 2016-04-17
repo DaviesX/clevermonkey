@@ -25,7 +25,7 @@ import org.jbox2d.common.Vec3;
 
 /**
  * 小车模拟辅助类。
- * 
+ *
  * @author davis
  */
 class CarBody {

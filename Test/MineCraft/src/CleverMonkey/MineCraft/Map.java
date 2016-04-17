@@ -59,7 +59,7 @@ public class Map implements IDrawable {
         public float MapHeight() {
                 return m_mem.getHeight() / k_mToPixelScale;
         }
-        
+
         public Vec2 GetScale() {
                 return new Vec2(MapWidth(), MapHeight());
         }

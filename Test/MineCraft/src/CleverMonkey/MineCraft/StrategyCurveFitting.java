@@ -22,17 +22,17 @@ import org.jbox2d.common.Vec2;
 
 /**
  * 曲线拟合策略。
- * 
+ *
  * @author davis
  */
 public class StrategyCurveFitting implements ITracingStrategy {
-        
+
         private final Map m_map;
         private final boolean m_is2Debug;
         private final JComponent m_alpha;
         private final JComponent m_beta;
         private final JComponent m_gamma;
-        
+
         /*
          * 应该由ITracingStrategyFactory来构造这个对象。
          */
@@ -43,7 +43,7 @@ public class StrategyCurveFitting implements ITracingStrategy {
                 m_beta = beta;
                 m_gamma = gamma;
         }
-        
+
         @Override
         public float ComputeFrontWheelAngularVelocity() {
                 throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

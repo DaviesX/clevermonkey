@@ -37,6 +37,7 @@ public class Sensor {
 
         /**
          * 从源图像更新传感器。
+         *
          * @param T 从传感器到源图像的反变换。
          * @param src 源图像。
          */
@@ -50,15 +51,15 @@ public class Sensor {
                                 X.y = y;
                                 LinearTransform.Apply2Point(T, X, W);
                                 int rgb = 0XFFFFFFFF;           // 超出源图像的默认为白色。
-                                if (W.x > 0.0f && W.x < src.getWidth() &&
-                                    W.y > 0.0f && W.y < src.getHeight()) {
+                                if (W.x > 0.0f && W.x < src.getWidth()
+                                    && W.y > 0.0f && W.y < src.getHeight()) {
                                         rgb = src.getRGB((int) W.x, (int) W.y);
                                 }
                                 m_mem.setRGB((int) X.x, (int) X.y, rgb);
                         }
                 }
         }
-        
+
         public static Mat33 GetInverseTransform(Vec2 t, float the) {
                 return null;
         }

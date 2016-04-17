@@ -416,14 +416,16 @@ public class Tracker {
                                         if (gapCounter < k_gapMax) {
                                                 ++gapCounter;
                                         } else // 过短的无效连通线则忽略并继续扫描。
-                                        if (pointCounter < k_trackWidthMin) {
-                                                // 清理变量为下一次判别准备。
-                                                pointX = 0;
-                                                pointCounter = 0;
-                                                gapCounter = 0;
-                                        } // 否则，退出搜索后处理数据。
-                                        else {
-                                                break;
+                                        {
+                                                if (pointCounter < k_trackWidthMin) {
+                                                        // 清理变量为下一次判别准备。
+                                                        pointX = 0;
+                                                        pointCounter = 0;
+                                                        gapCounter = 0;
+                                                } // 否则，退出搜索后处理数据。
+                                                else {
+                                                        break;
+                                                }
                                         }
                                 }
                         }

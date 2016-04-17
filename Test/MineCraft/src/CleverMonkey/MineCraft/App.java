@@ -61,7 +61,7 @@ public final class App {
         private final JLabel m_nullLabel = new JLabel("null");
         // 主窗口。
         private final JFrame m_mainFrame;
-        
+
         // 地图图片原点位置。
         protected Vec2 m_mapImgOrigin = new Vec2();
         // 模拟数据上下文对象。
@@ -99,7 +99,7 @@ public final class App {
                         }
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
                         // 使用跨平台皮肤后备方案。
-                        JOptionPane.showMessageDialog(null, "GTK+ or system theme are not supported. Applying fallback crossplatform theme", 
+                        JOptionPane.showMessageDialog(null, "GTK+ or system theme are not supported. Applying fallback crossplatform theme",
                                                       "CMonkey", JOptionPane.ERROR_MESSAGE);
                         UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 
@@ -245,9 +245,9 @@ public final class App {
                                         {
                                                 Map map = m_simCtx.GetMap();
                                                 if (map == null) {
-                                                        JOptionPane.showMessageDialog(null, 
-                                                                "You haven't loaded the map yet. Failed to set the car position.", 
-                                                                "CMonkey", JOptionPane.ERROR_MESSAGE);
+                                                        JOptionPane.showMessageDialog(null,
+                                                                                      "You haven't loaded the map yet. Failed to set the car position.",
+                                                                                      "CMonkey", JOptionPane.ERROR_MESSAGE);
                                                 } else {
                                                         Vec2 selected = new Vec2(e.getPoint().x, e.getPoint().y);
                                                         Vec2 position = LinearTransform.Apply2Point(
@@ -305,7 +305,7 @@ public final class App {
                                 map = new Map(new FileInputStream("Test/MineCraft/MapImg/未标题-1.jpg"));
                         } catch (IOException ex) {
                                 Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
-                                JOptionPane.showMessageDialog(null, "Benchmark map is not present in the directory. Stop proceeding.", 
+                                JOptionPane.showMessageDialog(null, "Benchmark map is not present in the directory. Stop proceeding.",
                                                               "CMonkey", JOptionPane.INFORMATION_MESSAGE);
                                 return;
                         }
@@ -340,7 +340,7 @@ public final class App {
                 try {
                         App app = new App();
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-                        JOptionPane.showMessageDialog(null, "App starts with failures. Program exiting.", 
+                        JOptionPane.showMessageDialog(null, "App starts with failures. Program exiting.",
                                                       "CMonkey", JOptionPane.ERROR_MESSAGE);
                         Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
                 }

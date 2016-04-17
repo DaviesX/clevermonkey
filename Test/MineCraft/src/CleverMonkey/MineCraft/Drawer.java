@@ -38,7 +38,7 @@ class DrawRegion extends JPanel {
                         }
                 });
         }
-        
+
         private void __Present() {
                 repaint();
         }
