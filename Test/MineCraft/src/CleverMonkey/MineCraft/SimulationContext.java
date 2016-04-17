@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package MineCraft.src.CleverMonkey.MineCraft;
+package CleverMonkey.MineCraft;
 
 import com.sun.corba.se.impl.orbutil.concurrent.Mutex;
 import java.util.ArrayList;

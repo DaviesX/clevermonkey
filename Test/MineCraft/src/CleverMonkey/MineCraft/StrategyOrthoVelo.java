@@ -15,15 +15,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package MineCraft.src.CleverMonkey.MineCraft;
+package CleverMonkey.MineCraft;
 
+import CleverMonkey.Tracker.Tracker;
 import javax.swing.JComponent;
 import org.jbox2d.common.Vec2;
 
 /**
  * 约束速度令其垂直于车轴。
  *
- * @author davis
+ * @author Sheldon, davis
  */
 public class StrategyOrthoVelo implements ITracingStrategy {
 
@@ -32,6 +33,7 @@ public class StrategyOrthoVelo implements ITracingStrategy {
         private final JComponent m_alpha;
         private final JComponent m_beta;
         private final JComponent m_gamma;
+        private final Tracker m_tracker = new Tracker();
 
         /*
          * 应该由ITracingStrategyFactory来构造这个对象。
