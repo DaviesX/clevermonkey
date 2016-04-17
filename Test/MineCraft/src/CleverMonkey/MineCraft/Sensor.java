@@ -20,6 +20,7 @@ package CleverMonkey.MineCraft;
 import java.awt.image.BufferedImage;
 import org.jbox2d.common.Mat33;
 import org.jbox2d.common.Vec2;
+import org.jbox2d.common.Vec3;
 
 /**
  * 虚拟传感器。
@@ -33,12 +34,14 @@ public class Sensor {
         // 图像传感器分辨率。
         private final int k_cameraWidth = 720;
         // 传感器图像
-        private BufferedImage m_mem = new BufferedImage(k_cameraWidth, k_cameraHeight, BufferedImage.TYPE_INT_ARGB);
+        private final BufferedImage m_mem = new BufferedImage(k_cameraWidth, k_cameraHeight, BufferedImage.TYPE_INT_ARGB);
+        // 传感器屏幕。
+        private final Screen m_screen = new Screen(k_cameraWidth, k_cameraHeight);
 
         /**
          * 从源图像更新传感器。
          *
-         * @param T 从传感器到源图像的反变换。
+         * @param T 从源图像到传感器的反变换。
          * @param src 源图像。
          */
         public void UpdateSensorFromSourceImage(Mat33 T, BufferedImage src) {
@@ -47,20 +50,32 @@ public class Sensor {
                 Vec2 W = new Vec2();
                 for (int y = 0; y < m_mem.getHeight(); ++y) {
                         for (int x = 0; x < m_mem.getWidth(); ++x) {
-                                X.x = x;
-                                X.y = y;
+                                X.x = x - m_mem.getWidth()/2;
+                                X.y = y - m_mem.getHeight()/2;
                                 LinearTransform.Apply2Point(T, X, W);
                                 int rgb = 0XFFFFFFFF;           // 超出源图像的默认为白色。
                                 if (W.x > 0.0f && W.x < src.getWidth()
                                     && W.y > 0.0f && W.y < src.getHeight()) {
                                         rgb = src.getRGB((int) W.x, (int) W.y);
                                 }
-                                m_mem.setRGB((int) X.x, (int) X.y, rgb);
+                                m_mem.setRGB(x, y, rgb);
                         }
                 }
         }
+        
+        public Screen GetScreen() {
+                return m_screen;
+        }
+        
+        public BufferedImage GetInternalImageRef() {
+                return m_mem;
+        }
 
-        public static Mat33 GetInverseTransform(Vec2 t, float the) {
-                return null;
+        public static Mat33 GetInverseTransform(Vec2 center, Vec2 dir) {
+                // 基底变换 R' = {<vx, vy>, <ux, uy>} -> R = {<1, 0>, <0, 1>}
+                // <vx, vy>.<ux, uy> = 0
+                return new Mat33(new Vec3(dir.y, dir.x, 0.0f),
+                                 new Vec3(-dir.x, dir.y, 0.0f),
+                                 new Vec3(center.x, center.y, 1.0f));
         }
 }

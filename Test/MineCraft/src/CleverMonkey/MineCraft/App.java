@@ -76,7 +76,7 @@ public final class App {
         private ITracingStrategy __GenerateStrategyFromAppState() {
                 return ITracingStrategyFactory.CreateStrategy(
                         ITracingStrategyFactory.Strategy.OrthoVelo,
-                        m_simCtx.GetMap(), true, m_alphLabel, m_betaLabel, m_nullLabel);
+                        m_simCtx.GetMap(), true, m_alphLabel, m_betaLabel, m_cameraLabel);
         }
 
         public App() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {

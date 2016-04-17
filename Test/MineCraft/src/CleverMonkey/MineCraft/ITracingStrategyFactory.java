@@ -17,7 +17,6 @@
  */
 package CleverMonkey.MineCraft;
 
-import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
 
 /**
@@ -30,12 +29,12 @@ public class ITracingStrategyFactory {
                 CurveFitting
         }
 
-        static ITracingStrategy CreateStrategy(Strategy type, Map map, boolean is2Debug, JComponent alpha, JComponent beta, JComponent gamma) {
+        static ITracingStrategy CreateStrategy(Strategy type, Map map, boolean is2Debug, JComponent alpha, JComponent beta, JComponent camera) {
                 switch (type) {
                         case OrthoVelo:
-                                return new StrategyOrthoVelo(map, is2Debug, alpha, beta, gamma);
+                                return new StrategyOrthoVelo(map, is2Debug, alpha, beta, camera);
                         case CurveFitting:
-                                return new StrategyCurveFitting(map, is2Debug, alpha, beta, gamma);
+                                return new StrategyCurveFitting(map, is2Debug, alpha, beta, camera);
                         default:
                                 return null;
                 }

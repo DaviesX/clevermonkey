@@ -225,7 +225,7 @@ public class EntityCar implements IPhysEntity, IDrawable {
                 if (null == m_strategy) {
                         return;
                 }
-                m_strategy.TimeEvolution(m_carBody.GetCentroidPosition(), m_carBody.GetDirection().mul(k_speed), dt, t);
+                m_strategy.TimeEvolution(m_carBody.GetCentroidPosition(), m_carBody.GetDirection().mul(k_speed), dt, t, universe);
                 Vec2 v = m_strategy.ComputeFrontWheelVelocity();
                 m_carBody.ClosedFormSolver(v, dt);
         }

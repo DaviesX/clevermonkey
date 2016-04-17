@@ -97,7 +97,7 @@ public class LinearTransform {
          */
         public static Vec2 Apply2Vector(Mat33 t, Vec2 v) {
                 Vec2 out = new Vec2();
-                Apply2Point(t, v, out);
+                Apply2Vector(t, v, out);
                 return out;
         }
 }

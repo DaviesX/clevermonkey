@@ -50,7 +50,8 @@ public class StrategyCurveFitting implements ITracingStrategy {
         }
 
         @Override
-        public void TimeEvolution(Vec2 centroid, Vec2 centroidVelocity, float dt, Simulation.Clock t) {
+        public void TimeEvolution(Vec2 centroid, Vec2 centroidVelocity, float dt, 
+                                    Simulation.Clock t, Simulation.Universe universe) {
                 throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 

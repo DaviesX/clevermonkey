@@ -18,7 +18,9 @@
 package CleverMonkey.MineCraft;
 
 import CleverMonkey.Tracker.Tracker;
+import java.awt.Graphics;
 import javax.swing.JComponent;
+import org.jbox2d.common.Mat33;
 import org.jbox2d.common.Vec2;
 
 /**
@@ -30,20 +32,27 @@ public class StrategyOrthoVelo implements ITracingStrategy {
 
         private final Map m_map;
         private final boolean m_is2Debug;
-        private final JComponent m_alpha;
-        private final JComponent m_beta;
-        private final JComponent m_gamma;
+        private final Graphics m_gAlpha;
+        private final Graphics m_gBeta;
+        private final Graphics m_gCamera;
+        private final JComponent m_compAlpha;
+        private final JComponent m_compBeta;
+        private final JComponent m_compCamera;
         private final Tracker m_tracker = new Tracker();
+        private final Sensor m_sensor = new Sensor();
 
         /*
          * 应该由ITracingStrategyFactory来构造这个对象。
          */
-        public StrategyOrthoVelo(Map map, boolean is2Debug, JComponent alpha, JComponent beta, JComponent gamma) {
+        public StrategyOrthoVelo(Map map, boolean is2Debug, JComponent alpha, JComponent beta, JComponent camera) {
                 m_map = map;
                 m_is2Debug = is2Debug;
-                m_alpha = alpha;
-                m_beta = beta;
-                m_gamma = gamma;
+                m_gAlpha = alpha != null ? alpha.getGraphics() : null;
+                m_gBeta = beta != null ? beta.getGraphics() : null;
+                m_gCamera = camera != null ? camera.getGraphics() : null;
+                m_compAlpha = alpha;
+                m_compBeta = beta;
+                m_compCamera = camera;
         }
 
         @Override
@@ -52,7 +61,25 @@ public class StrategyOrthoVelo implements ITracingStrategy {
         }
 
         @Override
-        public void TimeEvolution(Vec2 centroid, Vec2 centroidVelocity, float dt, Simulation.Clock t) {
+        public void TimeEvolution(Vec2 centroid, Vec2 frontVelocity, float dt, 
+                                    Simulation.Clock t, Simulation.Universe universe) {
+
+                Screen screen = new Screen(m_map.GetInternalImageRef().getWidth(), m_map.GetInternalImageRef().getHeight());
+                Mat33 screenTrans = screen.FromEuclidSpace(new Vec2(0.0f, 0.0f), universe.GetWorldScale());
+                Vec2 center = LinearTransform.Apply2Point(screenTrans, centroid);
+                Vec2 dir = frontVelocity.clone();
+                dir.normalize();
+                
+                m_sensor.UpdateSensorFromSourceImage(Sensor.GetInverseTransform(center, dir), m_map.GetInternalImageRef());
+                Tracker.ResultType result = m_tracker.AnalyseImg(m_sensor.GetInternalImageRef());
+                if (m_is2Debug) {
+                        m_gAlpha.drawImage(m_tracker.GetAlphaPatternImg(true),
+                                0, 0, m_compAlpha.getWidth(), m_compAlpha.getHeight(), null);
+                        m_gBeta.drawImage(m_tracker.GetBetaPatternImg(true),
+                                0, 0, m_compBeta.getWidth(), m_compBeta.getHeight(), null);
+                        m_gCamera.drawImage(m_sensor.GetInternalImageRef(),
+                                0, 0, m_compCamera.getWidth(), m_compCamera.getHeight(), null);
+                }
         }
 
         @Override
