@@ -49,7 +49,7 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public final class App {
 
-        // 显示地图的JLable。
+        // 显示地图的JPanel。
         private final JPanel m_drawRegionPanel = new JPanel();
         // 显示Camera的JLable。
         private final JLabel m_cameraLabel = new JLabel("Camera");
@@ -69,7 +69,7 @@ public final class App {
         // 绘制区域的屏幕对象。
         private final Screen m_drawRegionScreen = new Screen(0, 0);
         // 模拟器演变速度。
-        private final float k_simDeltaT = 0.1f;
+        private final float k_simDeltaT = 0.05f;
         // 跟踪策略。
         private ITracingStrategyFactory.Strategy m_strategy = ITracingStrategyFactory.Strategy.OrthoVelo;
 

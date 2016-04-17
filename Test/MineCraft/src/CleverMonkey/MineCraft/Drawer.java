@@ -17,37 +17,8 @@
  */
 package CleverMonkey.MineCraft;
 
-import java.awt.Graphics;
 import java.util.List;
 import javax.swing.JComponent;
-import javax.swing.JPanel;
-
-class DrawRegion extends JPanel {
-
-        private List<IDrawable> m_batch = null;
-
-        @Override
-        protected void paintComponent(Graphics g) {
-                if (m_batch == null) {
-                        return;
-                }
-                super.paintComponent(g);
-                m_batch.stream().forEach((drawable) -> {
-                        if (drawable != null) {
-                                drawable.Draw(g, super.getWidth(), super.getHeight());
-                        }
-                });
-        }
-
-        private void __Present() {
-                repaint();
-        }
-
-        public void Draw(List<IDrawable> batch) {
-                m_batch = batch;
-                __Present();
-        }
-}
 
 /**
  * 绘制。
@@ -56,20 +27,24 @@ class DrawRegion extends JPanel {
  */
 public class Drawer {
 
-        DrawRegion m_target = new DrawRegion();
+        JComponent m_compTarget;
 
         public Drawer() {
         }
 
         public Drawer(JComponent target) {
-                target.add(m_target);
+                m_compTarget = target;
         }
 
         public void SetDrawingTarget(JComponent target) {
-                target.add(m_target);
+                m_compTarget = target;
         }
 
         public void Draw(List<IDrawable> batch) {
-                m_target.Draw(batch);
+                batch.stream().forEach((drawable) -> {
+                        if (drawable != null) {
+                                drawable.Draw(m_compTarget.getGraphics(), m_compTarget.getWidth(), m_compTarget.getHeight());
+                        }
+                });
         }
 }
