@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 davis
+ * Copyright (C) 2016 Sheldon, davis
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,7 +24,7 @@ import org.jbox2d.common.Vec2;
 /**
  * 虚拟传感器。
  *
- * @author davis
+ * @author Sheldon, davis
  */
 public class Sensor {
 
