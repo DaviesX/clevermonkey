@@ -125,6 +125,7 @@ public class Simulation {
                         entity.TimeEvolution(m_universe, m_dt, m_clock);
                 });
                 m_universe.TimeEvolution(m_dt);
+                m_clock.TimeEvolution(m_dt);
                 return true;
         }
 }
