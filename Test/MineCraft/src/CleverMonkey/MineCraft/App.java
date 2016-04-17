@@ -50,7 +50,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 public final class App {
 
         // 显示地图的JLable。
-        private final JLabel m_drawRegionLabel = new JLabel("", JLabel.CENTER);
+        private final JPanel m_drawRegionPanel = new JPanel();
         // 显示Camera的JLable。
         private final JLabel m_cameraLabel = new JLabel("Camera");
         // 显示Alpha图的JLable。
@@ -148,7 +148,6 @@ public final class App {
 
                 // 框架。
                 JPanel mainPanel = new JPanel();
-                JPanel leftPanel = new JPanel();
                 JPanel rightPanel = new JPanel();
                 JPanel rightPanel1 = new JPanel();
                 JPanel rightPanel2 = new JPanel();
@@ -156,27 +155,26 @@ public final class App {
                 JPanel rightPanel4 = new JPanel();
 
                 mainPanel.setLayout(new GridLayout(1, 2));
-                leftPanel.setLayout(new BorderLayout());
+                m_drawRegionPanel.setLayout(new BorderLayout());
                 rightPanel.setLayout(new GridLayout(2, 2));
                 // 使用borderLayout以居中JLabel显示图片。
                 rightPanel1.setLayout(new BorderLayout());
                 rightPanel2.setLayout(new BorderLayout());
                 rightPanel3.setLayout(new BorderLayout());
                 rightPanel4.setLayout(new BorderLayout());
-                mainPanel.add(leftPanel);
+                mainPanel.add(m_drawRegionPanel);
                 mainPanel.add(rightPanel);
                 rightPanel.add(rightPanel1);
                 rightPanel.add(rightPanel2);
                 rightPanel.add(rightPanel3);
                 rightPanel.add(rightPanel4);
-                leftPanel.add(m_drawRegionLabel);
                 rightPanel1.add(m_cameraLabel, BorderLayout.CENTER);
                 rightPanel2.add(m_alphLabel);
                 rightPanel3.add(m_betaLabel);
                 rightPanel4.add(m_nullLabel);
 
                 // 设置事件。
-                m_drawRegionLabel.addComponentListener(new ComponentListener() {
+                m_drawRegionPanel.addComponentListener(new ComponentListener() {
                         @Override
                         public void componentResized(ComponentEvent e) {
                                 m_drawRegionScreen.Resize(e.getComponent().getWidth(), e.getComponent().getHeight());
@@ -224,7 +222,7 @@ public final class App {
                 });
 
                 simulateSetCarMenuItem.addActionListener((ActionEvent arg0) -> {
-                        leftPanel.addMouseListener(new MouseListener() {
+                        m_drawRegionPanel.addMouseListener(new MouseListener() {
                                 @Override
                                 public void mouseReleased(MouseEvent arg0) {
                                 }
@@ -332,7 +330,7 @@ public final class App {
                 // 设置模拟数据上下文。
                 m_simCtx.BeginModification();
                 {
-                        m_simCtx.GetDrawer().SetDrawingTarget(leftPanel);
+                        m_simCtx.GetDrawer().SetDrawingTarget(m_drawRegionPanel);
                         m_simCtx.GetSimulation().SetDeltaT(k_simDeltaT);
                 }
                 m_simCtx.EndModification();
