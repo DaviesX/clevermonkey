@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 class Runner implements Runnable {
 
         // 模拟帧间隔时间（毫秒）。
-        private final int k_frameTime = 50;
+        private final int k_frameTime = 120;
         // 模拟数据上下文。
         private final SimulationContext m_ctx;
         // 运行状态。

@@ -18,6 +18,7 @@
 package CleverMonkey.MineCraft;
 
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,19 +34,26 @@ public class Map implements IDrawable {
 
         // 物理单位米(m)到物理像素的转换系数。
         private final float k_mToPixelScale = 7000.0f;
+        
+        private final int k_scaleWidth = 512;
+        private final int k_scaleHeight = 512;
 
         private BufferedImage m_mem;
+        private Image m_scaled;
 
         public Map(BufferedImage img) {
                 m_mem = img;
+                m_scaled = img.getScaledInstance(k_scaleWidth, k_scaleHeight, Image.SCALE_AREA_AVERAGING);
         }
 
         public Map(int w, int h) {
                 m_mem = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+                m_scaled = m_mem.getScaledInstance(k_scaleWidth, k_scaleHeight, Image.SCALE_AREA_AVERAGING);
         }
 
         public Map(InputStream imgFile) throws IOException {
                 m_mem = ImageIO.read(imgFile);
+                m_scaled = m_mem.getScaledInstance(k_scaleWidth, k_scaleHeight, Image.SCALE_AREA_AVERAGING);
         }
 
         public BufferedImage GetInternalImageRef() {
@@ -66,6 +74,6 @@ public class Map implements IDrawable {
 
         @Override
         public void Draw(Graphics g, int width, int height) {
-                g.drawImage(m_mem, 0, 0, width, height, null);
+                g.drawImage(m_scaled, 0, 0, width, height, null);
         }
 }

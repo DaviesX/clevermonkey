@@ -71,12 +71,11 @@ public final class App {
         // 模拟器演变速度。
         private final float k_simDeltaT = 0.05f;
         // 跟踪策略。
-        private ITracingStrategyFactory.Strategy m_strategy = ITracingStrategyFactory.Strategy.OrthoVelo;
+        private ITracingStrategyFactory.Strategy m_strategy = ITracingStrategyFactory.Strategy.CurveFitting;
 
         private ITracingStrategy __GenerateStrategyFromAppState() {
                 return ITracingStrategyFactory.CreateStrategy(
-                        ITracingStrategyFactory.Strategy.OrthoVelo,
-                        m_simCtx.GetMap(), true, m_alphLabel, m_betaLabel, m_cameraLabel);
+                        m_strategy, m_simCtx.GetMap(), true, m_alphLabel, m_betaLabel, m_cameraLabel);
         }
 
         public App() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {

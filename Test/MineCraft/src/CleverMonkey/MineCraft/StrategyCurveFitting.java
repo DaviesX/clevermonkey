@@ -18,6 +18,7 @@
 package CleverMonkey.MineCraft;
 
 import javax.swing.JComponent;
+import org.jbox2d.common.Mat33;
 import org.jbox2d.common.Vec2;
 
 /**
@@ -32,6 +33,7 @@ public class StrategyCurveFitting implements ITracingStrategy {
         private final JComponent m_alpha;
         private final JComponent m_beta;
         private final JComponent m_gamma;
+        private final Sensor m_sensor = new Sensor();
 
         /*
          * 应该由ITracingStrategyFactory来构造这个对象。
@@ -50,9 +52,21 @@ public class StrategyCurveFitting implements ITracingStrategy {
         }
 
         @Override
-        public void TimeEvolution(Vec2 centroid, Vec2 centroidVelocity, float dt, 
+        public void TimeEvolution(Vec2 centroid, Vec2 frontVelocity, float dt, 
                                     Simulation.Clock t, Simulation.Universe universe) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                Screen screen = new Screen(m_map.GetInternalImageRef().getWidth(), m_map.GetInternalImageRef().getHeight());
+                Mat33 screenTrans = screen.FromEuclidSpace(new Vec2(0.0f, 0.0f), universe.GetWorldScale());
+                Vec2 center = LinearTransform.Apply2Point(screenTrans, centroid);
+                Vec2 dir = frontVelocity.clone();
+                dir.normalize();
+                
+                m_sensor.UpdateSensorFromSourceImage(Sensor.GetInverseTransform(center, dir), m_map.GetInternalImageRef(), true);
+                if (m_is2Debug) {
+                        m_gamma.getGraphics().drawImage(m_sensor.GetInternalImageRef(),
+                                0, 0, m_gamma.getWidth(), m_gamma.getHeight(), null);
+                        m_alpha.getGraphics().drawImage(m_sensor.GetInternalDownsampledRef(), 
+                                                        0, 0, m_alpha.getWidth(), m_alpha.getHeight(), null);
+                }
         }
 
         @Override
@@ -62,7 +76,7 @@ public class StrategyCurveFitting implements ITracingStrategy {
 
         @Override
         public Vec2 ComputeFrontWheelVelocity() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                return new Vec2(0.0f, 0.1f);
         }
 
 }

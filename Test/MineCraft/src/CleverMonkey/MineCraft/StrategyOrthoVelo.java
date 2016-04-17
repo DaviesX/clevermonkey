@@ -70,7 +70,7 @@ public class StrategyOrthoVelo implements ITracingStrategy {
                 Vec2 dir = frontVelocity.clone();
                 dir.normalize();
                 
-                m_sensor.UpdateSensorFromSourceImage(Sensor.GetInverseTransform(center, dir), m_map.GetInternalImageRef());
+                m_sensor.UpdateSensorFromSourceImage(Sensor.GetInverseTransform(center, dir), m_map.GetInternalImageRef(), false);
                 Tracker.ResultType result = m_tracker.AnalyseImg(m_sensor.GetInternalImageRef());
                 if (m_is2Debug) {
                         m_gAlpha.drawImage(m_tracker.GetAlphaPatternImg(true),

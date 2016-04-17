@@ -18,6 +18,7 @@
 package CleverMonkey.MineCraft;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import org.jbox2d.common.Mat33;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.common.Vec3;
@@ -33,8 +34,16 @@ public class Sensor {
         private final int k_cameraHeight = 1280;
         // 图像传感器分辨率。
         private final int k_cameraWidth = 720;
-        // 传感器图像
+        // 256倍降采样图像宽度。
+        private final int k_downWidth = 45;
+        // 256倍降采样图像高度。
+        private final int k_downHeight = 80;
+        // 传感器图像。
         private final BufferedImage m_mem = new BufferedImage(k_cameraWidth, k_cameraHeight, BufferedImage.TYPE_INT_ARGB);
+        // 降采样亮度图(luminance)图像。
+        private final BufferedImage m_downSampled = new BufferedImage(
+                        k_downWidth, k_downHeight, BufferedImage.TYPE_BYTE_GRAY);
+        // 
         // 传感器屏幕。
         private final Screen m_screen = new Screen(k_cameraWidth, k_cameraHeight);
 
@@ -44,14 +53,14 @@ public class Sensor {
          * @param T 从源图像到传感器的反变换。
          * @param src 源图像。
          */
-        public void UpdateSensorFromSourceImage(Mat33 T, BufferedImage src) {
+        public void UpdateSensorFromSourceImage(Mat33 T, BufferedImage src, boolean toDownsample) {
                 // 线性变换T: X -> W (X, W ≅ RxR)
                 Vec2 X = new Vec2();
                 Vec2 W = new Vec2();
-                for (int y = 0; y < m_mem.getHeight(); ++y) {
-                        for (int x = 0; x < m_mem.getWidth(); ++x) {
-                                X.x = x - m_mem.getWidth()/2;
-                                X.y = y - m_mem.getHeight()/2;
+                for (int y = 0; y < k_cameraHeight; ++y) {
+                        for (int x = 0; x < k_cameraWidth; ++x) {
+                                X.x = x - (k_cameraWidth >>> 1);
+                                X.y = y - (k_cameraHeight >>> 1);
                                 LinearTransform.Apply2Point(T, X, W);
                                 int rgb = 0XFFFFFFFF;           // 超出源图像的默认为白色。
                                 if (W.x > 0.0f && W.x < src.getWidth()
@@ -61,6 +70,31 @@ public class Sensor {
                                 m_mem.setRGB(x, y, rgb);
                         }
                 }
+                if (toDownsample) {
+                        __DownSampleSensorImage();
+                }
+        }
+        
+        private void __DownSampleSensorImage() {
+                for (int y = 0; y < k_downHeight; ++y) {
+                        for (int x = 0; x < k_downWidth; ++x) {
+                                int rr = 0, rg = 0, rb = 0;     // 辐射亮度。
+                                int vsum = 0;
+                                for (int j = 0; j < 16; j ++) {
+                                        for (int i = 0; i < 16; i ++) {
+                                                int v = m_mem.getRGB((x << 4) + i, (y << 4) + j);
+                                                rr += (v >>> 16) & 0XFF;
+                                                rg += (v >>> 8) & 0XFF;
+                                                rb += v & 0XFF;
+                                        }
+                                }
+                                int lumin = (int) (0.299*rr/256 + 0.587*rg/256 + 0.114*rb/256);    // 流明。
+                                m_downSampled.setRGB(x, y, (0XFF) | (lumin << 16) | (lumin << 8) | (lumin));
+                        }
+                }
+        }
+        
+        public void SobelFilterSensorImage() {
         }
         
         public Screen GetScreen() {
@@ -69,6 +103,10 @@ public class Sensor {
         
         public BufferedImage GetInternalImageRef() {
                 return m_mem;
+        }
+        
+        public BufferedImage GetInternalDownsampledRef() {
+                return m_downSampled;
         }
 
         public static Mat33 GetInverseTransform(Vec2 center, Vec2 dir) {
