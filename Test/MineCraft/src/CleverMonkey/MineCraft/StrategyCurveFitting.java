@@ -34,6 +34,7 @@ public class StrategyCurveFitting implements ITracingStrategy {
         private final JComponent m_beta;
         private final JComponent m_gamma;
         private final Sensor m_sensor = new Sensor();
+        private final PathVectorizer m_pathVec = new PathVectorizer(m_sensor.GetInternalDownsampledRef());
 
         /*
          * 应该由ITracingStrategyFactory来构造这个对象。
@@ -66,6 +67,11 @@ public class StrategyCurveFitting implements ITracingStrategy {
                                 0, 0, m_gamma.getWidth(), m_gamma.getHeight(), null);
                         m_alpha.getGraphics().drawImage(m_sensor.GetInternalDownsampledRef(), 
                                                         0, 0, m_alpha.getWidth(), m_alpha.getHeight(), null);
+                        m_pathVec.Vectorize2BrokenLines(10);
+                        m_beta.getGraphics().drawImage(m_pathVec.GetInternalGradientMap(), 
+                                                        0, 0, m_beta.getWidth(), m_beta.getHeight(), null);
+//                        m_beta.getGraphics().drawImage(m_pathVec.GetInternalLowPass(), 
+//                                                        0, 0, m_beta.getWidth(), m_beta.getHeight(), null);
                 }
         }
 

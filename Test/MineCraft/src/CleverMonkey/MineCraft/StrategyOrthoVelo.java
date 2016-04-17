@@ -89,6 +89,6 @@ public class StrategyOrthoVelo implements ITracingStrategy {
 
         @Override
         public Vec2 ComputeFrontWheelVelocity() {
-                return new Vec2(0.05f, 0.1f);
+                return new Vec2(0.0f, 0.1f);
         }
 }
