@@ -83,12 +83,12 @@ public class Sensor {
                                 for (int j = 0; j < 16; j ++) {
                                         for (int i = 0; i < 16; i ++) {
                                                 int v = m_mem.getRGB((x << 4) + i, (y << 4) + j);
-                                                rr += (v >>> 16) & 0XFF;
-                                                rg += (v >>> 8) & 0XFF;
-                                                rb += v & 0XFF;
+                                                rr += v & 0X00FF0000;
+                                                rg += v & 0X0000FF00;
+                                                rb += v & 0X000000FF;
                                         }
                                 }
-                                int lumin = (int) (0.299*rr/256 + 0.587*rg/256 + 0.114*rb/256);    // 流明。
+                                int lumin = (int) (0.299*(rr >>> 16)/256 + 0.587*(rg >>> 8)/256 + 0.114*rb/256);    // 流明。
                                 m_downSampled.setRGB(x, y, (0XFF) | (lumin << 16) | (lumin << 8) | (lumin));
                         }
                 }
