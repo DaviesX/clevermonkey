@@ -41,6 +41,21 @@ public class PathVectorizer {
         private final int m_kernelSize = m_radius*2 + 1;
         // 高斯核心。
         private final float[][] m_G = new float [m_kernelSize][m_kernelSize];
+        // Sobel核心。
+        private final float[][] m_Sx = {
+                {1.0f, 2.0f, 0.0f,  -2.0f, -1.0f},
+                {4.0f, 8.0f, 0.0f,  -8.0f, -4.0f},
+                {6.0f, 12.0f, 0.0f, -12.0f, -6.0f},
+                {4.0f, 8.0f, 0.0f,  -8.0f, -4.0f},
+                {1.0f, 2.0f, 0.0f,  -2.0f, -1.0f}
+        };
+        private final float[][] m_Sy = {
+                {1.0f, 4.0f, 6.0f, 4.0f, 1.0f},
+                {2.0f, 8.0f, 12.0f, 8.0f, 2.0f},
+                {0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+                {-2.0f, -8.0f, -12.0f, -8.0f, -2.0f},
+                {-1.0f, -4.0f, -6.0f, -4.0f, -1.0f}
+        };
         // 信号函数。
         private final int[][] m_Fxy = new int [m_kernelSize][m_kernelSize];
         
@@ -121,6 +136,18 @@ public class PathVectorizer {
                                                     (m_Fxy[2][0] + 2*m_Fxy[2][1] + m_Fxy[2][2])) + 
                                            Math.abs((m_Fxy[0][2] + 2*m_Fxy[1][2] + m_Fxy[2][2]) - 
                                                     (m_Fxy[0][0] + 2*m_Fxy[1][0] + m_Fxy[2][0]));
+//                                float gradX = 0.0f, gradY = 0.0f;
+//                                for (int j = 0; j < m_kernelSize; j ++) {
+//                                        for (int i = 0; i < m_kernelSize; i ++) {
+//                                                gradX += m_Sx[j][i]*m_Fxy[j][i];
+//                                        }
+//                                }
+//                                for (int j = 0; j < m_kernelSize; j ++) {
+//                                        for (int i = 0; i < m_kernelSize; i ++) {
+//                                                gradY += m_Sy[j][i]*m_Fxy[j][i];
+//                                        }
+//                                }
+//                                int grad = (int) (Math.abs(gradX) + Math.abs(gradY));
                                 grads.setRGB(x, y, grad > threshold ? 0XFFFFFFFF : 0X0);
                         }
                 }
@@ -136,7 +163,7 @@ public class PathVectorizer {
         
         public BrokenLines Vectorize2BrokenLines(int edgeWidth) {
                 __BilateralLowPassFilter(m_rasterImg, m_lowPass);
-                __ComputeGradients(m_lowPass, m_gradientMap, 180);
+                __ComputeGradients(m_lowPass, m_gradientMap, 256);
                 return null;
         }
 }
