@@ -36,7 +36,7 @@ public class PathVectorizer {
         // 标准差。
         private final float m_sigma = 5.0f;
         // 采样半径。
-        private final int m_radius = 2;
+        private final int m_radius = 1;
         // 核心大小。
         private final int m_kernelSize = m_radius*2 + 1;
         // 高斯核心。
@@ -136,7 +136,7 @@ public class PathVectorizer {
         
         public BrokenLines Vectorize2BrokenLines(int edgeWidth) {
                 __BilateralLowPassFilter(m_rasterImg, m_lowPass);
-                __ComputeGradients(m_lowPass, m_gradientMap, 128);
+                __ComputeGradients(m_lowPass, m_gradientMap, 180);
                 return null;
         }
 }

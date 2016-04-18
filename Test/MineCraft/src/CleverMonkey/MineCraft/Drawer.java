@@ -17,8 +17,37 @@
  */
 package CleverMonkey.MineCraft;
 
+import java.awt.Graphics;
 import java.util.List;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
+
+/**
+ * 绘制区域，被动让swing安排绘制任务，以防影响其他JComponents。
+ * 
+ * @author davis
+ */
+class DrawRegion extends JPanel {
+
+        private List<IDrawable> m_batch = null;
+
+        @Override
+        protected void paintComponent(Graphics g) {
+                if (m_batch == null) {
+                        return;
+                }
+                super.paintComponent(g);
+                m_batch.stream().forEach((drawable) -> {
+                        if (drawable != null)
+                                drawable.Draw(g, super.getWidth(), super.getHeight());
+                });
+        }
+
+        public void Draw(List<IDrawable> batch) {
+                m_batch = batch;
+                repaint();
+        }
+}
 
 /**
  * 绘制。
@@ -27,24 +56,20 @@ import javax.swing.JComponent;
  */
 public class Drawer {
 
-        JComponent m_compTarget;
+        private final DrawRegion m_compTarget = new DrawRegion();
 
         public Drawer() {
         }
 
         public Drawer(JComponent target) {
-                m_compTarget = target;
+                target.add(m_compTarget);
         }
 
         public void SetDrawingTarget(JComponent target) {
-                m_compTarget = target;
+                target.add(m_compTarget);
         }
 
         public void Draw(List<IDrawable> batch) {
-                batch.stream().forEach((drawable) -> {
-                        if (drawable != null) {
-                                drawable.Draw(m_compTarget.getGraphics(), m_compTarget.getWidth(), m_compTarget.getHeight());
-                        }
-                });
+                m_compTarget.Draw(batch);
         }
 }
