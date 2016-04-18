@@ -18,6 +18,7 @@
 package CleverMonkey.MineCraft;
 
 import java.awt.image.BufferedImage;
+import org.jbox2d.common.Vec2;
 
 /**
  * 矢量化路径。
@@ -161,9 +162,57 @@ public class PathVectorizer {
                 return m_lowPass;
         }
         
-        public BrokenLines Vectorize2BrokenLines(int edgeWidth) {
+        public void PreprocessRasterImage() {
                 __BilateralLowPassFilter(m_rasterImg, m_lowPass);
                 __ComputeGradients(m_lowPass, m_gradientMap, 256);
-                return null;
+        }
+        
+        public Vec2 PredictTangent() {
+                float factor = 1.0f/16.0f;
+                int dist = (int) (factor*m_gradientMap.getHeight());
+                Vec2 st = new Vec2(), s0 = new Vec2(), ds = new Vec2(m_gradientMap.getWidth()/2, 0.0f);
+                int s = 0;
+                OUTTER_ST:
+                for (int j = 0; j < m_gradientMap.getHeight(); j ++) {
+                        for (int i = 0; i < m_gradientMap.getWidth(); i ++) {
+                                int v = m_gradientMap.getRGB(i, j) & 0XFF;
+                                if (v != 0X0) {
+                                        int lx = i, rx = i;
+                                        for (i = m_gradientMap.getWidth() - 1; i >= 0; i --) {
+                                                v = m_gradientMap.getRGB(i, j) & 0XFF;
+                                                if (v != 0X0) {
+                                                        rx = i;
+                                                        break;
+                                                }
+                                        }
+                                        st.set((lx + rx)/2, j);
+                                        ds.set(factor*(st.x - ds.x), j);
+                                        s = j;
+                                        break OUTTER_ST;
+                                } 
+                        }
+                }
+                OUTTER_S0:
+                for (int j = Math.min(s + dist, m_gradientMap.getHeight() - 1); j < m_gradientMap.getHeight(); j ++) {
+                        for (int i = 0; i < m_gradientMap.getWidth(); i ++) {
+                                int v = m_gradientMap.getRGB(i, j) & 0XFF;
+                                if (v != 0X0) {
+                                        int lx = i, rx = i;
+                                        for (i = m_gradientMap.getWidth() - 1; i >= 0; i --) {
+                                                v = m_gradientMap.getRGB(i, j) & 0XFF;
+                                                if (v != 0X0) {
+                                                        rx = i;
+                                                        break;
+                                                }
+                                        }
+                                        s0.set((lx + rx)/2, j);
+                                        break OUTTER_S0;
+                                } 
+                        }
+                }
+                Vec2 tangent = new Vec2(st.x - s0.x, s0.y - st.y);
+                tangent = tangent.add(ds);
+                tangent.normalize();
+                return tangent;
         }
 }

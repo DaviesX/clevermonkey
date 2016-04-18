@@ -35,6 +35,8 @@ public class StrategyCurveFitting implements ITracingStrategy {
         private final JComponent m_gamma;
         private final Sensor m_sensor = new Sensor();
         private final PathVectorizer m_pathVec = new PathVectorizer(m_sensor.GetInternalDownsampledRef());
+        
+        private Vec2 m_velo = new Vec2();
 
         /*
          * 应该由ITracingStrategyFactory来构造这个对象。
@@ -62,15 +64,17 @@ public class StrategyCurveFitting implements ITracingStrategy {
                 dir.normalize();
                 
                 m_sensor.UpdateSensorFromSourceImage(Sensor.GetInverseTransform(center, dir), m_map.GetInternalImageRef(), true);
-                m_pathVec.Vectorize2BrokenLines(10);
+                m_pathVec.PreprocessRasterImage();
+                Vec2 vLocal = m_pathVec.PredictTangent();
+                Vec2 vStandard = new Vec2(vLocal.x*dir.y + vLocal.y*dir.x, -vLocal.x*dir.x + vLocal.y*dir.y);
+                float speed = frontVelocity.length();
+                m_velo.set(vStandard.x*speed, vStandard.y*speed);
                 
                 if (m_is2Debug) {
                         m_gamma.getGraphics().drawImage(m_sensor.GetInternalImageRef(),
                                 0, 0, m_gamma.getWidth(), m_gamma.getHeight(), null);
                         m_alpha.getGraphics().drawImage(m_pathVec.GetInternalGradientMap(), 
                                                         0, 0, m_alpha.getWidth(), m_alpha.getHeight(), null);
-                        m_beta.getGraphics().drawImage(m_pathVec.GetInternalLowPass(), 
-                                                        0, 0, m_beta.getWidth(), m_beta.getHeight(), null);
                 }
         }
 
@@ -81,7 +85,7 @@ public class StrategyCurveFitting implements ITracingStrategy {
 
         @Override
         public Vec2 ComputeFrontWheelVelocity() {
-                return new Vec2(0.0f, 0.1f);
+                return m_velo;
         }
 
 }
