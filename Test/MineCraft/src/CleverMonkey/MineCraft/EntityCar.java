@@ -76,8 +76,9 @@ class CarBody {
          * @param dt
          */
         public void ClosedFormSolver(Vec2 frontVelocity, float dt) {
-                Vec2 dir = GetDirection();
                 float v = frontVelocity.length();
+                if (v == 0) return;
+                Vec2 dir = GetDirection();
 
                 // 速度在小车方向上的投影量
                 float projX = dir.x * frontVelocity.x + dir.y * frontVelocity.y;

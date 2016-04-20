@@ -46,6 +46,7 @@ public class Sensor {
         // 传感器屏幕。
         private final Screen m_screen = new Screen(k_cameraWidth, k_cameraHeight);
 
+        /// @FIXME 变换函数应该移到Map类里->GetInternalRegion。
         /**
          * 从源图像更新传感器。
          *
