@@ -41,6 +41,7 @@ class DrawRegion extends JPanel {
                         if (drawable != null)
                                 drawable.Draw(g, super.getWidth(), super.getHeight());
                 });
+                m_batch = null;
         }
 
         public void Draw(List<IDrawable> batch) {

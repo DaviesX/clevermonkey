@@ -87,6 +87,14 @@ public class Tracker {
         public Point GetResult() {
                 return m_targetPoint;
         }
+        
+        /**
+         * @return 欧氏坐标空间的目标点（传感器所在的坐标系）。
+         */
+        public Point ComputeTargetPoint() {
+                return new Point(m_targetPoint.x - m_patternToImgScale*k_patternWidth/2, 
+                                 m_patternToImgScale*k_patternHeight - m_targetPoint.y);
+        }
 
         // 以图片对象方式输出原图。
         // @isResultDrawed 是否绘制结果点。

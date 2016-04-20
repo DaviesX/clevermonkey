@@ -19,6 +19,7 @@ package CleverMonkey.MineCraft;
 
 import CleverMonkey.Tracker.Tracker;
 import java.awt.Graphics;
+import java.awt.Point;
 import javax.swing.JComponent;
 import org.jbox2d.common.Mat33;
 import org.jbox2d.common.Vec2;
@@ -40,6 +41,7 @@ public class StrategyOrthoVelo implements ITracingStrategy {
         private final JComponent m_compCamera;
         private final Tracker m_tracker = new Tracker();
         private final Sensor m_sensor = new Sensor();
+        private final Vec2 m_velo = new Vec2();
 
         /*
          * 应该由ITracingStrategyFactory来构造这个对象。
@@ -72,6 +74,14 @@ public class StrategyOrthoVelo implements ITracingStrategy {
                 
                 m_sensor.UpdateSensorFromSourceImage(Sensor.GetInverseTransform(center, dir), m_map.GetInternalImageRef(), false);
                 Tracker.ResultType result = m_tracker.AnalyseImg(m_sensor.GetInternalImageRef());
+                
+                Point target = m_tracker.ComputeTargetPoint();
+                Vec2 vLocal = new Vec2(target.x, target.y);
+                vLocal.normalize();
+                Vec2 vStandard = new Vec2(vLocal.x*dir.y + vLocal.y*dir.x, -vLocal.x*dir.x + vLocal.y*dir.y);
+                float speed = frontVelocity.length();
+                m_velo.set(vStandard.x*speed, (vStandard.y)*speed);
+                
                 if (m_is2Debug) {
                         m_gAlpha.drawImage(m_tracker.GetAlphaPatternImg(true),
                                 0, 0, m_compAlpha.getWidth(), m_compAlpha.getHeight(), null);
@@ -89,6 +99,6 @@ public class StrategyOrthoVelo implements ITracingStrategy {
 
         @Override
         public Vec2 ComputeFrontWheelVelocity() {
-                return new Vec2(0.0f, 0.1f);
+                return m_velo;
         }
 }

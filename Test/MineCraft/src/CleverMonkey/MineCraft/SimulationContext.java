@@ -34,6 +34,7 @@ class Runner implements Runnable {
         private final SimulationContext m_ctx;
         // 运行状态。
         private boolean m_is2run = true;
+        private boolean m_is2Pause = false;
 
         public Runner(SimulationContext ctx) {
                 m_ctx = ctx;
@@ -46,8 +47,10 @@ class Runner implements Runnable {
 
                         m_ctx.BeginModification();
                         {
-                                // 模拟
-                                m_ctx.GetSimulation().TimeEvolution();
+                                if (!m_is2Pause) {
+                                        // 模拟
+                                        m_ctx.GetSimulation().TimeEvolution();
+                                }
                                 // 呈现
                                 List<IDrawable> batch = new ArrayList<>();
                                 batch.add(m_ctx.GetMap());
@@ -70,6 +73,14 @@ class Runner implements Runnable {
 
         public void Stop() {
                 m_is2run = false;
+        }
+        
+        public void Pause() {
+                m_is2Pause = true;
+        }
+        
+        public void Continue() {
+                m_is2Pause = false;
         }
 }
 
@@ -99,6 +110,14 @@ public class SimulationContext {
                         m_runner = new Runner(this);
                         m_runnerThr = new Thread(m_runner);
                         m_runnerThr.start();
+                } else {
+                        m_runner.Continue();
+                }
+        }
+        
+        public void Pause() {
+                if (m_runner != null) {
+                        m_runner.Pause();
                 }
         }
 
@@ -150,6 +169,7 @@ public class SimulationContext {
         }
 
         public void SetCar(EntityCar car) {
+                RemoveCar();
                 m_car = car;
                 m_sim.AddPhysEntity(car);
         }
@@ -159,6 +179,7 @@ public class SimulationContext {
         }
 
         public void RemoveCar() {
+                if (m_car == null) return;
                 m_sim.RemovePhysEntity(m_car);
                 m_car = null;
         }

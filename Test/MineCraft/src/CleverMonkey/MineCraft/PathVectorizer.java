@@ -186,7 +186,7 @@ public class PathVectorizer {
                                                 }
                                         }
                                         st.set((lx + rx)/2, j);
-                                        ds.set(factor*(st.x - ds.x), j);
+                                        ds.set(2.0f*factor*(st.x - ds.x), j);
                                         s = j;
                                         break OUTTER_ST;
                                 } 
