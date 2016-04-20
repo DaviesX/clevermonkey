@@ -75,6 +75,8 @@ public class StrategyCurveFitting implements ITracingStrategy {
                                 0, 0, m_gamma.getWidth(), m_gamma.getHeight(), null);
                         m_alpha.getGraphics().drawImage(m_pathVec.GetInternalGradientMap(), 
                                                         0, 0, m_alpha.getWidth(), m_alpha.getHeight(), null);
+                        m_beta.getGraphics().drawImage(m_pathVec.GetInternalLowPass(), 
+                                                        0, 0, m_beta.getWidth(), m_beta.getHeight(), null);
                 }
         }
 

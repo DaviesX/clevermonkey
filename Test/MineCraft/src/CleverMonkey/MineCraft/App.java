@@ -71,7 +71,7 @@ public final class App {
         // 模拟器演变速度。
         private final float k_simDeltaT = 0.05f;
         // 跟踪策略。
-        private ITracingStrategyFactory.Strategy m_strategy = ITracingStrategyFactory.Strategy.OrthoVelo;
+        private ITracingStrategyFactory.Strategy m_strategy = ITracingStrategyFactory.Strategy.CurveFitting;
 
         private ITracingStrategy __GenerateStrategyFromAppState() {
                 return ITracingStrategyFactory.CreateStrategy(
@@ -313,7 +313,7 @@ public final class App {
                 loadDefaultBenchmarkMenuItem.addActionListener((ActionEvent e) -> {
                         Map map;
                         try {
-                                map = new Map(new FileInputStream("Test/MineCraft/MapImg/未标题-1.jpg"));
+                                map = new Map(new FileInputStream("Test/MineCraft/MapImg/未标题-6.jpg"));
                         } catch (IOException ex) {
                                 Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
                                 JOptionPane.showMessageDialog(null, "Benchmark map is not present in the directory. Stop proceeding.",

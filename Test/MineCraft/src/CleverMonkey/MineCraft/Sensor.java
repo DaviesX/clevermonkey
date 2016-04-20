@@ -89,8 +89,8 @@ public class Sensor {
                                                 rb += v & 0X000000FF;
                                         }
                                 }
-                                int lumin = (int) (0.299*(rr >>> 16)/256 + 0.587*(rg >>> 8)/256 + 0.114*rb/256);    // 流明。
-                                m_downSampled.setRGB(x, y, (0XFF) | (lumin << 16) | (lumin << 8) | (lumin));
+                                int lumin = (int) (0.33*(rr >>> 16)/256 + 0.34*(rg >>> 8)/256 + 0.33*rb/256);    // 流明。
+                                m_downSampled.setRGB(x, y, (lumin << 16) | (lumin << 8) | (lumin));
                         }
                 }
         }

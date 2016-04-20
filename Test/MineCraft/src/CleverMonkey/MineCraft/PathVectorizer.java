@@ -36,7 +36,7 @@ public class PathVectorizer {
         private final float[] m_gaussianDist;
         // 标准差。
         private final float m_sigma = 5.0f;
-        // 采样半径。
+        // 采样半径。@note: 性能上考虑，1个单位已经足够（Desktop上 < 2 ms)。
         private final int m_radius = 1;
         // 核心大小。
         private final int m_kernelSize = m_radius*2 + 1;
@@ -59,6 +59,12 @@ public class PathVectorizer {
         };
         // 信号函数。
         private final int[][] m_Fxy = new int [m_kernelSize][m_kernelSize];
+        
+        // 可调整参数
+        // 梯度识别度
+        private final int k_gradientThreshold = 128;
+        // 二进制转换识别度
+        private final int k_binaryThreshold = 30;
         
         private float __GaussXY(double sigma, int x, int y) {
 		return (float) Math.exp(-((x*x + y*y) / (2*sigma*sigma)));
@@ -94,9 +100,14 @@ public class PathVectorizer {
                         for (int i = x - radius, m = 0; m <= 2*radius; i ++, m ++) {
                                 int ri = Math.min(wlimit, Math.max(0, i));
                                 int rj = Math.min(hlimit, Math.max(0, j));
-                                Fxy[l][m] = img.getRGB(ri, rj) & 0XFF;
+                                int level = img.getRGB(ri, rj) & 0XFF;
+                                Fxy[l][m] = level;
                         }
                 }
+        }
+        
+        private int __BinaryLevel(int level) {
+                return level > k_binaryThreshold ? 0XFF : 0X0;
         }
         
         // 双边低通滤波器。
@@ -111,14 +122,15 @@ public class PathVectorizer {
                                 int centralLumin = m_Fxy[1][1];
                                 for (int j = 0; j < m_kernelSize; j ++) {
                                         for (int i = 0; i < m_kernelSize; i ++) {
-                                                float w = m_G[j][i]*m_gaussianDist[Math.abs(m_Fxy[j][i] - centralLumin)];
-                                                s += m_Fxy[j][i]*w;
+                                                int level = m_Fxy[j][i];
+                                                float w = m_G[j][i]*m_gaussianDist[Math.abs(level - centralLumin)];
+                                                s += __BinaryLevel(level)*w;
                                                 sw += w;
                                         }
                                 }
                                 float exp = s/sw;
-                                int scale = (int) exp;
-                                lowPass.setRGB(x, y, 0XFF | (scale << 16) | (scale << 8) | scale);
+                                int scale = exp > 255 ? 255 : (int) exp;
+                                lowPass.setRGB(x, y, (scale << 16) | (scale << 8) | scale);
                         }
                 }
         }
@@ -137,6 +149,7 @@ public class PathVectorizer {
                                                     (m_Fxy[2][0] + 2*m_Fxy[2][1] + m_Fxy[2][2])) + 
                                            Math.abs((m_Fxy[0][2] + 2*m_Fxy[1][2] + m_Fxy[2][2]) - 
                                                     (m_Fxy[0][0] + 2*m_Fxy[1][0] + m_Fxy[2][0]));
+                                // @note: 使用2个单位的采样半径可以得到更精确的梯度，从现有的测试上看，1个单位仍然可以接受
 //                                float gradX = 0.0f, gradY = 0.0f;
 //                                for (int j = 0; j < m_kernelSize; j ++) {
 //                                        for (int i = 0; i < m_kernelSize; i ++) {
@@ -164,7 +177,7 @@ public class PathVectorizer {
         
         public void PreprocessRasterImage() {
                 __BilateralLowPassFilter(m_rasterImg, m_lowPass);
-                __ComputeGradients(m_lowPass, m_gradientMap, 256);
+                __ComputeGradients(m_lowPass, m_gradientMap, 128);
         }
         
         public Vec2 PredictTangent() {

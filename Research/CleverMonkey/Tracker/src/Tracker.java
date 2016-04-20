@@ -20,7 +20,7 @@ public class Tracker {
         // 模式图宽度。
         protected final int k_patternWidth = 90;
         // 判别颜色上限。
-        protected final Color k_appointedColorMax = new Color(15, 15, 15);
+        protected final Color k_appointedColorMax = new Color(80, 80, 80);
         // 判别颜色下限。
         protected final Color k_appointedColorMin = new Color(0, 0, 0);
         // 路径线宽下限。
