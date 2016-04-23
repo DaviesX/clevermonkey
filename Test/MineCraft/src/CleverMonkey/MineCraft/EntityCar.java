@@ -238,7 +238,7 @@ public class EntityCar implements IPhysEntity, IDrawable {
                 Vec2 dir = frontVelocity.clone();
                 dir.normalize();
                 
-                m_sensor.UpdateSensorFromSourceImage(Sensor.GetInverseTransform(center, dir), m_map.GetInternalImageRef(), true);
+                m_sensor.UpdateSensorFromSourceImage(Sensor.GetInverseTransform(center, dir), m_map.GetInternalImageRef());
                 
                 m_strategy.TimeEvolution(centroid, frontVelocity,  dt, t, m_sensor, universe);
                 Vec2 v = m_strategy.ComputeFrontWheelVelocity();
