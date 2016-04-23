@@ -17,8 +17,66 @@
  */
 package CleverMonkey.MineCraft;
 
+import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
 import org.jbox2d.common.Vec2;
+
+/**
+ * 决策。
+ * 
+ * @author davis
+ */
+class Decision {
+        
+        public static Vec2 PredictTangentFromGradientMap(BufferedImage gradMap) {
+                float factor = 1.0f/16.0f;
+                int dist = (int) (factor*gradMap.getHeight());
+                Vec2 st = new Vec2(), s0 = new Vec2(), ds = new Vec2(gradMap.getWidth()/2, 0.0f);
+                int s = 0;
+                OUTTER_ST:
+                for (int j = 0; j < gradMap.getHeight(); j ++) {
+                        for (int i = 0; i < gradMap.getWidth(); i ++) {
+                                int v = gradMap.getRGB(i, j) & 0XFF;
+                                if (v != 0X0) {
+                                        int lx = i, rx = i;
+                                        for (i = gradMap.getWidth() - 1; i >= 0; i --) {
+                                                v = gradMap.getRGB(i, j) & 0XFF;
+                                                if (v != 0X0) {
+                                                        rx = i;
+                                                        break;
+                                                }
+                                        }
+                                        st.set((lx + rx)/2, j);
+                                        ds.set(2.0f*factor*(st.x - ds.x), j);
+                                        s = j;
+                                        break OUTTER_ST;
+                                } 
+                        }
+                }
+                OUTTER_S0:
+                for (int j = Math.min(s + dist, gradMap.getHeight() - 1); j < gradMap.getHeight(); j ++) {
+                        for (int i = 0; i < gradMap.getWidth(); i ++) {
+                                int v = gradMap.getRGB(i, j) & 0XFF;
+                                if (v != 0X0) {
+                                        int lx = i, rx = i;
+                                        for (i = gradMap.getWidth() - 1; i >= 0; i --) {
+                                                v = gradMap.getRGB(i, j) & 0XFF;
+                                                if (v != 0X0) {
+                                                        rx = i;
+                                                        break;
+                                                }
+                                        }
+                                        s0.set((lx + rx)/2, j);
+                                        break OUTTER_S0;
+                                } 
+                        }
+                }
+                Vec2 tangent = new Vec2(st.x - s0.x, s0.y - st.y);
+                tangent = tangent.add(ds);
+                tangent.normalize();
+                return tangent;
+        }
+}
 
 /**
  * 曲线拟合策略。
@@ -59,7 +117,7 @@ public class StrategyCurveFitting implements ITracingStrategy {
                 dir.normalize();
                 
                 m_pathVec.PreprocessRasterImage(sensor.GetInternalImageRef());
-                Vec2 vLocal = m_pathVec.PredictTangent();
+                Vec2 vLocal = Decision.PredictTangentFromGradientMap(m_pathVec.GetInternalGradientMap());
                 Vec2 vStandard = new Vec2(vLocal.x*dir.y + vLocal.y*dir.x, -vLocal.x*dir.x + vLocal.y*dir.y);
                 float speed = frontVelocity.length();
                 m_velo.set(vStandard.x*speed, vStandard.y*speed);
