@@ -256,7 +256,7 @@ public final class App {
                                                         Vec2 position = LinearTransform.Apply2Point(
                                                                 m_drawRegionScreen.ToEuclidSpace(m_mapImgOrigin, map.GetScale()), selected);
 
-                                                        m_simCtx.SetCar(new EntityCar(position, __GenerateStrategyFromAppState()));
+                                                        m_simCtx.SetCar(new EntityCar(position, __GenerateStrategyFromAppState(), map));
                                                 }
                                         }
                                         m_simCtx.EndModification();
@@ -323,7 +323,7 @@ public final class App {
                         m_simCtx.BeginModification();
                         {
                                 m_simCtx.SetMap(map);
-                                m_simCtx.SetCar(new EntityCar(new Vec2(0.2f, 0.1f), __GenerateStrategyFromAppState()));
+                                m_simCtx.SetCar(new EntityCar(new Vec2(0.2f, 0.1f), __GenerateStrategyFromAppState(), map));
                         }
                         m_simCtx.EndModification();
                 });

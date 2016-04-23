@@ -191,10 +191,13 @@ public class EntityCar implements IPhysEntity, IDrawable {
         private final float k_carWidth = 0.14f;
         private final float k_speed = 0.1f;
         private Simulation.Universe m_universe;
+        private final Sensor m_sensor = new Sensor();
+        private final Map m_map;
 
-        public EntityCar(Vec2 centroid, ITracingStrategy stg) {
+        public EntityCar(Vec2 centroid, ITracingStrategy stg, Map map) {
                 m_strategy = stg;
                 m_carBody = new CarBody(k_carLength, k_carWidth, centroid, new Vec2(0.0f, 1.0f));
+                m_map = map;
         }
 
         public void ChangeStrategy(ITracingStrategy stg) {
@@ -226,8 +229,20 @@ public class EntityCar implements IPhysEntity, IDrawable {
                 if (null == m_strategy) {
                         return;
                 }
-                m_strategy.TimeEvolution(m_carBody.GetCentroidPosition(), m_carBody.GetDirection().mul(k_speed), dt, t, universe);
+                Vec2 frontVelocity = m_carBody.GetDirection().mul(k_speed);
+                Vec2 centroid = m_carBody.GetCentroidPosition();
+                
+                Screen screen = new Screen(m_map.GetInternalImageRef().getWidth(), m_map.GetInternalImageRef().getHeight());
+                Mat33 screenTrans = screen.FromEuclidSpace(new Vec2(0.0f, 0.0f), universe.GetWorldScale());
+                Vec2 center = LinearTransform.Apply2Point(screenTrans, centroid);
+                Vec2 dir = frontVelocity.clone();
+                dir.normalize();
+                
+                m_sensor.UpdateSensorFromSourceImage(Sensor.GetInverseTransform(center, dir), m_map.GetInternalImageRef(), true);
+                
+                m_strategy.TimeEvolution(centroid, frontVelocity,  dt, t, m_sensor, universe);
                 Vec2 v = m_strategy.ComputeFrontWheelVelocity();
+                
                 m_carBody.ClosedFormSolver(v, dt);
         }
 

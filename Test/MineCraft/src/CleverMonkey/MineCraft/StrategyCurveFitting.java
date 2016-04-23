@@ -33,10 +33,9 @@ public class StrategyCurveFitting implements ITracingStrategy {
         private final JComponent m_alpha;
         private final JComponent m_beta;
         private final JComponent m_gamma;
-        private final Sensor m_sensor = new Sensor();
-        private final PathVectorizer m_pathVec = new PathVectorizer(m_sensor.GetInternalDownsampledRef());
+        private final PathVectorizer m_pathVec = new PathVectorizer(null);
         
-        private Vec2 m_velo = new Vec2();
+        private final Vec2 m_velo = new Vec2();
 
         /*
          * 应该由ITracingStrategyFactory来构造这个对象。
@@ -55,15 +54,11 @@ public class StrategyCurveFitting implements ITracingStrategy {
         }
 
         @Override
-        public void TimeEvolution(Vec2 centroid, Vec2 frontVelocity, float dt, 
-                                    Simulation.Clock t, Simulation.Universe universe) {
-                Screen screen = new Screen(m_map.GetInternalImageRef().getWidth(), m_map.GetInternalImageRef().getHeight());
-                Mat33 screenTrans = screen.FromEuclidSpace(new Vec2(0.0f, 0.0f), universe.GetWorldScale());
-                Vec2 center = LinearTransform.Apply2Point(screenTrans, centroid);
+        public void TimeEvolution(Vec2 centroid, Vec2 frontVelocity, float dt, Simulation.Clock t, 
+                                    Sensor sensor, Simulation.Universe universe) {
                 Vec2 dir = frontVelocity.clone();
                 dir.normalize();
                 
-                m_sensor.UpdateSensorFromSourceImage(Sensor.GetInverseTransform(center, dir), m_map.GetInternalImageRef(), true);
                 m_pathVec.PreprocessRasterImage();
                 Vec2 vLocal = m_pathVec.PredictTangent();
                 Vec2 vStandard = new Vec2(vLocal.x*dir.y + vLocal.y*dir.x, -vLocal.x*dir.x + vLocal.y*dir.y);
@@ -71,7 +66,7 @@ public class StrategyCurveFitting implements ITracingStrategy {
                 m_velo.set(vStandard.x*speed, vStandard.y*speed);
                 
                 if (m_is2Debug) {
-                        m_gamma.getGraphics().drawImage(m_sensor.GetInternalImageRef(),
+                        m_gamma.getGraphics().drawImage(sensor.GetInternalImageRef(),
                                 0, 0, m_gamma.getWidth(), m_gamma.getHeight(), null);
                         m_alpha.getGraphics().drawImage(m_pathVec.GetInternalGradientMap(), 
                                                         0, 0, m_alpha.getWidth(), m_alpha.getHeight(), null);

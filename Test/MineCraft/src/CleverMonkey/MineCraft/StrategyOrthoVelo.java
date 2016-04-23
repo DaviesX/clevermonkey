@@ -40,7 +40,6 @@ public class StrategyOrthoVelo implements ITracingStrategy {
         private final JComponent m_compBeta;
         private final JComponent m_compCamera;
         private final Tracker m_tracker = new Tracker();
-        private final Sensor m_sensor = new Sensor();
         private final Vec2 m_velo = new Vec2();
 
         /*
@@ -63,17 +62,13 @@ public class StrategyOrthoVelo implements ITracingStrategy {
         }
 
         @Override
-        public void TimeEvolution(Vec2 centroid, Vec2 frontVelocity, float dt, 
-                                    Simulation.Clock t, Simulation.Universe universe) {
+        public void TimeEvolution(Vec2 centroid, Vec2 frontVelocity, float dt, Simulation.Clock t, 
+                                    Sensor sensor, Simulation.Universe universe) {
 
-                Screen screen = new Screen(m_map.GetInternalImageRef().getWidth(), m_map.GetInternalImageRef().getHeight());
-                Mat33 screenTrans = screen.FromEuclidSpace(new Vec2(0.0f, 0.0f), universe.GetWorldScale());
-                Vec2 center = LinearTransform.Apply2Point(screenTrans, centroid);
                 Vec2 dir = frontVelocity.clone();
                 dir.normalize();
                 
-                m_sensor.UpdateSensorFromSourceImage(Sensor.GetInverseTransform(center, dir), m_map.GetInternalImageRef(), false);
-                Tracker.ResultType result = m_tracker.AnalyseImg(m_sensor.GetInternalImageRef());
+                Tracker.ResultType result = m_tracker.AnalyseImg(sensor.GetInternalImageRef());
                 
                 Point target = m_tracker.ComputeTargetPoint();
                 Vec2 vLocal = new Vec2(target.x, target.y);
@@ -87,7 +82,7 @@ public class StrategyOrthoVelo implements ITracingStrategy {
                                 0, 0, m_compAlpha.getWidth(), m_compAlpha.getHeight(), null);
                         m_gBeta.drawImage(m_tracker.GetBetaPatternImg(true),
                                 0, 0, m_compBeta.getWidth(), m_compBeta.getHeight(), null);
-                        m_gCamera.drawImage(m_sensor.GetInternalImageRef(),
+                        m_gCamera.drawImage(sensor.GetInternalImageRef(),
                                 0, 0, m_compCamera.getWidth(), m_compCamera.getHeight(), null);
                 }
         }

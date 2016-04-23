@@ -26,8 +26,8 @@ import org.jbox2d.common.Vec2;
  */
 public interface ITracingStrategy {
 
-        public void TimeEvolution(Vec2 centroid, Vec2 frontVelocity, float dt, 
-                                    Simulation.Clock t, Simulation.Universe universe);
+        public void TimeEvolution(Vec2 centroid, Vec2 frontVelocity, float dt,  Simulation.Clock t, 
+                                    Sensor sensor, Simulation.Universe universe);
 
         public float ComputeFrontWheelAngularVelocity();
 
