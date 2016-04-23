@@ -310,7 +310,7 @@ public final class App {
                 loadDefaultBenchmarkMenuItem.addActionListener((ActionEvent e) -> {
                         Map map;
                         try {
-                                map = new Map(new FileInputStream("Test/MineCraft/MapImg/未标题-6.jpg"));
+                                map = new Map(new FileInputStream("Test/MineCraft/MapImg/未标题-2.jpg"));
                         } catch (IOException ex) {
                                 Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
                                 JOptionPane.showMessageDialog(null, "Benchmark map is not present in the directory. Stop proceeding.",

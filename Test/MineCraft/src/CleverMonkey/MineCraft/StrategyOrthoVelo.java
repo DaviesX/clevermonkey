@@ -42,6 +42,8 @@ public class StrategyOrthoVelo implements ITracingStrategy {
         private final JComponent m_compCamera;
         // @note: 缓存Tracker以减轻GC压力
         private final Tracker m_tracker = new Tracker();
+        // 响应敏感度 @note: [0.0 - 1.0）数值越高对曲线的响应速率越快。
+        private final float k_responseFactor = 0.8f;
         
         private final Vec2 m_velo = new Vec2();
 
@@ -76,6 +78,8 @@ public class StrategyOrthoVelo implements ITracingStrategy {
                 if (result == Tracker.ResultType.Run) {
                         Point target = m_tracker.ComputeTargetPoint();
                         Vec2 vLocal = new Vec2(target.x, target.y);
+                        vLocal.normalize();
+                        vLocal.subLocal(new Vec2(0.0f, k_responseFactor));
                         vLocal.normalize();
                         Vec2 vStandard = new Vec2(vLocal.x*dir.y + vLocal.y*dir.x, -vLocal.x*dir.x + vLocal.y*dir.y);
                         float speed = frontVelocity.length();

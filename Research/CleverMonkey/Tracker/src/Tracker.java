@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.awt.Point;
 import java.awt.Color;
 import java.awt.Graphics;
+import org.jbox2d.common.Vec2;
 
 /**
  * CMTracker类用于根据图像输入给出运动控制目标信息。
@@ -92,7 +93,7 @@ public class Tracker {
          * @return 欧氏坐标空间的目标点（传感器所在的坐标系）。
          */
         public Point ComputeTargetPoint() {
-                return new Point(m_targetPoint.x - m_patternToImgScale*k_patternWidth/2, 
+                return new Point(m_targetPoint.x - m_patternToImgScale*k_patternWidth/2,
                                  m_patternToImgScale*k_patternHeight - m_targetPoint.y);
         }
 
