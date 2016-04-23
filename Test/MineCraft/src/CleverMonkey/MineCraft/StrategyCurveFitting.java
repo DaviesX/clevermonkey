@@ -20,6 +20,7 @@ package CleverMonkey.MineCraft;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import org.jbox2d.common.Vec2;
 
 /**
@@ -89,9 +90,9 @@ public class StrategyCurveFitting implements ITracingStrategy {
         private final Map m_map;
         // 调试工具
         private final boolean m_is2Debug;
-        private final JComponent m_alpha;
-        private final JComponent m_beta;
-        private final JComponent m_gamma;
+        private final JComponent m_camera;
+        private final JComponent m_grad;
+        private final JComponent m_lowPass;
         // @note: 缓存PathVectorizer以减轻GC压力
         private final PathVectorizer m_pathVec = new PathVectorizer();
         // 路径的目标辐射亮度。
@@ -102,12 +103,12 @@ public class StrategyCurveFitting implements ITracingStrategy {
         /*
          * 应该由ITracingStrategyFactory来构造这个对象。
          */
-        public StrategyCurveFitting(Map map, boolean is2Debug, JComponent alpha, JComponent beta, JComponent gamma) {
+        public StrategyCurveFitting(Map map, boolean is2Debug, JComponent slot0, JComponent slot1, JComponent slot2, JComponent slot3) {
                 m_map = map;
                 m_is2Debug = is2Debug;
-                m_alpha = alpha;
-                m_beta = beta;
-                m_gamma = gamma;
+                m_camera = slot0;
+                m_grad = slot1;
+                m_lowPass = slot2;
         }
 
         @Override
@@ -128,12 +129,16 @@ public class StrategyCurveFitting implements ITracingStrategy {
                 m_velo.set(vStandard.x*speed, vStandard.y*speed);
                 
                 if (m_is2Debug) {
-                        m_gamma.getGraphics().drawImage(sensor.GetInternalImageRef(),
-                                0, 0, m_gamma.getWidth(), m_gamma.getHeight(), null);
-                        m_alpha.getGraphics().drawImage(m_pathVec.GetInternalGradientMap(), 
-                                                        0, 0, m_alpha.getWidth(), m_alpha.getHeight(), null);
-                        m_beta.getGraphics().drawImage(m_pathVec.GetInternalLowPass(), 
-                                                        0, 0, m_beta.getWidth(), m_beta.getHeight(), null);
+                        m_camera.getGraphics().drawImage(sensor.GetInternalImageRef(),
+                                0, 0, m_camera.getWidth(), m_camera.getHeight(), null);
+                        m_camera.getGraphics().drawString("Sensor", 0, 20);
+                        
+                        m_grad.getGraphics().drawImage(m_pathVec.GetInternalGradientMap(), 
+                                                        0, 0, m_grad.getWidth(), m_grad.getHeight(), null);
+                        m_grad.getGraphics().drawString("GradientMap", 0, 20);
+                        m_lowPass.getGraphics().drawImage(m_pathVec.GetInternalLowPass(), 
+                                                        0, 0, m_lowPass.getWidth(), m_lowPass.getHeight(), null);
+                        m_lowPass.getGraphics().drawString("LowPass", 0, 20);
                 }
         }
 

@@ -21,6 +21,7 @@ import CleverMonkey.Tracker.Tracker;
 import java.awt.Graphics;
 import java.awt.Point;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import org.jbox2d.common.Vec2;
 
 /**
@@ -47,15 +48,15 @@ public class StrategyOrthoVelo implements ITracingStrategy {
         /*
          * 应该由ITracingStrategyFactory来构造这个对象。
          */
-        public StrategyOrthoVelo(Map map, boolean is2Debug, JComponent alpha, JComponent beta, JComponent camera) {
+        public StrategyOrthoVelo(Map map, boolean is2Debug, JComponent slot0, JComponent slot1, JComponent slot2, JComponent slot3) {
                 m_map = map;
                 m_is2Debug = is2Debug;
-                m_gAlpha = alpha != null ? alpha.getGraphics() : null;
-                m_gBeta = beta != null ? beta.getGraphics() : null;
-                m_gCamera = camera != null ? camera.getGraphics() : null;
-                m_compAlpha = alpha;
-                m_compBeta = beta;
-                m_compCamera = camera;
+                m_gCamera = slot0 != null ? slot0.getGraphics() : null;
+                m_gAlpha = slot1 != null ? slot1.getGraphics() : null;
+                m_gBeta = slot2 != null ? slot2.getGraphics() : null;
+                m_compCamera = slot0;
+                m_compAlpha = slot1;
+                m_compBeta = slot2;
         }
 
         @Override
@@ -86,10 +87,13 @@ public class StrategyOrthoVelo implements ITracingStrategy {
                 if (m_is2Debug) {
                         m_gAlpha.drawImage(m_tracker.GetAlphaPatternImg(true),
                                 0, 0, m_compAlpha.getWidth(), m_compAlpha.getHeight(), null);
+                        m_gAlpha.drawString("Alpha", 0, 20);
                         m_gBeta.drawImage(m_tracker.GetBetaPatternImg(true),
                                 0, 0, m_compBeta.getWidth(), m_compBeta.getHeight(), null);
+                        m_gBeta.drawString("Beta", 0, 20);
                         m_gCamera.drawImage(sensor.GetInternalImageRef(),
                                 0, 0, m_compCamera.getWidth(), m_compCamera.getHeight(), null);
+                        m_gCamera.drawString("Camera", 0, 20);
                 }
         }
 

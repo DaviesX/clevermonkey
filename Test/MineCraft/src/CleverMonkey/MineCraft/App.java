@@ -51,14 +51,11 @@ public final class App {
 
         // 显示地图的JPanel。
         private final JPanel m_drawRegionPanel = new JPanel();
-        // 显示Camera的JLable。
-        private final JLabel m_cameraLabel = new JLabel("Camera");
-        // 显示Alpha图的JLable。
-        private final JLabel m_alphLabel = new JLabel("Alpha");
-        // 显示Beta的JLable。
-        private final JLabel m_betaLabel = new JLabel("Beta");
-        // 显示null的JLable。
-        private final JLabel m_nullLabel = new JLabel("null");
+        // 显示调试信息的Label。
+        private final JLabel m_debugLabel0 = new JLabel();
+        private final JLabel m_debugLabel1 = new JLabel();
+        private final JLabel m_debugLabel2 = new JLabel();
+        private final JLabel m_debugLabel3 = new JLabel();
         // 主窗口。
         private final JFrame m_mainFrame;
 
@@ -74,8 +71,8 @@ public final class App {
         private ITracingStrategyFactory.Strategy m_strategy = ITracingStrategyFactory.Strategy.CurveFitting;
 
         private ITracingStrategy __GenerateStrategyFromAppState() {
-                return ITracingStrategyFactory.CreateStrategy(
-                        m_strategy, m_simCtx.GetMap(), true, m_alphLabel, m_betaLabel, m_cameraLabel);
+                return ITracingStrategyFactory.CreateStrategy(m_strategy, m_simCtx.GetMap(), true,
+                                m_debugLabel0, m_debugLabel1, m_debugLabel2, m_debugLabel3);
         }
 
         public App() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
@@ -171,10 +168,10 @@ public final class App {
                 rightPanel.add(rightPanel2);
                 rightPanel.add(rightPanel3);
                 rightPanel.add(rightPanel4);
-                rightPanel1.add(m_cameraLabel, BorderLayout.CENTER);
-                rightPanel2.add(m_alphLabel);
-                rightPanel3.add(m_betaLabel);
-                rightPanel4.add(m_nullLabel);
+                rightPanel1.add(m_debugLabel0, BorderLayout.CENTER);
+                rightPanel2.add(m_debugLabel1);
+                rightPanel3.add(m_debugLabel2);
+                rightPanel4.add(m_debugLabel3);
 
                 // 设置事件。
                 m_drawRegionPanel.addComponentListener(new ComponentListener() {
