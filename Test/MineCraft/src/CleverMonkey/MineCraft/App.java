@@ -71,7 +71,7 @@ public final class App {
         private ITracingStrategyFactory.Strategy m_strategy = ITracingStrategyFactory.Strategy.CurveFitting;
 
         private ITracingStrategy __GenerateStrategyFromAppState() {
-                return ITracingStrategyFactory.CreateStrategy(m_strategy, m_simCtx.GetMap(), true,
+                return ITracingStrategyFactory.CreateStrategy(m_strategy, m_simCtx.GetMap(),
                                 m_debugLabel0, m_debugLabel1, m_debugLabel2, m_debugLabel3);
         }
 

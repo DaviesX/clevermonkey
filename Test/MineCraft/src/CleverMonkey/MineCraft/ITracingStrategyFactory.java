@@ -30,12 +30,23 @@ public class ITracingStrategyFactory {
         }
 
         static ITracingStrategy CreateStrategy(Strategy type, Map map, 
-                boolean is2Debug, JComponent slot0, JComponent slot1, JComponent slot2, JComponent slot3) {
+                JComponent slot0, JComponent slot1, JComponent slot2, JComponent slot3) {
                 switch (type) {
                         case OrthoVelo:
-                                return new StrategyOrthoVelo(map, is2Debug, slot0, slot1, slot2, slot3);
+                                return new StrategyOrthoVelo(map, true, slot0, slot1, slot2, slot3);
                         case CurveFitting:
-                                return new StrategyCurveFitting(map, is2Debug, slot0, slot1, slot2, slot3);
+                                return new StrategyCurveFitting(map, true, slot0, slot1, slot2, slot3);
+                        default:
+                                return null;
+                }
+        }
+        
+        static ITracingStrategy CreateStrategy(Strategy type, Map map) {
+                switch (type) {
+                        case OrthoVelo:
+                                return new StrategyOrthoVelo(map, false, null, null, null, null);
+                        case CurveFitting:
+                                return new StrategyCurveFitting(map, false, null, null, null, null);
                         default:
                                 return null;
                 }
