@@ -21,7 +21,6 @@ import CleverMonkey.Tracker.Tracker;
 import java.awt.Graphics;
 import java.awt.Point;
 import javax.swing.JComponent;
-import org.jbox2d.common.Mat33;
 import org.jbox2d.common.Vec2;
 
 /**
@@ -73,12 +72,16 @@ public class StrategyOrthoVelo implements ITracingStrategy {
                 
                 Tracker.ResultType result = m_tracker.AnalyseImg(sensor.GetInternalImageRef());
                 
-                Point target = m_tracker.ComputeTargetPoint();
-                Vec2 vLocal = new Vec2(target.x, target.y);
-                vLocal.normalize();
-                Vec2 vStandard = new Vec2(vLocal.x*dir.y + vLocal.y*dir.x, -vLocal.x*dir.x + vLocal.y*dir.y);
-                float speed = frontVelocity.length();
-                m_velo.set(vStandard.x*speed, (vStandard.y)*speed);
+                if (result == Tracker.ResultType.Run) {
+                        Point target = m_tracker.ComputeTargetPoint();
+                        Vec2 vLocal = new Vec2(target.x, target.y);
+                        vLocal.normalize();
+                        Vec2 vStandard = new Vec2(vLocal.x*dir.y + vLocal.y*dir.x, -vLocal.x*dir.x + vLocal.y*dir.y);
+                        float speed = frontVelocity.length();
+                        m_velo.set(vStandard.x*speed, (vStandard.y)*speed);
+                } else {
+                        m_velo.setZero();
+                }
                 
                 if (m_is2Debug) {
                         m_gAlpha.drawImage(m_tracker.GetAlphaPatternImg(true),
