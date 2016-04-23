@@ -68,16 +68,18 @@ public final class App {
         // 模拟器演变速度。
         private final float k_simDeltaT = 0.05f;
         // 跟踪策略。
-        private ITracingStrategyFactory.Strategy m_strategy = ITracingStrategyFactory.Strategy.CurveFitting;
+        private ITracingStrategyFactory.Strategy m_strategy = ITracingStrategyFactory.Strategy.OrthoVelo;
+        // 窗口标题。
+        private final String k_WindowTitle = "CMMineCraft";
 
         private ITracingStrategy __GenerateStrategyFromAppState() {
                 return ITracingStrategyFactory.CreateStrategy(m_strategy, m_simCtx.GetMap(),
-                                m_debugLabel0, m_debugLabel1, m_debugLabel2, m_debugLabel3);
+                                                              m_debugLabel0, m_debugLabel1, m_debugLabel2, m_debugLabel3);
         }
 
         public App() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
                 m_simCtx = SimulationContext.GetInstance();
-                
+
                 // 设置皮肤。
                 try {
                         // 使用GTK或者系统默认皮肤。
@@ -102,7 +104,7 @@ public final class App {
                 }
 
                 // 创建主窗口UI。
-                m_mainFrame = new JFrame("CMMineCraft");
+                m_mainFrame = new JFrame(k_WindowTitle);
                 m_mainFrame.setLayout(new BorderLayout());
 
                 // 菜单。
@@ -199,21 +201,27 @@ public final class App {
                                                                 FileDialog.LOAD);
                         loadFileDlg.setVisible(true);
 
-                        try {
-                                if (loadFileDlg.getDirectory() == null || loadFileDlg.getFile() == null) {
-                                        // 用户没有选择文件。
-                                        return;
-                                }
-                                String path = loadFileDlg.getDirectory() + loadFileDlg.getFile();
-                                Map map = new Map(new FileInputStream(path));
-                                m_simCtx.BeginModification();
-                                {
-                                        m_simCtx.SetMap(map);
-                                }
-                                m_simCtx.EndModification();
-                        } catch (Exception ex) {
-                                Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+                        if (loadFileDlg.getDirectory() == null || loadFileDlg.getFile() == null) {
+                                // 用户没有选择文件。
+                                return;
                         }
+                        String path = loadFileDlg.getDirectory() + loadFileDlg.getFile();
+                        Map map;
+                        try {
+                                map = new Map(new FileInputStream(path));
+                        } catch (Exception ex) {
+                                JOptionPane.showMessageDialog(null, "Failed to initialize the map from: " + path + " Stop proceeding.",
+                                                              "CMonkey", JOptionPane.INFORMATION_MESSAGE);
+                                Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+                                return;
+                        }
+                        m_mainFrame.setTitle(k_WindowTitle + " - " + path);
+                        m_simCtx.BeginModification();
+                        {
+                                m_simCtx.SetMap(map);
+                        }
+                        m_simCtx.EndModification();
+
                 });
 
                 fileQuitMenuItem.addActionListener((ActionEvent e) -> {
@@ -268,11 +276,11 @@ public final class App {
                 simulateStopMenuItem.addActionListener((ActionEvent e) -> {
                         m_simCtx.Stop();
                 });
-                
+
                 simulatePauseMenuItem.addActionListener((ActionEvent e) -> {
                         m_simCtx.Pause();
                 });
-                
+
                 simulateContinueMenuItem.addActionListener((ActionEvent e) -> {
                         m_simCtx.Start();
                 });
@@ -308,15 +316,17 @@ public final class App {
                 });
 
                 loadDefaultBenchmarkMenuItem.addActionListener((ActionEvent e) -> {
+                        String benchFile = "Test/MineCraft/MapImg/未标题-2.jpg";
                         Map map;
                         try {
-                                map = new Map(new FileInputStream("Test/MineCraft/MapImg/未标题-2.jpg"));
+                                map = new Map(new FileInputStream(benchFile));
                         } catch (IOException ex) {
                                 Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
                                 JOptionPane.showMessageDialog(null, "Benchmark map is not present in the directory. Stop proceeding.",
                                                               "CMonkey", JOptionPane.INFORMATION_MESSAGE);
                                 return;
                         }
+                        m_mainFrame.setTitle(k_WindowTitle + " - " + benchFile);
                         m_simCtx.BeginModification();
                         {
                                 m_simCtx.SetMap(map);
@@ -329,9 +339,9 @@ public final class App {
                 m_mainFrame.getContentPane().add(mainMenuBar, BorderLayout.NORTH);
                 m_mainFrame.getContentPane().add(mainPanel, BorderLayout.CENTER);
                 m_mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                m_mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+                m_mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
                 m_mainFrame.setVisible(true);
-                
+
                 // 已经可以开始运行。
                 m_simCtx.Start();
 
