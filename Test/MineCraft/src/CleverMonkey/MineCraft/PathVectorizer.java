@@ -26,12 +26,12 @@ import org.jbox2d.common.Vec2;
  */
 public class PathVectorizer {
         
-        // 源图像。
-        private final BufferedImage m_rasterImg;
-        // 梯度映射。
-        private final BufferedImage m_gradientMap;
-        // 低通过滤图像。
-        private final BufferedImage m_lowPass;
+        // 源图像。@note: 保留图像内存减少设备内存的分配与释放
+        private BufferedImage m_rasterImg = null;
+        // 梯度映射。@note: 保留图像内存减少设备内存的分配与释放
+        private BufferedImage m_gradientMap = null;
+        // 低通过滤图像。@note: 保留图像内存减少设备内存的分配与释放
+        private BufferedImage m_lowPass = null;
         // 高斯分布。
         private final float[] m_gaussianDist;
         // 标准差。
@@ -74,13 +74,17 @@ public class PathVectorizer {
 		return (float) Math.exp(-(x/(2*sigma*sigma)));
 	}
         
+        private BufferedImage __ReallocImage(BufferedImage img, int w, int h) {
+                if (img == null || img.getWidth() != w || img.getHeight() != h) {
+                        img = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
+                }
+                return img;
+        }
+        
         /**
          * @param rasterImg 光栅化图像。
          */
         public PathVectorizer(BufferedImage rasterImg) {
-                m_gradientMap = new BufferedImage(rasterImg.getWidth(), rasterImg.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
-                m_lowPass = new BufferedImage(rasterImg.getWidth(), rasterImg.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
-                m_rasterImg = rasterImg;
                 // 计算高斯分布。
                 m_gaussianDist = new float[256];
                 for (int i = 0; i < 256; i ++) {
@@ -111,7 +115,8 @@ public class PathVectorizer {
         }
         
         // 双边低通滤波器。
-        private void __BilateralLowPassFilter(BufferedImage rasterImg, BufferedImage lowPass) {
+        private BufferedImage __BilateralLowPassFilter(BufferedImage rasterImg, BufferedImage lowPass) {
+                lowPass = __ReallocImage(lowPass, rasterImg.getWidth(), rasterImg.getHeight());
                 // G(x, y) = 1/(2pi*sigma) * exp{-(x^2 + y^2)/(2*sigma^2)}, 其中sigma = 1
                 int iw = rasterImg.getWidth(), ih = rasterImg.getHeight();
                 for (int y = 0; y < ih; y ++) {
@@ -133,10 +138,12 @@ public class PathVectorizer {
                                 lowPass.setRGB(x, y, (scale << 16) | (scale << 8) | scale);
                         }
                 }
+                return lowPass;
         }
         
         // 计算梯度映射。
-        private void __ComputeGradients(BufferedImage rasterImg, BufferedImage grads, int threshold) {
+        private BufferedImage __ComputeGradients(BufferedImage rasterImg, BufferedImage grads, int threshold) {
+                grads = __ReallocImage(grads, rasterImg.getWidth(), rasterImg.getHeight());
                 // G[f] = (Gx i + Gy j)[f] = (d/dx i + d/dy j)[f]
                 // int[][] Gx = {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}};
                 // int[][] Gy = {{1, 2, 1}, {0, 0, 0}, {-1, -2, -1}};
@@ -165,6 +172,32 @@ public class PathVectorizer {
                                 grads.setRGB(x, y, grad > threshold ? 0XFFFFFFFF : 0X0);
                         }
                 }
+                return grads;
+        }
+        
+        private BufferedImage __Downsampler256(BufferedImage input, BufferedImage rasterOut) {
+                int downWidth = input.getWidth()/16;
+                int downHeight = input.getHeight()/16;
+                rasterOut = __ReallocImage(rasterOut, downWidth, downHeight);
+                for (int y = 0; y < downHeight; ++y) {
+                        for (int x = 0; x < downWidth; ++x) {
+                                // 辐射亮度。
+                                int rr = 0, rg = 0, rb = 0;
+                                int vsum = 0;
+                                for (int j = 0; j < 16; j ++) {
+                                        for (int i = 0; i < 16; i ++) {
+                                                int v = input.getRGB((x << 4) + i, (y << 4) + j);
+                                                rr += v & 0X00FF0000;
+                                                rg += v & 0X0000FF00;
+                                                rb += v & 0X000000FF;
+                                        }
+                                }
+                                 // 流明。
+                                int lumin = (int) (0.33*(rr >>> 16)/256 + 0.34*(rg >>> 8)/256 + 0.33*rb/256);
+                                rasterOut.setRGB(x, y, (lumin << 16) | (lumin << 8) | (lumin));
+                        }
+                }
+                return rasterOut;
         }
         
         public BufferedImage GetInternalGradientMap() {
@@ -175,9 +208,10 @@ public class PathVectorizer {
                 return m_lowPass;
         }
         
-        public void PreprocessRasterImage() {
-                __BilateralLowPassFilter(m_rasterImg, m_lowPass);
-                __ComputeGradients(m_lowPass, m_gradientMap, 128);
+        public void PreprocessRasterImage(BufferedImage input) {
+                m_rasterImg = __Downsampler256(input, m_rasterImg);
+                m_lowPass = __BilateralLowPassFilter(m_rasterImg, m_lowPass);
+                m_gradientMap = __ComputeGradients(m_lowPass, m_gradientMap, 128);
         }
         
         public Vec2 PredictTangent() {

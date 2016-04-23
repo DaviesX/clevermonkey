@@ -18,7 +18,6 @@
 package CleverMonkey.MineCraft;
 
 import javax.swing.JComponent;
-import org.jbox2d.common.Mat33;
 import org.jbox2d.common.Vec2;
 
 /**
@@ -59,7 +58,7 @@ public class StrategyCurveFitting implements ITracingStrategy {
                 Vec2 dir = frontVelocity.clone();
                 dir.normalize();
                 
-                m_pathVec.PreprocessRasterImage();
+                m_pathVec.PreprocessRasterImage(sensor.GetInternalImageRef());
                 Vec2 vLocal = m_pathVec.PredictTangent();
                 Vec2 vStandard = new Vec2(vLocal.x*dir.y + vLocal.y*dir.x, -vLocal.x*dir.x + vLocal.y*dir.y);
                 float speed = frontVelocity.length();
