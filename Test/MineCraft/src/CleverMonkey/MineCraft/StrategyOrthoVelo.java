@@ -32,6 +32,7 @@ import org.jbox2d.common.Vec2;
 public class StrategyOrthoVelo implements ITracingStrategy {
 
         private final Map m_map;
+        // 调试工具
         private final boolean m_is2Debug;
         private final Graphics m_gAlpha;
         private final Graphics m_gBeta;
@@ -39,7 +40,9 @@ public class StrategyOrthoVelo implements ITracingStrategy {
         private final JComponent m_compAlpha;
         private final JComponent m_compBeta;
         private final JComponent m_compCamera;
+        // @note: 缓存Tracker以减轻GC压力
         private final Tracker m_tracker = new Tracker();
+        
         private final Vec2 m_velo = new Vec2();
 
         /*

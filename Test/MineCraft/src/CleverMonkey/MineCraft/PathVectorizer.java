@@ -17,6 +17,7 @@
  */
 package CleverMonkey.MineCraft;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 /**
@@ -80,10 +81,7 @@ public class PathVectorizer {
                 return img;
         }
         
-        /**
-         * @param rasterImg 光栅化图像。
-         */
-        public PathVectorizer(BufferedImage rasterImg) {
+        public PathVectorizer() {
                 // 计算高斯分布。
                 m_gaussianDist = new float[256];
                 for (int i = 0; i < 256; i ++) {
@@ -174,7 +172,7 @@ public class PathVectorizer {
                 return grads;
         }
         
-        private BufferedImage __Downsampler256(BufferedImage input, BufferedImage rasterOut) {
+        private BufferedImage __Downsampler256(BufferedImage input, Color targetRadiance, BufferedImage rasterOut) {
                 int downWidth = input.getWidth()/16;
                 int downHeight = input.getHeight()/16;
                 rasterOut = __ReallocImage(rasterOut, downWidth, downHeight);
@@ -191,8 +189,11 @@ public class PathVectorizer {
                                                 rb += v & 0X000000FF;
                                         }
                                 }
-                                 // 流明。
-                                int lumin = (int) (0.33*(rr >>> 16)/256 + 0.34*(rg >>> 8)/256 + 0.33*rb/256);
+                                int expR = Math.abs((rr >>> 16)/256 - targetRadiance.getRed());
+                                int expG = Math.abs((rg >>> 8)/256 - targetRadiance.getGreen());
+                                int expB = Math.abs(rb/256 - targetRadiance.getBlue());
+                                 // 流明。@note 使用SPD的平均功率而不是辐射强度。
+                                int lumin = (expR + expG + expB)/3;
                                 rasterOut.setRGB(x, y, (lumin << 16) | (lumin << 8) | (lumin));
                         }
                 }
@@ -207,8 +208,8 @@ public class PathVectorizer {
                 return m_lowPass;
         }
         
-        public void PreprocessRasterImage(BufferedImage input) {
-                m_rasterImg = __Downsampler256(input, m_rasterImg);
+        public void PreprocessRasterImage(BufferedImage input, Color targetRadiance) {
+                m_rasterImg = __Downsampler256(input, targetRadiance, m_rasterImg);
                 m_lowPass = __BilateralLowPassFilter(m_rasterImg, m_lowPass);
                 m_gradientMap = __ComputeGradients(m_lowPass, m_gradientMap, 128);
         }

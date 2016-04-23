@@ -17,6 +17,7 @@
  */
 package CleverMonkey.MineCraft;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
 import org.jbox2d.common.Vec2;
@@ -86,11 +87,15 @@ class Decision {
 public class StrategyCurveFitting implements ITracingStrategy {
 
         private final Map m_map;
+        // 调试工具
         private final boolean m_is2Debug;
         private final JComponent m_alpha;
         private final JComponent m_beta;
         private final JComponent m_gamma;
-        private final PathVectorizer m_pathVec = new PathVectorizer(null);
+        // @note: 缓存PathVectorizer以减轻GC压力
+        private final PathVectorizer m_pathVec = new PathVectorizer();
+        // 路径的目标辐射亮度。
+        private final Color k_targetRadiance = new Color(0, 0, 0);
         
         private final Vec2 m_velo = new Vec2();
 
@@ -116,7 +121,7 @@ public class StrategyCurveFitting implements ITracingStrategy {
                 Vec2 dir = frontVelocity.clone();
                 dir.normalize();
                 
-                m_pathVec.PreprocessRasterImage(sensor.GetInternalImageRef());
+                m_pathVec.PreprocessRasterImage(sensor.GetInternalImageRef(), k_targetRadiance);
                 Vec2 vLocal = Decision.PredictTangentFromGradientMap(m_pathVec.GetInternalGradientMap());
                 Vec2 vStandard = new Vec2(vLocal.x*dir.y + vLocal.y*dir.x, -vLocal.x*dir.x + vLocal.y*dir.y);
                 float speed = frontVelocity.length();
