@@ -21,7 +21,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import org.jbox2d.common.Mat33;
 import org.jbox2d.common.Vec2;
-import org.jbox2d.common.Vec3;
 
 
 /**

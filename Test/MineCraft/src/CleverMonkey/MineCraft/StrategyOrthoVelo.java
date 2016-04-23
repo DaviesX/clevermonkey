@@ -21,7 +21,6 @@ import CleverMonkey.Tracker.Tracker;
 import java.awt.Graphics;
 import java.awt.Point;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import org.jbox2d.common.Vec2;
 
 /**

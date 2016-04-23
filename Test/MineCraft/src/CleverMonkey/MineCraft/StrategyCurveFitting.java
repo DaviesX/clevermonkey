@@ -20,7 +20,6 @@ package CleverMonkey.MineCraft;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import org.jbox2d.common.Vec2;
 
 /**
