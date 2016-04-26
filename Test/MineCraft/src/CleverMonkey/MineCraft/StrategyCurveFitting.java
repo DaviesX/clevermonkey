@@ -74,8 +74,11 @@ class Decision {
                 }
                 Vec2 tangent = new Vec2(st.x - s0.x, s0.y - st.y);
                 tangent = tangent.add(ds);
-                tangent.normalize();
                 return tangent;
+        }
+        
+        public static Vec2 PredictTangentFromBezierPath(BezierSpline bs) {
+                return bs.T(1.0f).add(new Vec2(bs.B(1.0f).x - 0.5f, 0.0f));
         }
 }
 
@@ -127,7 +130,9 @@ public class StrategyCurveFitting implements ITracingStrategy {
                 // BezierSpline path = m_pathVec.BezierSplineRegression();
                 // BrokenLines path = m_pathVec.BorkenLinesRegression();
                 BezierSpline path = m_pathVec.BezierSplineFromPath();
-                Vec2 vLocal = Decision.PredictTangentFromGradientMap(m_pathVec.GetInternalGradientMap());
+                // Vec2 vLocal = Decision.PredictTangentFromGradientMap(m_pathVec.GetInternalGradientMap());
+                Vec2 vLocal = Decision.PredictTangentFromBezierPath(path);
+                vLocal.normalize();
                 Vec2 vStandard = new Vec2(vLocal.x*dir.y + vLocal.y*dir.x, -vLocal.x*dir.x + vLocal.y*dir.y);
                 float speed = frontVelocity.length();
                 m_velo.set(vStandard.x*speed, vStandard.y*speed);

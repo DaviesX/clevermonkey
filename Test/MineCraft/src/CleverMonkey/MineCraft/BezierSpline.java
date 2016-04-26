@@ -69,7 +69,10 @@ public class BezierSpline implements IDrawable {
         }
         
         public void B(float t, Vec2 p) {
-                float a = __Cubic(1 - t), b = 3.0f*__Qudratic(1 - t)*t, c = 3.0f*(1 - t)*__Qudratic(t), d = __Cubic(t);
+                float a = __Cubic(1 - t), 
+                      b = 3*__Qudratic(1 - t)*t, 
+                      c = 3*(1 - t)*__Qudratic(t), 
+                      d = __Cubic(t);
                 p.set(a*m_c[0].x + b*m_c[1].x + c*m_c[2].x + d*m_c[3].x,
                       a*m_c[0].y + b*m_c[1].y + c*m_c[2].y + d*m_c[3].y);
         }
@@ -82,6 +85,15 @@ public class BezierSpline implements IDrawable {
         
         public float D(Vec2 p) {
                 throw new UnsupportedOperationException();
+        }
+        
+        public Vec2 T(float t) {
+                float a = -3*__Qudratic(1 - t), 
+                      b = 3*(1 - 4*t + 3*__Qudratic(t)), 
+                      c = 3*(2*t - 3*__Qudratic(t)), 
+                      d = 3*__Qudratic(t);
+                return new Vec2(a*m_c[0].x + b*m_c[1].x + c*m_c[2].x + d*m_c[3].x,
+                         a*m_c[0].y + b*m_c[1].y + c*m_c[2].y + d*m_c[3].y);
         }
         
         private void __DrawLine(Graphics g, Vec2 s0, Vec2 st, float mx, float my) {

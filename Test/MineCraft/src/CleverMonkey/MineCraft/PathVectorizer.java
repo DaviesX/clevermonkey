@@ -256,7 +256,6 @@ public class PathVectorizer {
                 float h = grads.getHeight() - 1;
                 
                 for (int k = grads.getHeight() - 1, ns = 0; ns <= k_numSegments; k -= dvdt, ns ++) {
-                        k = Math.max(0, k);
                         int n = Math.max(0, k - dvdt);
                         float x = 0, cnt = 0;
                         for (int i = 0; i < grads.getWidth(); i++) {
@@ -285,9 +284,7 @@ public class PathVectorizer {
                 local.ensureCapacity(k_numSamples*grads.getWidth());
                 
                 float Y = 0;
-                boolean firstTime = true;
                 for (int k = grads.getHeight() - 1, ns = 0; ns <= k_numSegments; k -= dvdt, ns ++) {
-                        k = Math.max(0, k);
                         int n = Math.max(0, k - dvdt);
                         int n_samples = 0;
                         for (int j = k, nss = 0; nss <= k_numSamples; j -= drdt, nss ++) {
@@ -324,11 +321,6 @@ public class PathVectorizer {
                         Eyy = Eyy == 0 ? 1e-5f : Eyy;
                         float beta1 = Eyx / Eyy;
                         float beta0 = miuX - beta1 * miuY;
-                        if (firstTime) {
-                                float x = beta0;
-                                dataset.add(new Vec2(x / w, 0));
-                                firstTime = false;
-                        }
                         float x = beta1 * Y + beta0;
                         dataset.add(new Vec2(x / w, Y / h));
                         Y += dvdt;
@@ -338,7 +330,7 @@ public class PathVectorizer {
         // 分段线性回归。
         public BrokenLines BorkenLinesRegression() {
                 Dataset dataset = new Dataset();
-                __LineSampleAvgFromGradientMap(m_gradientMap, dataset);
+                __LineSampleFromGradientMap(m_gradientMap, dataset);
                 BrokenLines bl = new BrokenLines(dataset);
                 return bl;
         }
