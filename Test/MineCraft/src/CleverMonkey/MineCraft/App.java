@@ -68,7 +68,7 @@ public final class App {
         // 模拟器演变速度。
         private final float k_simDeltaT = 0.05f;
         // 跟踪策略。
-        private ITracingStrategyFactory.Strategy m_strategy = ITracingStrategyFactory.Strategy.OrthoVelo;
+        private ITracingStrategyFactory.Strategy m_strategy = ITracingStrategyFactory.Strategy.CurveFitting;
         // 窗口标题。
         private final String k_WindowTitle = "CMMineCraft";
 

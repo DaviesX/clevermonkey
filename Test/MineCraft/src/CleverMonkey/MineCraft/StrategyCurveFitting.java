@@ -92,6 +92,7 @@ public class StrategyCurveFitting implements ITracingStrategy {
         private final JComponent m_camera;
         private final JComponent m_grad;
         private final JComponent m_lowPass;
+        private final JComponent m_path;
         // @note: 缓存PathVectorizer以减轻GC压力
         private final PathVectorizer m_pathVec = new PathVectorizer();
         // 路径的目标辐射亮度。
@@ -108,6 +109,7 @@ public class StrategyCurveFitting implements ITracingStrategy {
                 m_camera = slot0;
                 m_grad = slot1;
                 m_lowPass = slot2;
+                m_path = slot3;
         }
 
         @Override
@@ -121,7 +123,7 @@ public class StrategyCurveFitting implements ITracingStrategy {
                 Vec2 dir = frontVelocity.clone();
                 dir.normalize();
                 
-                m_pathVec.PreprocessRasterImage(sensor.GetInternalImageRef(), k_targetRadiance);
+                m_pathVec.UpdateFromRasterImage(sensor.GetInternalImageRef(), k_targetRadiance);
                 Vec2 vLocal = Decision.PredictTangentFromGradientMap(m_pathVec.GetInternalGradientMap());
                 Vec2 vStandard = new Vec2(vLocal.x*dir.y + vLocal.y*dir.x, -vLocal.x*dir.x + vLocal.y*dir.y);
                 float speed = frontVelocity.length();
@@ -135,9 +137,14 @@ public class StrategyCurveFitting implements ITracingStrategy {
                         m_grad.getGraphics().drawImage(m_pathVec.GetInternalGradientMap(), 
                                                         0, 0, m_grad.getWidth(), m_grad.getHeight(), null);
                         m_grad.getGraphics().drawString("GradientMap", 0, 20);
-                        m_lowPass.getGraphics().drawImage(m_pathVec.GetInternalLowPass(), 
-                                                        0, 0, m_lowPass.getWidth(), m_lowPass.getHeight(), null);
-                        m_lowPass.getGraphics().drawString("LowPass", 0, 20);
+//                        m_lowPass.getGraphics().drawImage(m_pathVec.GetInternalLowPass(), 
+//                                                        0, 0, m_lowPass.getWidth(), m_lowPass.getHeight(), null);
+//                        m_lowPass.getGraphics().drawString("LowPass", 0, 20);
+                        BezierSpline bs = new BezierSpline(new Vec2(0.5f, 0.0f), 
+                                                           new Vec2(0.7f, 3.0f), 
+                                                           new Vec2(0.8f, 3.0f), 
+                                                           new Vec2(1.0f, 1.0f));
+                        bs.Draw(m_path.getGraphics(), m_path.getWidth(), m_path.getHeight());
                 }
         }
 

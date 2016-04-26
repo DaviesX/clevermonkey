@@ -19,13 +19,18 @@ package CleverMonkey.MineCraft;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import org.jbox2d.common.Vec2;
 
 /**
  * 矢量化路径。
  * @author davis
  */
 public class PathVectorizer {
+        public class Dataset extends ArrayList<Vec2> {}
         
+        // 图像样本。
+        private Dataset m_samples;
         // 源图像。@note: 保留图像内存减少设备内存的分配与释放
         private BufferedImage m_rasterImg = null;
         // 梯度映射。@note: 保留图像内存减少设备内存的分配与释放
@@ -208,9 +213,38 @@ public class PathVectorizer {
                 return m_lowPass;
         }
         
-        public void PreprocessRasterImage(BufferedImage input, Color targetRadiance) {
+        public void UpdateFromRasterImage(BufferedImage input, Color targetRadiance) {
                 m_rasterImg = __Downsampler256(input, targetRadiance, m_rasterImg);
                 m_lowPass = __BilateralLowPassFilter(m_rasterImg, m_lowPass);
                 m_gradientMap = __ComputeGradients(m_lowPass, m_gradientMap, 128);
+        }
+        
+        public class Statistics {
+                protected Dataset samples;
+                protected float sigma;
+                protected float miu;
+        }
+        
+        private void __SampleFromGradientMap(BufferedImage grads, Dataset dataset) {
+                int dudt = grads.getWidth()/20;
+                int dvdt = grads.getHeight()/10;
+                for (int j = 0; j < grads.getHeight(); j += dvdt) {
+                        for (int i = 0; i < grads.getWidth();) {
+                                if (0X0 != grads.getRGB(i, j)) {
+                                        dataset.add(new Vec2(i, grads.getHeight() - j));
+                                        i += dudt;
+                                } else {
+                                        i ++;
+                                }
+                        }
+                }
+        }
+        
+        public BezierSpline BezierSplineRegression() {
+                throw new UnsupportedOperationException();
+        }
+        
+        public Dataset SampleAround(Vec2 r0, Vec2 r1) {
+                throw new UnsupportedOperationException();
         }
 }
