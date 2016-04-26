@@ -118,7 +118,11 @@ public class PathVectorizer {
         private int __BinaryLevel(int level) {
                 return level > k_binaryThreshold ? 0XFF : 0X0;
         }
-
+        
+        private int __InverseBinaryLevel(int level) {
+                return level < (0XFF - k_binaryThreshold) ? 0XFF : 0X0;
+        }
+        
         // 双边低通滤波器。
         private BufferedImage __BilateralLowPassFilter(BufferedImage rasterImg, BufferedImage lowPass) {
                 lowPass = __ReallocImage(lowPass, rasterImg.getWidth(), rasterImg.getHeight());
@@ -155,18 +159,13 @@ public class PathVectorizer {
                 int iw = rasterImg.getWidth(), ih = rasterImg.getHeight();
                 for (int y = 1; y < ih - 1; y++) {
                         for (int x = 1; x < iw - 1; x++) {
-                                int level = rasterImg.getRGB(x, y) & 0XFF;
-                                if (level < 230) {
-                                        grads.setRGB(x, y, 0XFFFFFFFF);
-                                } else {
-                                        grads.setRGB(x, y, 0X0);
-                                }
-//                                __ComputeFxy(rasterImg, x, y, 1, m_Fxy);
+                                __ComputeFxy(rasterImg, x, y, 1, m_Fxy);
                                 // 卷积Sobel核心（可分离）并计算梯度标量大小||G|| = sqrt(Gx.Gx + Gy.Gy) <= ||Gx|| + ||Gy||
-//                                int grad = Math.abs((m_Fxy[0][0] + 2*m_Fxy[0][1] + m_Fxy[0][2]) - 
-//                                                    (m_Fxy[2][0] + 2*m_Fxy[2][1] + m_Fxy[2][2])) + 
-//                                           Math.abs((m_Fxy[0][2] + 2*m_Fxy[1][2] + m_Fxy[2][2]) - 
-//                                                    (m_Fxy[0][0] + 2*m_Fxy[1][0] + m_Fxy[2][0]));
+                                float gradX = (m_Fxy[0][0] + 2*m_Fxy[0][1] + m_Fxy[0][2]) - 
+                                              (m_Fxy[2][0] + 2*m_Fxy[2][1] + m_Fxy[2][2]);
+                                float gradY = (m_Fxy[0][2] + 2*m_Fxy[1][2] + m_Fxy[2][2]) - 
+                                              (m_Fxy[0][0] + 2*m_Fxy[1][0] + m_Fxy[2][0]);
+                                int grad = (int) (Math.abs(gradX) + Math.abs(gradY));
                                 // @note: 使用2个单位的采样半径可以得到更精确的梯度，从现有的测试上看，1个单位仍然可以接受
 //                                float gradX = 0.0f, gradY = 0.0f;
 //                                for (int j = 0; j < m_kernelSize; j ++) {
@@ -180,10 +179,23 @@ public class PathVectorizer {
 //                                        }
 //                                }
 //                                int grad = (int) (Math.abs(gradX) + Math.abs(gradY));
-//                                grads.setRGB(x, y, grad > threshold ? 0XFFFFFFFF : 0X0);
+                                grads.setRGB(x, y, grad > threshold ? 0XFFFFFFFF : 0X0);
                         }
                 }
                 return grads;
+        }
+        
+        private BufferedImage __Bicolorize(BufferedImage rasterImg, BufferedImage bicolor) {
+                bicolor = __ReallocImage(bicolor, rasterImg.getWidth(), rasterImg.getHeight());
+                int iw = rasterImg.getWidth(), ih = rasterImg.getHeight();
+                for (int y = 0; y < ih; y++) {
+                        for (int x = 0; x < iw; x++) {
+                                int level = rasterImg.getRGB(x, y) & 0XFF;
+                                level = __InverseBinaryLevel(level);
+                                bicolor.setRGB(x, y, (level << 16) | (level << 8) | level);
+                        }
+                }
+                return bicolor;
         }
 
         private BufferedImage __Downsampler256(BufferedImage input, Color targetRadiance, BufferedImage rasterOut) {
@@ -225,7 +237,8 @@ public class PathVectorizer {
         public void UpdateFromRasterImage(BufferedImage input, Color targetRadiance) {
                 m_rasterImg = __Downsampler256(input, targetRadiance, m_rasterImg);
                 m_lowPass = __BilateralLowPassFilter(m_rasterImg, m_lowPass);
-                m_gradientMap = __ComputeGradients(m_lowPass, m_gradientMap, 128);
+                // m_gradientMap = __ComputeGradients(m_lowPass, m_gradientMap, 128);
+                m_gradientMap = __Bicolorize(m_lowPass, m_gradientMap);
         }
 
         public class Statistics {
@@ -236,7 +249,7 @@ public class PathVectorizer {
         }
 
         // 线样本，简单x坐标平均值。
-        private void __LineSampleFromGradientMapSimple(BufferedImage grads, Dataset dataset) {
+        private void __LineSampleAvgFromGradientMap(BufferedImage grads, Dataset dataset) {
                 int dvdt = Math.max(1, grads.getHeight() / 8);
                 for (int k = grads.getHeight() - 1; k >= 0; k -= dvdt) {
                         int n = Math.max(0, k - dvdt);
@@ -258,49 +271,62 @@ public class PathVectorizer {
         // 线样本，线性回归。
         private void __LineSampleFromGradientMap(BufferedImage grads, Dataset dataset) {
                 Dataset local = new Dataset();
-                int dvdt = Math.max(1, grads.getHeight() / 4);
-                int drdt = Math.max(1, dvdt / 5);
+                final int k_numSegments = 4;
+                final int k_numSamples = 3;
+                int dvdt = Math.max(1, grads.getHeight() / k_numSegments);
+                int drdt = Math.max(1, dvdt / k_numSamples);
+                float w = grads.getWidth() - 1;
+                float h = grads.getHeight() - 1;
+                // 预分配内存，减轻GC压力。
+                local.ensureCapacity(k_numSamples*grads.getWidth());
+                
                 float Y = 0;
                 boolean firstTime = true;
-                for (int k = grads.getHeight() - 1; k >= 0; k -= dvdt) {
+                for (int k = grads.getHeight() - 1, ns = 0; ns <= k_numSegments; k -= dvdt, ns ++) {
+                        k = Math.max(0, k);
                         int n = Math.max(0, k - dvdt);
-                        for (int j = k; j >= n; j -= drdt) {
+                        int n_samples = 0;
+                        for (int j = k, nss = 0; nss <= k_numSamples; j -= drdt, nss ++) {
+                                j = Math.max(0, j);
                                 for (int i = 0; i < grads.getWidth(); i++) {
                                         if (0X0 != (grads.getRGB(i, j) & 0XFF)) {
-                                                local.add(new Vec2((float) i,
-                                                                   (float) grads.getHeight() - j));
+                                                float x = i, y = h - j;
+                                                if (n_samples >= local.size())  local.add(new Vec2(x, y));
+                                                else                            local.get(n_samples).set(x, y);
+                                                n_samples ++;
                                         }
                                 }
                         }
-                        if (local.isEmpty()) {
-                                continue;
-                        }
+                        if (n_samples == 0) continue;
+                        
                         // 误差期望函数 E(β0, β1) = ∑ (Xi - (β1<X> + β0))^2，当
                         // β1 = ∑(Yi - <Y>)(Xi - <X>) / ∑ (Yi - <Y>)^2
                         // β0 = <X> - β1*<Y> 时，E最小
                         float miuX = 0, miuY = 0;
-                        for (Vec2 sample : local) {
+                        for (int l = 0; l < n_samples; l ++) {
+                                Vec2 sample = local.get(l);
                                 miuX += sample.x;
                                 miuY += sample.y;
                         }
-                        miuX /= local.size();
-                        miuY /= local.size();
+                        miuX /= n_samples;
+                        miuY /= n_samples;
                         float Eyy = 0, Eyx = 0;
-                        for (Vec2 sample : local) {
+                        for (int l = 0; l < n_samples; l ++) {
+                                Vec2 sample = local.get(l);
                                 Eyy += (sample.y - miuY) * (sample.y - miuY);
                                 Eyx += (sample.x - miuX) * (sample.y - miuY);
                         }
-                        local.clear();
+                        
                         Eyy = Eyy == 0 ? 1e-5f : Eyy;
                         float beta1 = Eyx / Eyy;
                         float beta0 = miuX - beta1 * miuY;
                         if (firstTime) {
                                 float x = beta0;
-                                dataset.add(new Vec2(x / grads.getWidth(), 0));
+                                dataset.add(new Vec2(x / w, 0));
                                 firstTime = false;
                         }
                         float x = beta1 * Y + beta0;
-                        Vec2 pt = new Vec2(x / grads.getWidth(), Y / grads.getHeight());
+                        Vec2 pt = new Vec2(x / w, Y / h);
                         dataset.add(pt);
                         Y += dvdt;
                 }

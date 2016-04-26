@@ -53,7 +53,8 @@ public class BrokenLines implements IDrawable {
         }
         
         private void __DrawLine(Graphics g, Vec2 s0, Vec2 st, float mx, float my) {
-                g.drawLine((int) (s0.x*mx), (int) (s0.y*my), (int) (st.x*mx), (int) (st.y*my));
+                g.drawLine((int) (s0.x*mx), (int) ((m_scale - s0.y)*my), 
+                           (int) (st.x*mx), (int) ((m_scale - st.y)*my));
         }
         
         public float D(Vec2 p) {
