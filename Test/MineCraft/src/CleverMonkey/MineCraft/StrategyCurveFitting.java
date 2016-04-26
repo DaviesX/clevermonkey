@@ -124,8 +124,9 @@ public class StrategyCurveFitting implements ITracingStrategy {
                 dir.normalize();
                 
                 m_pathVec.UpdateFromRasterImage(sensor.GetInternalImageRef(), k_targetRadiance);
-                //BezierSpline bs = m_pathVec.BezierSplineRegression();
-                BrokenLines bl = m_pathVec.BorkenLinesRegression();
+                // BezierSpline path = m_pathVec.BezierSplineRegression();
+                // BrokenLines path = m_pathVec.BorkenLinesRegression();
+                BezierSpline path = m_pathVec.BezierSplineFromPath();
                 Vec2 vLocal = Decision.PredictTangentFromGradientMap(m_pathVec.GetInternalGradientMap());
                 Vec2 vStandard = new Vec2(vLocal.x*dir.y + vLocal.y*dir.x, -vLocal.x*dir.x + vLocal.y*dir.y);
                 float speed = frontVelocity.length();
@@ -144,7 +145,7 @@ public class StrategyCurveFitting implements ITracingStrategy {
 //                        m_lowPass.getGraphics().drawString("LowPass", 0, 20);
 //                        bs.Draw(m_path.getGraphics(), m_path.getWidth(), m_path.getHeight());
                         m_path.getGraphics().clearRect(0, 0, m_path.getWidth(), m_path.getHeight());
-                        bl.Draw(m_path.getGraphics(), m_path.getWidth(), m_path.getHeight());
+                        path.Draw(m_path.getGraphics(), m_path.getWidth(), m_path.getHeight());
                         m_path.getGraphics().drawString("PredictedPath", 0, 20);
                 }
         }

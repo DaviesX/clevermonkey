@@ -250,7 +250,7 @@ public class PathVectorizer {
 
         // 线样本，简单x坐标平均值。
         private void __LineSampleAvgFromGradientMap(BufferedImage grads, Dataset dataset) {
-                final int k_numSegments = 4;
+                final int k_numSegments = 3;
                 int dvdt = Math.max(1, grads.getHeight() / k_numSegments);
                 float w = grads.getWidth() - 1;
                 float h = grads.getHeight() - 1;
@@ -275,7 +275,7 @@ public class PathVectorizer {
         // 线样本，线性回归。
         private void __LineSampleFromGradientMap(BufferedImage grads, Dataset dataset) {
                 Dataset local = new Dataset();
-                final int k_numSegments = 4;
+                final int k_numSegments = 3;
                 final int k_numSamples = 3;
                 int dvdt = Math.max(1, grads.getHeight() / k_numSegments);
                 int drdt = Math.max(1, dvdt / k_numSamples);
@@ -330,8 +330,7 @@ public class PathVectorizer {
                                 firstTime = false;
                         }
                         float x = beta1 * Y + beta0;
-                        Vec2 pt = new Vec2(x / w, Y / h);
-                        dataset.add(pt);
+                        dataset.add(new Vec2(x / w, Y / h));
                         Y += dvdt;
                 }
         }
@@ -363,6 +362,14 @@ public class PathVectorizer {
         // 贝塞尔回归。
         public BezierSpline BezierSplineRegression() {
                 throw new UnsupportedOperationException();
+        }
+        
+        // 从路径产生贝塞尔曲线。
+        public BezierSpline BezierSplineFromPath() {
+                Dataset dataset = new Dataset();
+                __LineSampleAvgFromGradientMap(m_gradientMap, dataset);
+                BezierSpline bs = new BezierSpline(dataset.get(0), dataset.get(1), dataset.get(2), dataset.get(3), true);
+                return bs;
         }
 
         // 区域采样。

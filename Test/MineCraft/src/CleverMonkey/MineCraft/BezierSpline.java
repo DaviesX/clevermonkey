@@ -29,15 +29,31 @@ public class BezierSpline implements IDrawable {
         private final Vec2[] m_c = new Vec2[4];
         private float m_scale = 1.0f;
         
-        public BezierSpline(Vec2 c0, Vec2 c1, Vec2 c2, Vec2 c3) {
-                m_c[0] = c0;
-                m_c[1] = c1;
-                m_c[2] = c2;
-                m_c[3] = c3;
+        private void __SetControlPointFromTargetPoint(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, Vec2[] c) {
+                c[0] = p0.clone();
+                c[3] = p3.clone();
+                final float t1 = 1.0f/3.0f, t2 = 2.0f/3.0f;
+                final float A = 3.0f*__Qudratic(1 - t1)*t1, B = 3.0f*(1 - t1)*__Qudratic(t1),
+                            C = 3.0f*__Qudratic(1 - t2)*t2, D = 3.0f*(1 - t2)*__Qudratic(t2);
+                final float det = A*D - C*B;
+                final float iA = D/det, iB = -B/det, iC = -C/det, iD = A/det;
+                final float mt1 = __Cubic(1 - t1), mt2 = __Cubic(1 - t2);
+                final float nt1 = __Cubic(t1), nt2 = __Cubic(t2);
+                float S1x = p1.x - mt1*p0.x - nt1*p3.x;
+                float S1y = p1.y - mt1*p0.y - nt1*p3.y;
+                float S2x = p2.x - mt2*p0.x - nt2*p3.x;
+                float S2y = p2.y - mt2*p0.y - nt2*p3.y;
+                c[1] = new Vec2(iA*S1x + iB*S2x, iA*S1y + iB*S2y);
+                c[2] = new Vec2(iC*S1x + iD*S2x, iC*S1y + iD*S2y);
         }
         
-        public void SetControlPoint(int i, Vec2 c) {
-                m_c[i] = c;
+        public BezierSpline(Vec2 c0, Vec2 c1, Vec2 c2, Vec2 c3, boolean isTarget) {
+                if (!isTarget) {
+                        m_c[0] = c0.clone();
+                        m_c[1] = c1.clone();
+                        m_c[2] = c2.clone();
+                        m_c[3] = c3.clone();
+                } else __SetControlPointFromTargetPoint(c0, c1, c2, c3, m_c);
         }
         
         public void SetScale(float s) {
@@ -53,7 +69,7 @@ public class BezierSpline implements IDrawable {
         }
         
         public void B(float t, Vec2 p) {
-                float a = __Cubic(1 - t), b = __Qudratic(1 - t)*t, c = (1 - t)*__Qudratic(t), d = __Cubic(t);
+                float a = __Cubic(1 - t), b = 3.0f*__Qudratic(1 - t)*t, c = 3.0f*(1 - t)*__Qudratic(t), d = __Cubic(t);
                 p.set(a*m_c[0].x + b*m_c[1].x + c*m_c[2].x + d*m_c[3].x,
                       a*m_c[0].y + b*m_c[1].y + c*m_c[2].y + d*m_c[3].y);
         }
