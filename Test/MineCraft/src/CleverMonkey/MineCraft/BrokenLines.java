@@ -27,17 +27,34 @@ import org.jbox2d.common.Vec2;
  * 
  * @author davis
  */
-public class BrokenLines implements IDrawable {
+public final class BrokenLines implements IDrawable {
         
         private final List<Vec2> m_points;
+        private final float[] m_pathLength;
         private float m_scale = 1.0f;
+        private float m_length = 0.0f;
         
-        public BrokenLines() {
-                m_points = new ArrayList<>();
+        public double __PathLengthSquared(Vec2 a, Vec2 b) {
+                return (a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y);
+        }
+        
+        public Vec2 __Interpolate(Vec2 a, Vec2 b, float t) {
+                return new Vec2((b.x - a.x)*t, (b.y - a.y)*t);
         }
         
         public BrokenLines(List<Vec2> points) {
                 m_points = points;
+                if (m_points.size() < 2) {
+                        m_pathLength = new float[] {0.0f};
+                        m_length = 0.0f;
+                        return ;
+                }
+                m_pathLength = new float [m_points.size() - 1];
+                for (int i = 0; i < m_points.size() - 1; i ++) {
+                        double sq = __PathLengthSquared(m_points.get(i), m_points.get(i + 1));
+                        m_length += Math.sqrt(sq);
+                        m_pathLength[i] = m_length;
+                }
         }
         
         public void SetScale(float s) {
@@ -48,13 +65,24 @@ public class BrokenLines implements IDrawable {
                 m_points.clear();
         }
         
-        public void Append(Vec2 point) {
-                m_points.add(point);
-        }
-        
         private void __DrawLine(Graphics g, Vec2 s0, Vec2 st, float mx, float my) {
                 g.drawLine((int) (s0.x*mx), (int) ((m_scale - s0.y)*my), 
                            (int) (st.x*mx), (int) ((m_scale - st.y)*my));
+        }
+        
+        public Vec2 L(float t) {
+                if (m_points.isEmpty()) return new Vec2();
+                if (m_points.size() == 1) return m_points.get(0);
+                float lenSq = 0.0f;
+                for (int i = 0; i < m_points.size() - 1; i ++) {
+                        lenSq += m_pathLength[i];
+                        float factor = lenSq/m_length;
+                        if (factor >= t) {
+                                float s = factor - t;
+                                return __Interpolate(m_points.get(i), m_points.get(i + 1), s);
+                        }
+                }
+                return m_points.get(m_points.size() - 1);
         }
         
         public float D(Vec2 p) {
