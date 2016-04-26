@@ -250,8 +250,13 @@ public class PathVectorizer {
 
         // 线样本，简单x坐标平均值。
         private void __LineSampleAvgFromGradientMap(BufferedImage grads, Dataset dataset) {
-                int dvdt = Math.max(1, grads.getHeight() / 8);
-                for (int k = grads.getHeight() - 1; k >= 0; k -= dvdt) {
+                final int k_numSegments = 4;
+                int dvdt = Math.max(1, grads.getHeight() / k_numSegments);
+                float w = grads.getWidth() - 1;
+                float h = grads.getHeight() - 1;
+                
+                for (int k = grads.getHeight() - 1, ns = 0; ns <= k_numSegments; k -= dvdt, ns ++) {
+                        k = Math.max(0, k);
                         int n = Math.max(0, k - dvdt);
                         float x = 0, cnt = 0;
                         for (int i = 0; i < grads.getWidth(); i++) {
@@ -262,8 +267,7 @@ public class PathVectorizer {
                         }
                         if (cnt != 0) {
                                 x /= cnt;
-                                dataset.add(new Vec2((float) x/grads.getWidth(),
-                                                     (float) (grads.getHeight() - k)/grads.getHeight()));
+                                dataset.add(new Vec2(x/w, 1 - k/h));
                         }
                 }
         }
@@ -335,7 +339,7 @@ public class PathVectorizer {
         // 分段线性回归。
         public BrokenLines BorkenLinesRegression() {
                 Dataset dataset = new Dataset();
-                __LineSampleFromGradientMap(m_gradientMap, dataset);
+                __LineSampleAvgFromGradientMap(m_gradientMap, dataset);
                 BrokenLines bl = new BrokenLines(dataset);
                 return bl;
         }
