@@ -30,7 +30,6 @@ import org.jbox2d.common.Vec2;
  */
 public class StrategyOrthoVelo implements ITracingStrategy {
 
-        private final Map m_map;
         // 调试工具
         private final boolean m_is2Debug;
         private final Graphics m_gAlpha;
@@ -49,8 +48,7 @@ public class StrategyOrthoVelo implements ITracingStrategy {
         /*
          * 应该由ITracingStrategyFactory来构造这个对象。
          */
-        public StrategyOrthoVelo(Map map, boolean is2Debug, JComponent slot0, JComponent slot1, JComponent slot2, JComponent slot3) {
-                m_map = map;
+        public StrategyOrthoVelo(boolean is2Debug, JComponent slot0, JComponent slot1, JComponent slot2, JComponent slot3) {
                 m_is2Debug = is2Debug;
                 m_gCamera = slot0 != null ? slot0.getGraphics() : null;
                 m_gAlpha = slot1 != null ? slot1.getGraphics() : null;
@@ -58,11 +56,6 @@ public class StrategyOrthoVelo implements ITracingStrategy {
                 m_compCamera = slot0;
                 m_compAlpha = slot1;
                 m_compBeta = slot2;
-        }
-
-        @Override
-        public float ComputeFrontWheelAngularVelocity() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override
@@ -98,11 +91,6 @@ public class StrategyOrthoVelo implements ITracingStrategy {
                                 0, 0, m_compCamera.getWidth(), m_compCamera.getHeight(), null);
                         m_gCamera.drawString("Camera", 0, 20);
                 }
-        }
-
-        @Override
-        public float ComputeFrontWheelAngle() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override

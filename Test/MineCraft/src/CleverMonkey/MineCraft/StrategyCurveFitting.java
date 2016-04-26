@@ -29,54 +29,6 @@ import org.jbox2d.common.Vec2;
  */
 class Decision {
         
-        public static Vec2 PredictTangentFromGradientMap(BufferedImage gradMap) {
-                float factor = 1.0f/16.0f;
-                int dist = (int) (factor*gradMap.getHeight());
-                Vec2 st = new Vec2(), s0 = new Vec2(), ds = new Vec2(gradMap.getWidth()/2, 0.0f);
-                int s = 0;
-                OUTTER_ST:
-                for (int j = 0; j < gradMap.getHeight(); j ++) {
-                        for (int i = 0; i < gradMap.getWidth(); i ++) {
-                                int v = gradMap.getRGB(i, j) & 0XFF;
-                                if (v != 0X0) {
-                                        int lx = i, rx = i;
-                                        for (i = gradMap.getWidth() - 1; i >= 0; i --) {
-                                                v = gradMap.getRGB(i, j) & 0XFF;
-                                                if (v != 0X0) {
-                                                        rx = i;
-                                                        break;
-                                                }
-                                        }
-                                        st.set((lx + rx)/2, j);
-                                        ds.set(2.0f*factor*(st.x - ds.x), j);
-                                        s = j;
-                                        break OUTTER_ST;
-                                } 
-                        }
-                }
-                OUTTER_S0:
-                for (int j = Math.min(s + dist, gradMap.getHeight() - 1); j < gradMap.getHeight(); j ++) {
-                        for (int i = 0; i < gradMap.getWidth(); i ++) {
-                                int v = gradMap.getRGB(i, j) & 0XFF;
-                                if (v != 0X0) {
-                                        int lx = i, rx = i;
-                                        for (i = gradMap.getWidth() - 1; i >= 0; i --) {
-                                                v = gradMap.getRGB(i, j) & 0XFF;
-                                                if (v != 0X0) {
-                                                        rx = i;
-                                                        break;
-                                                }
-                                        }
-                                        s0.set((lx + rx)/2, j);
-                                        break OUTTER_S0;
-                                } 
-                        }
-                }
-                Vec2 tangent = new Vec2(st.x - s0.x, s0.y - st.y);
-                tangent = tangent.add(ds);
-                return tangent;
-        }
-        
         public static Vec2 PredictTangentFromBezierPath(BezierSpline bs) {
                 return bs.T(0.8f).add(new Vec2(bs.B(0.8f).x - 0.5f, 0.0f));
         }
@@ -89,7 +41,6 @@ class Decision {
  */
 public class StrategyCurveFitting implements ITracingStrategy {
 
-        private final Map m_map;
         // 调试工具
         private final boolean m_is2Debug;
         private final JComponent m_camera;
@@ -106,18 +57,13 @@ public class StrategyCurveFitting implements ITracingStrategy {
         /*
          * 应该由ITracingStrategyFactory来构造这个对象。
          */
-        public StrategyCurveFitting(Map map, boolean is2Debug, JComponent slot0, JComponent slot1, JComponent slot2, JComponent slot3) {
-                m_map = map;
+        public StrategyCurveFitting(boolean is2Debug, JComponent slot0, JComponent slot1, JComponent slot2, JComponent slot3) {
                 m_is2Debug = is2Debug;
                 m_camera = slot0;
                 m_grad = slot1;
-                m_lowPass = slot2;
-                m_path = slot3;
-        }
-
-        @Override
-        public float ComputeFrontWheelAngularVelocity() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                m_path = slot2;
+                m_lowPass = slot3;
+                
         }
 
         @Override
@@ -127,12 +73,10 @@ public class StrategyCurveFitting implements ITracingStrategy {
                 dir.normalize();
                 
                 m_pathVec.UpdateFromRasterImage(sensor.GetInternalImageRef(), k_targetRadiance);
-                // BezierSpline path = m_pathVec.BezierSplineRegression();
-                // BrokenLines path = m_pathVec.BorkenLinesRegression();
                 BezierSpline path = m_pathVec.BezierSplineFromPath();
-                // Vec2 vLocal = Decision.PredictTangentFromGradientMap(m_pathVec.GetInternalGradientMap());
                 Vec2 vLocal = Decision.PredictTangentFromBezierPath(path);
                 vLocal.normalize();
+                
                 Vec2 vStandard = new Vec2(vLocal.x*dir.y + vLocal.y*dir.x, -vLocal.x*dir.x + vLocal.y*dir.y);
                 float speed = frontVelocity.length();
                 m_velo.set(vStandard.x*speed, vStandard.y*speed);
@@ -145,19 +89,10 @@ public class StrategyCurveFitting implements ITracingStrategy {
                         m_grad.getGraphics().drawImage(m_pathVec.GetInternalGradientMap(), 
                                                         0, 0, m_grad.getWidth(), m_grad.getHeight(), null);
                         m_grad.getGraphics().drawString("GradientMap", 0, 20);
-//                        m_lowPass.getGraphics().drawImage(m_pathVec.GetInternalLowPass(), 
-//                                                        0, 0, m_lowPass.getWidth(), m_lowPass.getHeight(), null);
-//                        m_lowPass.getGraphics().drawString("LowPass", 0, 20);
-//                        bs.Draw(m_path.getGraphics(), m_path.getWidth(), m_path.getHeight());
                         m_path.getGraphics().clearRect(0, 0, m_path.getWidth(), m_path.getHeight());
                         path.Draw(m_path.getGraphics(), m_path.getWidth(), m_path.getHeight());
-                        m_path.getGraphics().drawString("PredictedPath", 0, 20);
+                        m_path.getGraphics().drawString("Path: " + path.toString(), 0, 20);
                 }
-        }
-
-        @Override
-        public float ComputeFrontWheelAngle() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
         @Override

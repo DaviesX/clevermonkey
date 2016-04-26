@@ -18,6 +18,7 @@
 package CleverMonkey.MineCraft;
 
 import java.awt.Graphics;
+import java.text.DecimalFormat;
 import org.jbox2d.common.Vec2;
 
 /**
@@ -112,5 +113,19 @@ public class BezierSpline implements IDrawable {
                         B(t + dt, Sj);
                         __DrawLine(g, Si, Sj, mx, my);
                 }
-        }        
+        }
+        
+        private final DecimalFormat m_df = new DecimalFormat("#.#");
+        
+        private String __FormatVec2(Vec2 vec) {
+                return "(" + m_df.format(vec.x) + "," + m_df.format(vec.y) + ")";
+        }
+        
+        @Override
+        public String toString() {
+                return __FormatVec2(m_c[0]) + "," + 
+                       __FormatVec2(m_c[1]) + "," + 
+                       __FormatVec2(m_c[2]) + "," + 
+                       __FormatVec2(m_c[3]);
+        }
 }

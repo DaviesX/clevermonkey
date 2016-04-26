@@ -73,7 +73,7 @@ public final class App {
         private final String k_WindowTitle = "CMMineCraft";
 
         private ITracingStrategy __GenerateStrategyFromAppState() {
-                return ITracingStrategyFactory.CreateStrategy(m_strategy, m_simCtx.GetMap(),
+                return ITracingStrategyFactory.CreateStrategy(m_strategy,
                                                               m_debugLabel0, m_debugLabel1, m_debugLabel2, m_debugLabel3);
         }
 
@@ -316,7 +316,7 @@ public final class App {
                 });
 
                 loadDefaultBenchmarkMenuItem.addActionListener((ActionEvent e) -> {
-                        String benchFile = "Test/MineCraft/MapImg/未标题-6.jpg";
+                        String benchFile = "Test/MineCraft/MapImg/未标题-2.jpg";
                         Map map;
                         try {
                                 map = new Map(new FileInputStream(benchFile));

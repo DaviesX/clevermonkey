@@ -29,9 +29,5 @@ public interface ITracingStrategy {
         public void TimeEvolution(Vec2 centroid, Vec2 frontVelocity, float dt,  Simulation.Clock t, 
                                     Sensor sensor, Simulation.Universe universe);
 
-        public float ComputeFrontWheelAngularVelocity();
-
-        public float ComputeFrontWheelAngle();
-
         public Vec2 ComputeFrontWheelVelocity();
 }
