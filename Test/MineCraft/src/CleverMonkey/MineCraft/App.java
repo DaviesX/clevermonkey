@@ -316,7 +316,7 @@ public final class App {
                 });
 
                 loadDefaultBenchmarkMenuItem.addActionListener((ActionEvent e) -> {
-                        String benchFile = "Test/MineCraft/MapImg/未标题-1.jpg";
+                        String benchFile = "Test/MineCraft/MapImg/未标题-6.jpg";
                         Map map;
                         try {
                                 map = new Map(new FileInputStream(benchFile));

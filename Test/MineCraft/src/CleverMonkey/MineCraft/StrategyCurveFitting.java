@@ -78,7 +78,7 @@ class Decision {
         }
         
         public static Vec2 PredictTangentFromBezierPath(BezierSpline bs) {
-                return bs.T(1.0f).add(new Vec2(bs.B(1.0f).x - 0.5f, 0.0f));
+                return bs.T(0.8f).add(new Vec2(bs.B(0.8f).x - 0.5f, 0.0f));
         }
 }
 
