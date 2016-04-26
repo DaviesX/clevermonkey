@@ -368,7 +368,8 @@ public class PathVectorizer {
         public BezierSpline BezierSplineFromPath() {
                 Dataset dataset = new Dataset();
                 __LineSampleAvgFromGradientMap(m_gradientMap, dataset);
-                BezierSpline bs = new BezierSpline(dataset.get(0), dataset.get(1), dataset.get(2), dataset.get(3), true);
+                BrokenLines bl = new BrokenLines(dataset);
+                BezierSpline bs = new BezierSpline(bl.L(0.0f), bl.L(1.0f/3.0f), bl.L(2.0f/3.0f), bl.L(1.0f), true);
                 return bs;
         }
 

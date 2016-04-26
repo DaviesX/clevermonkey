@@ -39,7 +39,7 @@ public final class BrokenLines implements IDrawable {
         }
         
         public Vec2 __Interpolate(Vec2 a, Vec2 b, float t) {
-                return new Vec2((b.x - a.x)*t, (b.y - a.y)*t);
+                return new Vec2(a.x + (b.x - a.x)*t, a.y + (b.y - a.y)*t);
         }
         
         public BrokenLines(List<Vec2> points) {
@@ -49,11 +49,12 @@ public final class BrokenLines implements IDrawable {
                         m_length = 0.0f;
                         return ;
                 }
-                m_pathLength = new float [m_points.size() - 1];
+                m_pathLength = new float [m_points.size()];
+                m_pathLength[0] = 0.0f;
                 for (int i = 0; i < m_points.size() - 1; i ++) {
                         double sq = __PathLengthSquared(m_points.get(i), m_points.get(i + 1));
                         m_length += Math.sqrt(sq);
-                        m_pathLength[i] = m_length;
+                        m_pathLength[i + 1] = m_length;
                 }
         }
         
@@ -73,12 +74,11 @@ public final class BrokenLines implements IDrawable {
         public Vec2 L(float t) {
                 if (m_points.isEmpty()) return new Vec2();
                 if (m_points.size() == 1) return m_points.get(0);
-                float lenSq = 0.0f;
                 for (int i = 0; i < m_points.size() - 1; i ++) {
-                        lenSq += m_pathLength[i];
-                        float factor = lenSq/m_length;
+                        float factor = m_pathLength[i + 1]/m_length;
                         if (factor >= t) {
-                                float s = factor - t;
+                                float base = m_pathLength[i]/m_length;
+                                float s = (t - base)/(factor - base);
                                 return __Interpolate(m_points.get(i), m_points.get(i + 1), s);
                         }
                 }
