@@ -18,7 +18,6 @@
 package CleverMonkey.MineCraft;
 
 import java.awt.Color;
-import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
 import org.jbox2d.common.Vec2;
 
@@ -30,7 +29,7 @@ import org.jbox2d.common.Vec2;
 class Decision {
         
         public static Vec2 PredictTangentFromBezierPath(BezierSpline bs) {
-                return bs.T(0.8f).add(new Vec2(bs.B(0.8f).x - 0.5f, 0.0f));
+                return bs.T(0.75f).add(new Vec2(bs.B(0.75f).x - 0.5f, 0.0f));
         }
 }
 

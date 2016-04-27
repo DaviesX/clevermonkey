@@ -250,12 +250,13 @@ public class PathVectorizer {
 
         // 线样本，简单x坐标平均值。
         private void __LineSampleAvgFromGradientMap(BufferedImage grads, Dataset dataset) {
-                final int k_numSegments = 3;
+                final int k_numSegments = 10;
                 int dvdt = Math.max(1, grads.getHeight() / k_numSegments);
                 float w = grads.getWidth() - 1;
                 float h = grads.getHeight() - 1;
                 
                 for (int k = grads.getHeight() - 1, ns = 0; ns <= k_numSegments; k -= dvdt, ns ++) {
+                        k = Math.max(0, k);
                         int n = Math.max(0, k - dvdt);
                         float x = 0, cnt = 0;
                         for (int i = 0; i < grads.getWidth(); i++) {
@@ -274,8 +275,8 @@ public class PathVectorizer {
         // 线样本，线性回归。
         private void __LineSampleFromGradientMap(BufferedImage grads, Dataset dataset) {
                 Dataset local = new Dataset();
-                final int k_numSegments = 3;
-                final int k_numSamples = 3;
+                final int k_numSegments = 10;
+                final int k_numSamples = 2;
                 int dvdt = Math.max(1, grads.getHeight() / k_numSegments);
                 int drdt = Math.max(1, dvdt / k_numSamples);
                 float w = grads.getWidth() - 1;
