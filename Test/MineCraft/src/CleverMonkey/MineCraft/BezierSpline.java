@@ -69,6 +69,10 @@ public class BezierSpline implements IDrawable {
                 return x*x;
         }
         
+        public double __PathLengthSquared(Vec2 a, Vec2 b) {
+                return (a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y);
+        }
+        
         public void B(float t, Vec2 p) {
                 float a = __Cubic(1 - t), 
                       b = 3*__Qudratic(1 - t)*t, 
@@ -85,7 +89,24 @@ public class BezierSpline implements IDrawable {
         }
         
         public float D(Vec2 p) {
-                throw new UnsupportedOperationException();
+                final int k_Iterations = 5;
+                float t = 0.5f;
+                float tLow = 0.0f;
+                float tHigh = 1.0f;
+                double l = 0;
+                for (int i = 0; i < k_Iterations; i ++) {
+                        l = __PathLengthSquared(p, B(t));
+                        double ll = __PathLengthSquared(p, B(tLow));
+                        double lh = __PathLengthSquared(p, B(tHigh));
+                        if (Math.abs(l - ll) < Math.abs(l - lh)) {
+                                tHigh = t;
+                                t = (tHigh - tLow)/2;
+                        } else {
+                                tLow = t;
+                                t = (tHigh - tLow)/2;
+                        }
+                }
+                return (float) Math.sqrt(l);
         }
         
         public Vec2 T(float t) {

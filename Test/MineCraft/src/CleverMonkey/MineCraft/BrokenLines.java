@@ -18,7 +18,6 @@
 package CleverMonkey.MineCraft;
 
 import java.awt.Graphics;
-import java.util.ArrayList;
 import java.util.List;
 import org.jbox2d.common.Vec2;
 

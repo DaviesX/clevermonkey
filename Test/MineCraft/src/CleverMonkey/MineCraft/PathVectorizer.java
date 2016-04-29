@@ -19,7 +19,6 @@ package CleverMonkey.MineCraft;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import org.jbox2d.common.Vec2;
 
 /**
@@ -28,9 +27,6 @@ import org.jbox2d.common.Vec2;
  * @author davis
  */
 public class PathVectorizer {
-
-        public class Dataset extends ArrayList<Vec2> {
-        }
 
         // 图像样本。
         private Dataset m_samples;
@@ -368,6 +364,20 @@ public class PathVectorizer {
 
         // 区域采样。
         public Dataset SampleAround(Vec2 r0, Vec2 r1) {
-                throw new UnsupportedOperationException();
+                Dataset dataset = new Dataset();
+                float wscale = m_gradientMap.getWidth() - 1;
+                float hscale = m_gradientMap.getHeight() - 1;
+                int x0 = (int) (r0.x*wscale);
+                int y0 = (int) ((1.0f - r0.y)*hscale);
+                int x1 = (int) (r1.x*wscale);
+                int y1 = (int) ((1.0f - r1.y)*hscale);
+                for (int j = y0; j <= y1; j ++) {
+                        for (int i = x0; i <= x1; i ++) {
+                                if (0X0 != (m_gradientMap.getRGB(i, j) & 0XFF)) {
+                                        dataset.add(new Vec2(i/wscale, 1.0f - j/hscale));
+                                }
+                        }
+                }
+                return dataset;
         }
 }

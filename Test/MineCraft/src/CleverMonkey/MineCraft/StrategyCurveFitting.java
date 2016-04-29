@@ -28,6 +28,9 @@ import org.jbox2d.common.Vec2;
  */
 class Decision {
         private final PathVectorizer m_path;
+        private final float k_recoLevel = 0.75f;
+        private final float k_cutoffLevel = 1.2f;
+        private final BezierSpline m_bs;
         
         enum State {
                 RUN,
@@ -36,18 +39,27 @@ class Decision {
         
         public Decision(PathVectorizer path) {
                 m_path = path;
+                m_bs = m_path.BezierSplineFromPath();
         }
         
         public Vec2 PredictTangent() {
-                BezierSpline bs = m_path.BezierSplineFromPath();
-                Vec2 tangent = bs.T(0.75f);
-                Vec2 position = bs.B(0.75f);
+                Vec2 tangent = m_bs.T(k_recoLevel);
+                Vec2 position = m_bs.B(k_recoLevel);
                 float mag = tangent.length();
                 return tangent.add(new Vec2((position.x - 0.5f)*mag, 0.0f));
         }
         
         public State RationalizeState() {
-                return State.RUN;
+                Dataset ds = m_path.SampleAround(new Vec2(0.0f, k_recoLevel), 
+                                                 new Vec2(1.0f, k_recoLevel));
+                Dataset dist = new Dataset();
+                ds.stream().forEach((sample) -> {
+                        dist.add(m_bs.D(sample));
+                });
+                if (dist.Variance().x < k_cutoffLevel)
+                        return State.RUN;
+                else
+                        return State.STOP;
         }
 }
 
@@ -125,5 +137,4 @@ public class StrategyCurveFitting implements ITracingStrategy {
         public Vec2 ComputeFrontWheelVelocity() {
                 return m_velo;
         }
-
 }
