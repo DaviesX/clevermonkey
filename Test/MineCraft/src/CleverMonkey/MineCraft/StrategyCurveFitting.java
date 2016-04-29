@@ -27,9 +27,27 @@ import org.jbox2d.common.Vec2;
  * @author davis
  */
 class Decision {
+        private final PathVectorizer m_path;
         
-        public static Vec2 PredictTangentFromBezierPath(BezierSpline bs) {
-                return bs.T(0.75f).add(new Vec2(bs.B(0.75f).x - 0.5f, 0.0f));
+        enum State {
+                RUN,
+                STOP
+        }
+        
+        public Decision(PathVectorizer path) {
+                m_path = path;
+        }
+        
+        public Vec2 PredictTangent() {
+                BezierSpline bs = m_path.BezierSplineFromPath();
+                Vec2 tangent = bs.T(0.75f);
+                Vec2 position = bs.B(0.75f);
+                float mag = tangent.length();
+                return tangent.add(new Vec2((position.x - 0.5f)*mag, 0.0f));
+        }
+        
+        public State RationalizeState() {
+                return State.RUN;
         }
 }
 
@@ -72,13 +90,21 @@ public class StrategyCurveFitting implements ITracingStrategy {
                 dir.normalize();
                 
                 m_pathVec.UpdateFromRasterImage(sensor.GetInternalImageRef(), k_targetRadiance);
-                BezierSpline path = m_pathVec.BezierSplineFromPath();
-                Vec2 vLocal = Decision.PredictTangentFromBezierPath(path);
-                vLocal.normalize();
-                
-                Vec2 vStandard = new Vec2(vLocal.x*dir.y + vLocal.y*dir.x, -vLocal.x*dir.x + vLocal.y*dir.y);
-                float speed = frontVelocity.length();
-                m_velo.set(vStandard.x*speed, vStandard.y*speed);
+                Decision decision = new Decision(m_pathVec);
+                switch (decision.RationalizeState()) {
+                        case RUN:
+                                Vec2 vLocal = decision.PredictTangent();
+                                vLocal.normalize();
+
+                                Vec2 vStandard = new Vec2(vLocal.x*dir.y + vLocal.y*dir.x, 
+                                                         -vLocal.x*dir.x + vLocal.y*dir.y);
+                                float speed = frontVelocity.length();
+                                m_velo.set(vStandard.x*speed, vStandard.y*speed);
+                                break;
+                        case STOP:
+                                m_velo.setZero();
+                                break;
+                }
                 
                 if (m_is2Debug) {
                         m_camera.getGraphics().drawImage(sensor.GetInternalImageRef(),
@@ -89,6 +115,7 @@ public class StrategyCurveFitting implements ITracingStrategy {
                                                         0, 0, m_grad.getWidth(), m_grad.getHeight(), null);
                         m_grad.getGraphics().drawString("GradientMap", 0, 20);
                         m_path.getGraphics().clearRect(0, 0, m_path.getWidth(), m_path.getHeight());
+                        BezierSpline path = m_pathVec.BezierSplineFromPath();
                         path.Draw(m_path.getGraphics(), m_path.getWidth(), m_path.getHeight());
                         m_path.getGraphics().drawString("Path: " + path.toString(), 0, 20);
                 }
