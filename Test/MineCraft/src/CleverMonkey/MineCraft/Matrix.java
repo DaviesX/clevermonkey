@@ -23,7 +23,7 @@ package CleverMonkey.MineCraft;
  * @author davis
  */
 public class Matrix {
-        private final float[][] m_values;
+        private float[][] m_values;
         
         public Matrix(int m, int n) {
                 m_values = new float[m][n];
@@ -71,7 +71,43 @@ public class Matrix {
         }
         
         public void Inverse() {
-                throw new UnsupportedOperationException();
+                int m = M(), n = N();
+                Matrix augmented = new Matrix(m, n);
+                for (int j = 0; j < m; j ++) {
+                        for (int i = 0; i < n; i ++) {
+                                if (i == j) {
+                                        augmented.AssignAt(i, j, 1);
+                                }
+                        }
+                }
+                for (int i = 0; i < m - 1; i ++) {
+                        int l = i + 1;
+                        while (m_values[l][i] != 0 && l < m) { l ++; }
+                        for (int k = l; k < m; k ++) {
+                                if (m_values[k][i] == 0) continue;
+                                float factor = -m_values[k][i]/m_values[l][i];
+                                for (int j = i; j < n; j ++) {
+                                        m_values[k][j] += m_values[i][j]*factor;
+                                        augmented.m_values[k][j] += augmented.m_values[i][j]*factor;
+                                }
+                        }
+                }
+                for (int i = m - 1; i > 0; i --) {
+                        int l = i - 1;
+                        while (m_values[l][i] != 0 && l < m) { l --; }
+                        for (int k = i - 1; k >= 0; k --) {
+                                float factor = -m_values[k][i]/m_values[l][i];
+                                for (int j = i; j < n; j ++) {
+                                        m_values[k][j] += m_values[i][j]*factor;
+                                        augmented.m_values[k][j] += augmented.m_values[i][j]*factor;
+                                }
+                        }
+                }
+                for (int i = 0; i < m; i ++) {
+                        if (m_values[i][i] == 0) throw new IllegalArgumentException("not invertible");
+                        augmented.m_values[i][i] /= m_values[i][i];
+                }
+                m_values = augmented.m_values;
         }
         
         public Matrix MulTransponse() {
