@@ -69,7 +69,7 @@ public class BezierSpline implements IDrawable {
                 return x*x;
         }
         
-        public double __PathLengthSquared(Vec2 a, Vec2 b) {
+        private double __PathLengthSquared(Vec2 a, Vec2 b) {
                 return (a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y);
         }
         
